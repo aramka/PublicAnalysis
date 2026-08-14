@@ -6,6 +6,6 @@ namespace PublicAnalysis.Data
 {
     public interface IDataQueryValidation
     {
-        void ThrowIfNotValid(DataQuery dataSetQuery);
+        void ThrowIfNotValid(DataQuery dataSetQuery, DataMeta meta);
     }
 }

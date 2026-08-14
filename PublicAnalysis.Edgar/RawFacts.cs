@@ -6,7 +6,7 @@ using System.Text;
 
 namespace PublicAnalysis.Edgar
 {
-    public class RawFacts : IData
+    public class RawFacts : IEdgarData
     {
         public string Name => nameof(RawFacts);
 

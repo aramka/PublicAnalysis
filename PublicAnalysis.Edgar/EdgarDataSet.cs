@@ -1,15 +1,16 @@
 ﻿using PublicAnalysis.Data;
+using PublicAnalysis.Edgar.TickerToCIK;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection.Metadata.Ecma335;
 
 namespace PublicAnalysis.Edgar
 {
-    public class EdgarData : IDataSet
+    public class EdgarDataSet : IDataSet
     {
-        private Dictionary<string, IData> dataSets;
+        private Dictionary<string, IEdgarData> dataSets;
 
-        public string Name { get; } = nameof(EdgarData);
+        public string Name { get; } = nameof(EdgarDataSet);
 
         public IEnumerable<DataMeta> MetaData => this.dataSets.Select(d => d.Value.Meta);
 
@@ -17,21 +18,15 @@ namespace PublicAnalysis.Edgar
         {
             get
             {
-                this.dataSets.TryGetValue(dataName, out IData? value);
+                this.dataSets.TryGetValue(dataName, out IEdgarData? value);
 
                 return value;
             }
         }
 
-        public EdgarData(RawFacts raw)
+        public EdgarDataSet(IEnumerable<IEdgarData> edgarDataSets)
         {
-            this.dataSets = new Dictionary<string, IData>
-            {
-                {
-                    raw.Name,
-                    raw
-                }
-            };
+            this.dataSets = edgarDataSets.ToDictionary(ds => ds.Name);
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PublicAnalysis.Edgar
 {
-    public interface ITickerToCIKData : IData
+    public interface ITickerToCIKData : IEdgarData
     {
         Task Load(bool reload=false);
     }

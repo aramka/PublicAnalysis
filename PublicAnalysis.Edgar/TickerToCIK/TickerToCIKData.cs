@@ -75,7 +75,7 @@ namespace PublicAnalysis.Edgar.TickerToCIK
 
         public async Task<IEnumerable> Query(DataQuery dataSetQuery)
         {
-            this.dataQueryValidation.ThrowIfNotValid(dataSetQuery);
+            this.dataQueryValidation.ThrowIfNotValid(dataSetQuery, this.Meta);
 
             if (!this.loaded)
             {
