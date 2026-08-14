@@ -57,7 +57,7 @@ namespace Public.Analysis.Console
                         }
                         else if (dataSet is not null && dataSet[segments[2]] is not null) //show me the data for a particular datasets data
                         {
-                            var restOfPath = segments[2..];
+                            var restOfPath = segments[3..];
                             var dataSetQuery = new DataQuery(restOfPath);
                             IEnumerable data = await dataSet[segments[2]]!.Query(dataSetQuery);
 

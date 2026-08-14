@@ -12,7 +12,7 @@ namespace PublicAnalysis.Edgar
         public static IServiceCollection RegisterEdgarDataSet(this IServiceCollection services, IConfiguration configuration)
         {
             services.RegisterPublicAnalysis();
-
+            services.Configure<EdgarOptions>(configuration.GetSection(nameof(EdgarOptions)));
             services.Configure<TickerToCIKDataOptions>(configuration.GetSection(nameof(TickerToCIKDataOptions)));
                 
 

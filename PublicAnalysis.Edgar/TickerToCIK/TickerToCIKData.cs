@@ -14,15 +14,17 @@ namespace PublicAnalysis.Edgar.TickerToCIK
         private readonly HttpClient http;
         private readonly IDataQueryValidation dataQueryValidation;
         private readonly ILogger<TickerToCIKData> logger;
+        private readonly EdgarOptions edgarOptions;
         private readonly TickerToCIKDataOptions tickerToCIKDataOptions;
         private Dictionary<string, TickerToCIKModel> cikByTicker = new Dictionary<string, TickerToCIKModel>();
         private bool loaded = false;
 
-        public TickerToCIKData(IOptions<TickerToCIKDataOptions> options, HttpClient http, IDataQueryValidation dataQueryValidation, ILogger<TickerToCIKData> logger) {
+        public TickerToCIKData(IOptions<TickerToCIKDataOptions> options, IOptions<EdgarOptions> edgarOptions, HttpClient http, IDataQueryValidation dataQueryValidation, ILogger<TickerToCIKData> logger) {
             this.tickerToCIKDataOptions = options.Value;
             this.http = http;
             this.dataQueryValidation = dataQueryValidation;
             this.logger = logger;
+            this.edgarOptions = edgarOptions.Value;
         }
 
         public string Name => nameof(TickerToCIKData);
@@ -45,6 +47,7 @@ namespace PublicAnalysis.Edgar.TickerToCIK
             try
             {
                 HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, this.tickerToCIKDataOptions.SecGovFilesCompanyTickersJsonUrl);
+                request.Headers.TryAddWithoutValidation("User-Agent", this.edgarOptions.UserAgent);
 
                 using CancellationTokenSource ct = new CancellationTokenSource(TimeSpan.FromSeconds(this.tickerToCIKDataOptions.TimeOutSeconds));
                 var response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct.Token);
@@ -54,7 +57,7 @@ namespace PublicAnalysis.Edgar.TickerToCIK
 
                 var rawPayload = await response.Content.ReadFromJsonAsync<Dictionary<string, TickerToCIKModel>>(ct.Token);
 
-                var newDict = rawPayload!.ToDictionary(kvp => kvp.Value.Ticker, kvp => kvp.Value);
+                var newDict = rawPayload!.ToDictionary(kvp => kvp.Value.Ticker!, kvp => kvp.Value);
 
                 Interlocked.Exchange(ref this.cikByTicker, newDict);
                 this.loaded = true;
