@@ -89,6 +89,7 @@ namespace Public.Analysis.Console
                 .AddEnvironmentVariables()
                 .Build();
 
+
             var services = new ServiceCollection();
 
             services.AddLogging(builder =>
@@ -98,7 +99,7 @@ namespace Public.Analysis.Console
             });
 
             services.AddSingleton<IConfiguration>(configuration);
-            services.RegisterEdgarDataSet();
+            services.RegisterEdgarDataSet(configuration);
             services.AddSingleton(provider =>
             {
                 var dataSets = provider.GetRequiredService<IEnumerable<IDataSet>>().ToDictionary(ds => ds.Name);

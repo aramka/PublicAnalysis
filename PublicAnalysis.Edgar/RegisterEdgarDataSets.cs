@@ -1,19 +1,20 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Public.Frameworks.Initialization;
 using PublicAnalysis.Data;
 using PublicAnalysis.Edgar.TickerToCIK;
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace PublicAnalysis.Edgar
 {
     public static class EdgarRegistrations
     {
-        public static IServiceCollection RegisterEdgarDataSet(this IServiceCollection services)
+        public static IServiceCollection RegisterEdgarDataSet(this IServiceCollection services, IConfiguration configuration)
         {
             services.RegisterPublicAnalysis();
+
+            services.Configure<TickerToCIKDataOptions>(configuration.GetSection(nameof(TickerToCIKDataOptions)));
+                
 
             services.AddSingleton<HttpClient>();
             services.AddSingleton<RawFacts>();
