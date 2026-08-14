@@ -4,21 +4,27 @@ using Microsoft.Extensions.Options;
 using Public.Frameworks.Initialization;
 using Public.Analysis.Data;
 using Public.Analysis.Edgar.TickerToCIK;
+using Public.Analysis.Edgar.RawFacts;
+using Public.Analysis.Edgar.Models;
 
 namespace Public.Analysis.Edgar
 {
     public static class EdgarRegistrations
     {
-        public static IServiceCollection RegisterEdgarDataSet(this IServiceCollection services, IConfiguration configuration)
+        public const string PublicAnalysisEdgarOptionsPrefix = "Public.Analysis.Edgar";
+
+        private static string GetSectionName(string optionsClassName) => $"{PublicAnalysisEdgarOptionsPrefix}.{optionsClassName}";
+		public static IServiceCollection RegisterEdgarDataSet(this IServiceCollection services, IConfiguration configuration)
         {
             services.RegisterPublicAnalysis();
-            services.Configure<EdgarOptions>(configuration.GetSection(nameof(EdgarOptions)));
-            services.Configure<TickerToCIKDataOptions>(configuration.GetSection(nameof(TickerToCIKDataOptions)));
-                
+            services.Configure<EdgarOptions>(configuration.GetSection(GetSectionName(nameof(EdgarOptions))));
+            services.Configure<TickerToCIKDataOptions>(configuration.GetSection(GetSectionName(nameof(TickerToCIKDataOptions))));
+            services.Configure<FactsDataOptions>(configuration.GetSection(GetSectionName(nameof(FactsDataOptions))));
 
             services.AddSingleton<HttpClient>();
-            services.AddSingleton<RawFacts>();
+            services.AddSingleton<RawFactsData>();
             services.AddSingleton<TickerToCIKData>();
+            services.AddSingleton<ITickerToCIKData>((sp) => sp.GetRequiredService<TickerToCIKData>());
             services.AddTransient((sp) => {
                 return sp.GetRequiredService<TickerToCIKData>() as IMustBeLoaded;
             });

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Public.Analysis.Data;
+using Public.Analysis.Edgar.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -49,7 +50,7 @@ namespace Public.Analysis.Edgar.TickerToCIK
                 HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, this.tickerToCIKDataOptions.SecGovFilesCompanyTickersJsonUrl);
                 request.Headers.TryAddWithoutValidation("User-Agent", this.edgarOptions.UserAgent);
 
-                using CancellationTokenSource ct = new CancellationTokenSource(TimeSpan.FromSeconds(this.tickerToCIKDataOptions.TimeOutSeconds));
+                using CancellationTokenSource ct = new CancellationTokenSource(TimeSpan.FromSeconds(this.edgarOptions.TimeOutSeconds));
                 var response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct.Token);
 
                 response = response.EnsureSuccessStatusCode();

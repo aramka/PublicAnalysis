@@ -12,5 +12,10 @@ namespace Public.Analysis.Edgar.TickerToCIK
         
         [JsonPropertyName("title")]
         public string? Title { get; set; }
+
+        public string ToCIKString(int cikMaxLen)
+        {
+            return $"{this.CikStr.ToString().PadLeft(cikMaxLen, '0')}";
+        }
     }
 }

@@ -21,7 +21,7 @@ namespace Public.Analysis.Console
 
             var mustBeLoaded = serviceProvider.GetRequiredService<IEnumerable<IMustBeLoaded>>();
 
-            foreach(var iMustBeLoaded in mustBeLoaded)
+            foreach (var iMustBeLoaded in mustBeLoaded)
             {
                 await iMustBeLoaded.Load();
             }
@@ -29,15 +29,15 @@ namespace Public.Analysis.Console
             var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
             var dataSets = serviceProvider.GetRequiredService<Dictionary<string, IDataSet>>();
 
-            try
+            string prompt = $"Enter a path or type quit to stop:";
+            Console.WriteLine(prompt);
+
+            string? path = Console.ReadLine();
+            IDataSet? dataSet = null;
+
+            while (path?.ToLower() is not null && path is not "quit")
             {
-                string prompt = $"Enter a path or type quit to stop:";
-                Console.WriteLine(prompt);
-
-                string? path = Console.ReadLine();
-                IDataSet? dataSet = null;
-
-                while (path?.ToLower() is not null && path is not "quit")
+                try
                 {
                     var segments = path.Split('/');
 
@@ -64,21 +64,20 @@ namespace Public.Analysis.Console
                             Console.WriteLine(JsonSerializer.Serialize(data));
                         }
 
-                        Console.WriteLine(prompt);
-
-                        path = Console.ReadLine();
                     }
-
+                    
                 }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, ex.Message);
+                }
+
+                Console.WriteLine(prompt);
+
+                path = Console.ReadLine();
+
             }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "An error occurred in the application");
-            }
-            finally
-            {
-                serviceProvider.Dispose();
-            }
+            serviceProvider.Dispose();
         }
 
         static ServiceProvider Startup()
