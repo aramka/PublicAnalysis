@@ -89,11 +89,10 @@ namespace Public.Analysis.Console
             });
 
             services.AddSingleton<IConfiguration>(configuration);
+            services.RegisterEdgarDataSet();
             services.AddSingleton(provider =>
             {
-                var dataSets = new Dictionary<string, IDataSet>();
-                var edgarRawFacts = new EdgarData();
-                dataSets.Add(edgarRawFacts.Name, edgarRawFacts);
+                var dataSets = provider.GetRequiredService<IEnumerable<IDataSet>>().ToDictionary(ds => ds.Name);
                 return dataSets;
             });
 

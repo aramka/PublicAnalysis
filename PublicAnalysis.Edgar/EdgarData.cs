@@ -23,9 +23,8 @@ namespace PublicAnalysis.Edgar
             }
         }
 
-        public EdgarData()
+        public EdgarData(RawFacts raw)
         {
-            var raw = new RawFacts();
             this.dataSets = new Dictionary<string, IData>
             {
                 {
