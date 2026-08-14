@@ -1,12 +1,13 @@
-﻿using PublicAnalysis.Data;
+﻿using Public.Frameworks.Initialization;
+using PublicAnalysis.Data;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace PublicAnalysis.Edgar
 {
-    public interface ITickerToCIKData : IEdgarData
+    public interface ITickerToCIKData : IEdgarData, IMustBeLoaded
     {
-        Task Load(bool reload=false);
+        
     }
 }

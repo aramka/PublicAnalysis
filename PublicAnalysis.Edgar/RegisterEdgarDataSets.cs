@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Public.Frameworks.Initialization;
 using PublicAnalysis.Data;
 using PublicAnalysis.Edgar.TickerToCIK;
 using System;
@@ -17,6 +18,9 @@ namespace PublicAnalysis.Edgar
             services.AddSingleton<HttpClient>();
             services.AddSingleton<RawFacts>();
             services.AddSingleton<TickerToCIKData>();
+            services.AddTransient((sp) => {
+                return sp.GetRequiredService<TickerToCIKData>() as IMustBeLoaded;
+            });
             services.AddSingleton<IEnumerable<IEdgarData>>((sp) => {
 
                 return typeof(EdgarRegistrations)

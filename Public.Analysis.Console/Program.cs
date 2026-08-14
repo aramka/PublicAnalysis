@@ -7,6 +7,7 @@ namespace Public.Analysis.Console
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Abstractions;
+    using Public.Frameworks.Initialization;
     using PublicAnalysis.Data;
     using PublicAnalysis.Edgar;
     using Console = System.Console;
@@ -17,6 +18,14 @@ namespace Public.Analysis.Console
         public static async Task Main(string[] args)
         {
             var serviceProvider = Startup();
+
+            var mustBeLoaded = serviceProvider.GetRequiredService<IEnumerable<IMustBeLoaded>>();
+
+            foreach(var iMustBeLoaded in mustBeLoaded)
+            {
+                await iMustBeLoaded.Load();
+            }
+
             var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
             var dataSets = serviceProvider.GetRequiredService<Dictionary<string, IDataSet>>();
 

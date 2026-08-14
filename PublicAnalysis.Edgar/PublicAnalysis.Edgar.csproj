@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Public.Frameworks\Public.Frameworks.csproj" />
     <ProjectReference Include="..\PublicAnalysis.Data\PublicAnalysis.Data.csproj" />
   </ItemGroup>
 
