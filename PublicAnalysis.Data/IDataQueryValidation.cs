@@ -4,10 +4,8 @@ using System.Text;
 
 namespace PublicAnalysis.Data
 {
-    public enum DataReturnTypesEnum
+    public interface IDataQueryValidation
     {
-        UserDefined = 0,
-        TimeSeries = 1,
-        String = 2
+        void ThrowIfNotValid(DataQuery dataSetQuery);
     }
 }

@@ -1,57 +1,103 @@
-﻿namespace Public.Analysis.Console
+﻿
+namespace Public.Analysis.Console
 {
-    using PublicAnalysis.Data;
-    using PublicAnalysis.Edgar;
-    using System;
     using System.Collections;
     using System.Text.Json;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging.Abstractions;
+    using PublicAnalysis.Data;
+    using PublicAnalysis.Edgar;
+    using Console = System.Console;
 
-    internal class Program
+    public class Program
     {
-        static async Task Main(string[] args)
+
+        public static async Task Main(string[] args)
         {
-            var dataSets = new Dictionary<string, IDataSet>();
-            var edgarRawFacts = new EdgarData();
-            dataSets.Add(edgarRawFacts.Name, edgarRawFacts);
-            string prompt = $"Enter a path or type quit to stop:";
-            Console.WriteLine(prompt);
+            var serviceProvider = Startup();
+            var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+            var dataSets = serviceProvider.GetRequiredService<Dictionary<string, IDataSet>>();
 
-            string? path = Console.ReadLine();
-            IDataSet? dataSet = null;
-
-            while (path?.ToLower() is not null && path is not "quit")
+            try
             {
-                var segments = path.Split('/');
+                string prompt = $"Enter a path or type quit to stop:";
+                Console.WriteLine(prompt);
 
-                if (!segments.Any())
+                string? path = Console.ReadLine();
+                IDataSet? dataSet = null;
+
+                while (path?.ToLower() is not null && path is not "quit")
                 {
+                    var segments = path.Split('/');
+
+                    if (!segments.Any())
+                    {
+
+                    }
+                    else if (segments[0] == "datasets")
+                    {
+                        if (segments.Length == 1) //show me all the datasets
+                        {
+                            Console.WriteLine($"{JsonSerializer.Serialize(dataSets.Select(kvp => kvp.Key))}");
+                        }
+                        else if (segments.Length == 2 && dataSets.TryGetValue(segments[1], out dataSet)) //show info about the datas available in a particular dataset
+                        {
+                            Console.WriteLine(JsonSerializer.Serialize(dataSet.MetaData));
+                        }
+                        else if (dataSet is not null && dataSet[segments[2]] is not null) //show me the data for a particular datasets data
+                        {
+                            var restOfPath = segments[2..];
+                            var dataSetQuery = new DataQuery(restOfPath);
+                            IEnumerable data = await dataSet[segments[2]]!.Query(dataSetQuery);
+
+                            Console.WriteLine(JsonSerializer.Serialize(data));
+                        }
+
+                        Console.WriteLine(prompt);
+
+                        path = Console.ReadLine();
+                    }
 
                 }
-                else if (segments[0] == "datasets")
-                {
-                    if (segments.Length == 1) //show me all the datasets
-                    {
-                        Console.WriteLine($"{JsonSerializer.Serialize(dataSets.Select(kvp => kvp.Key))}");
-                    }
-                    else if (segments.Length == 2 && dataSets.TryGetValue(segments[1], out dataSet)) //show info about the datas available in a particular dataset
-                    {
-                        Console.WriteLine(JsonSerializer.Serialize(dataSet.MetaData));
-                    }
-                    else if (dataSet is not null && dataSet[segments[2]] is not null) //show me the data for a particular datasets data
-                    {
-                        var restOfPath = segments[2..];
-                        var dataSetQuery = new DataQuery(restOfPath);
-                        IEnumerable data = await dataSet[segments[2]]!.Query(dataSetQuery);
-
-                        Console.WriteLine(JsonSerializer.Serialize(data));
-                    }
-
-                    Console.WriteLine(prompt);
-
-                    path = Console.ReadLine();
-                }
-
             }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred in the application");
+            }
+            finally
+            {
+                serviceProvider.Dispose();
+            }
+        }
+
+        static ServiceProvider Startup()
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
+
+            var services = new ServiceCollection();
+
+            services.AddLogging(builder =>
+            {
+                builder.AddConsole();
+                builder.AddConfiguration(configuration.GetSection("Logging"));
+            });
+
+            services.AddSingleton<IConfiguration>(configuration);
+            services.AddSingleton(provider =>
+            {
+                var dataSets = new Dictionary<string, IDataSet>();
+                var edgarRawFacts = new EdgarData();
+                dataSets.Add(edgarRawFacts.Name, edgarRawFacts);
+                return dataSets;
+            });
+
+            return services.BuildServiceProvider();
         }
     }
 }
