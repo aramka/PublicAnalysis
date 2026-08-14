@@ -4,6 +4,6 @@
   </Folder>
   <Project Path="Public.Analysis.Console/Public.Analysis.Console.csproj" />
   <Project Path="Public.Frameworks/Public.Frameworks.csproj" />
-  <Project Path="PublicAnalysis.Data/PublicAnalysis.Data.csproj" />
-  <Project Path="PublicAnalysis.Edgar/PublicAnalysis.Edgar.csproj" />
+  <Project Path="PublicAnalysis.Data/Public.Analysis.Data.csproj" />
+  <Project Path="PublicAnalysis.Edgar/Public.Analysis.Edgar.csproj" />
 </Solution>

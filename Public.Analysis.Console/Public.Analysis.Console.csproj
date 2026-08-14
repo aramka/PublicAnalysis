@@ -18,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PublicAnalysis.Data\PublicAnalysis.Data.csproj" />
-    <ProjectReference Include="..\PublicAnalysis.Edgar\PublicAnalysis.Edgar.csproj" />
+    <ProjectReference Include="..\PublicAnalysis.Data\Public.Analysis.Data.csproj" />
+    <ProjectReference Include="..\PublicAnalysis.Edgar\Public.Analysis.Edgar.csproj" />
   </ItemGroup>
 
   <ItemGroup>
