@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PublicAnalysis.Data
+namespace Public.Analysis.Data
 {
     public class DataQuery
     {

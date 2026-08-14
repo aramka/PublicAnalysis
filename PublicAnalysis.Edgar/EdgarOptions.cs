@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PublicAnalysis.Edgar
+namespace Public.Analysis.Edgar
 {
     public class EdgarOptions
     {

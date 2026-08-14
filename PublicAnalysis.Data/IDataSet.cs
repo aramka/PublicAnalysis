@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Runtime.CompilerServices;
 
-namespace PublicAnalysis.Data
+namespace Public.Analysis.Data
 {
     public interface IDataSet
     {

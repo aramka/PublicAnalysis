@@ -1,13 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using PublicAnalysis.Data;
+using Public.Analysis.Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http.Json;
 using System.Text;
 
-namespace PublicAnalysis.Edgar.TickerToCIK
+namespace Public.Analysis.Edgar.TickerToCIK
 {
     public class TickerToCIKData : ITickerToCIKData
     {

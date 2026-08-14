@@ -1,10 +1,10 @@
-﻿using PublicAnalysis.Data;
-using PublicAnalysis.Edgar.TickerToCIK;
+﻿using Public.Analysis.Data;
+using Public.Analysis.Edgar.TickerToCIK;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection.Metadata.Ecma335;
 
-namespace PublicAnalysis.Edgar
+namespace Public.Analysis.Edgar
 {
     public class EdgarDataSet : IDataSet
     {

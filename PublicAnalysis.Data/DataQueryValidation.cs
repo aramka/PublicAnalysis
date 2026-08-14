@@ -1,4 +1,4 @@
-﻿namespace PublicAnalysis.Data
+﻿namespace Public.Analysis.Data
 {
     public class DataQueryValidation : IDataQueryValidation
     {

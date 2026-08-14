@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace PublicAnalysis.Edgar.TickerToCIK
+namespace Public.Analysis.Edgar.TickerToCIK
 {
     public class TickerToCIKModel
     {

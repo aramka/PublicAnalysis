@@ -2,10 +2,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Public.Frameworks.Initialization;
-using PublicAnalysis.Data;
-using PublicAnalysis.Edgar.TickerToCIK;
+using Public.Analysis.Data;
+using Public.Analysis.Edgar.TickerToCIK;
 
-namespace PublicAnalysis.Edgar
+namespace Public.Analysis.Edgar
 {
     public static class EdgarRegistrations
     {

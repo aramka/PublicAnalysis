@@ -1,6 +1,6 @@
-﻿using PublicAnalysis.Data;
+﻿using Public.Analysis.Data;
 
-namespace PublicAnalysis.Edgar
+namespace Public.Analysis.Edgar
 {
     public interface IEdgarData : IData
     {

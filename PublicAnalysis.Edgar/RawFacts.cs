@@ -1,10 +1,10 @@
-﻿using PublicAnalysis.Data;
+﻿using Public.Analysis.Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PublicAnalysis.Edgar
+namespace Public.Analysis.Edgar
 {
     public class RawFacts : IEdgarData
     {

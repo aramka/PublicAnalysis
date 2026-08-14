@@ -8,8 +8,8 @@ namespace Public.Analysis.Console
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Abstractions;
     using Public.Frameworks.Initialization;
-    using PublicAnalysis.Data;
-    using PublicAnalysis.Edgar;
+    using Public.Analysis.Data;
+    using Public.Analysis.Edgar;
     using Console = System.Console;
 
     public class Program

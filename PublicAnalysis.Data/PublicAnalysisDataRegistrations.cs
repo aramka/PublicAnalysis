@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PublicAnalysis.Data
+namespace Public.Analysis.Data
 {
     public static class PublicAnalysisDataRegistrations
     {
