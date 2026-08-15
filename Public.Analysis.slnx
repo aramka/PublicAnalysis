@@ -3,7 +3,8 @@
     <File Path="Directory.Packages.props" />
   </Folder>
   <Project Path="Public.Analysis.Console/Public.Analysis.Console.csproj" />
+  <Project Path="Public.Analysis.Edgar.Tests/Public.Analysis.Edgar.Tests.csproj" />
   <Project Path="Public.Frameworks/Public.Frameworks.csproj" />
-  <Project Path="PublicAnalysis.Data/Public.Analysis.Data.csproj" />
-  <Project Path="PublicAnalysis.Edgar/Public.Analysis.Edgar.csproj" />
+  <Project Path="Public.Analysis.Data/Public.Analysis.Data.csproj" />
+  <Project Path="Public.Analysis.Edgar/Public.Analysis.Edgar.csproj" />
 </Solution>

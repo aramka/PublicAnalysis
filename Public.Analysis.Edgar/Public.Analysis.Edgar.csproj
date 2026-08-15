@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Public.Frameworks\Public.Frameworks.csproj" />
-    <ProjectReference Include="..\PublicAnalysis.Data\Public.Analysis.Data.csproj" />
+    <ProjectReference Include="..\Public.Analysis.Data\Public.Analysis.Data.csproj" />
   </ItemGroup>
 
 </Project>
