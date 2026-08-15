@@ -6,6 +6,6 @@ namespace Public.Analysis.Edgar.Models
 {
     public class FactsDataOptions
     {
-        public object DataSecGovApiXbrlCompanyBaseUrl { get; set; }
+        public string? DataSecGovApiXbrlCompanyBaseUrl { get; set; }
     }
 }
