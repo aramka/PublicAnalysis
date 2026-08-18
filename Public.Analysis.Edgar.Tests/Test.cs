@@ -33,6 +33,7 @@ namespace Public.Analysis.Edgar.Tests
         private readonly Mock<HttpMessageHandler> httpHandlerMoq = new Mock<HttpMessageHandler>();
         private readonly HttpResponseMessage responseMessage = new HttpResponseMessage { Content = new StringContent(EdgarFactsFactory.EdgarFactsAPJsonString, System.Text.Encoding.UTF8, new MediaTypeHeaderValue("application/json")) };
         private readonly FactsDataOptions factsDataOptions;
+        private readonly EdgarOptions edgarOptions;
 
         public Test()
         {
@@ -47,9 +48,10 @@ namespace Public.Analysis.Edgar.Tests
 
 
             HttpClient clientHttp = new HttpClient(httpHandlerMoq.Object);
-            EdgarOptions options = new EdgarOptions { CIKMaxLen = 10, TimeOutSeconds = 30, UserAgent = "Test User Agent" };
+            
+            this.edgarOptions = new EdgarOptions { CIKMaxLen = 10, TimeOutSeconds = 30, UserAgent = "Test User Agent" };
             Mock<IOptions<EdgarOptions>> edgarOptionsMoq = new Mock<IOptions<EdgarOptions>>();
-            edgarOptionsMoq.Setup(a => a.Value).Returns(options);
+            edgarOptionsMoq.Setup(a => a.Value).Returns(this.edgarOptions);
            
             this.factsDataOptions = new FactsDataOptions { DataSecGovApiXbrlCompanyBaseUrl = "http://secfactsbaseurl" };
             Mock<IOptions<FactsDataOptions>> factsOptionsMoq = new Mock<IOptions<FactsDataOptions>>();
@@ -77,7 +79,7 @@ namespace Public.Analysis.Edgar.Tests
 
             actualRequestMessage.Method.Should().Be(HttpMethod.Get);
             actualRequestMessage.RequestUri.Should().NotBeNull();
-            actualRequestMessage.RequestUri.ToString().Should().Be($"{this.factsDataOptions.DataSecGovApiXbrlCompanyBaseUrl}/{aaplCik}/facts.json");
+            actualRequestMessage.RequestUri.ToString().Should().Be($"{this.factsDataOptions.DataSecGovApiXbrlCompanyBaseUrl}/CIK{aaplCik.ToString().PadLeft( this.edgarOptions.CIKMaxLen, '0')}.json");
         }
 
         [TestMethod]
