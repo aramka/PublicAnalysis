@@ -30,6 +30,9 @@ namespace Public.Analysis.Edgar.Tests
 
         private readonly Mock<ITickerToCIKData> tickerCIKDataMoq = new Mock<ITickerToCIKData>();
         private readonly Mock<IJsonQuery> jsonQueryMoq = new Mock<IJsonQuery>();
+        private readonly Mock<HttpMessageHandler> httpHandlerMoq = new Mock<HttpMessageHandler>();
+        private readonly HttpResponseMessage responseMessage = new HttpResponseMessage { Content = new StringContent(EdgarFactsFactory.EdgarFactsAPJsonString, System.Text.Encoding.UTF8, new MediaTypeHeaderValue("application/json")) };
+        private readonly FactsDataOptions factsDataOptions;
 
         public Test()
         {
@@ -37,11 +40,7 @@ namespace Public.Analysis.Edgar.Tests
             tickerCIKDataMoq.Setup(a => a.Query(It.Is<DataQuery>(q => q.Path[0] == aaplTicker))).ReturnsAsync(new TickerToCIKModel[] { new TickerToCIKModel { CikStr = aaplCik, Ticker = aaplTicker } });
 
             Mock<IDataQueryValidation> dataQueryValidationMoq = new Mock<IDataQueryValidation>();
-            string applFactsJsonString = EdgarFactsFactory.EdgarFactsAPJsonString; // File.ReadAllText("EdgarFactsJSONData\\2026-AAPL-CIK0000320193-Facts-AccountsPayable.json");
-
-            HttpResponseMessage responseMessage = new HttpResponseMessage { Content = new StringContent(applFactsJsonString, System.Text.Encoding.UTF8, new MediaTypeHeaderValue("application/json")) };
-
-            Mock<HttpMessageHandler> httpHandlerMoq = new Mock<HttpMessageHandler>();
+           
             httpHandlerMoq.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(responseMessage);
@@ -51,13 +50,36 @@ namespace Public.Analysis.Edgar.Tests
             EdgarOptions options = new EdgarOptions { CIKMaxLen = 10, TimeOutSeconds = 30, UserAgent = "Test User Agent" };
             Mock<IOptions<EdgarOptions>> edgarOptionsMoq = new Mock<IOptions<EdgarOptions>>();
             edgarOptionsMoq.Setup(a => a.Value).Returns(options);
-            FactsDataOptions factsDataOptions = new FactsDataOptions { DataSecGovApiXbrlCompanyBaseUrl = "http://secfactsbaseurl" };
+           
+            this.factsDataOptions = new FactsDataOptions { DataSecGovApiXbrlCompanyBaseUrl = "http://secfactsbaseurl" };
             Mock<IOptions<FactsDataOptions>> factsOptionsMoq = new Mock<IOptions<FactsDataOptions>>();
             factsOptionsMoq.Setup(a => a.Value).Returns(factsDataOptions);
 
             this.rawFacts = new RawFactsData(tickerCIKDataMoq.Object, dataQueryValidationMoq.Object, clientHttp, edgarOptionsMoq.Object, factsOptionsMoq.Object, jsonQueryMoq.Object);
             
         }
+
+        [TestMethod]
+        public async Task Query_CallMakesCorrectHttp()
+        {
+            HttpRequestMessage actualRequestMessage = null;
+            httpHandlerMoq.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage)
+            .Callback<HttpRequestMessage, CancellationToken>((req, token) =>
+            {
+                actualRequestMessage = req;
+            });
+
+            var actual = await rawFacts.Query(new DataQuery(factsPath.ToArray()));
+
+            actualRequestMessage.Should().NotBeNull();
+
+            actualRequestMessage.Method.Should().Be(HttpMethod.Get);
+            actualRequestMessage.RequestUri.Should().NotBeNull();
+            actualRequestMessage.RequestUri.ToString().Should().Be($"{this.factsDataOptions.DataSecGovApiXbrlCompanyBaseUrl}/{aaplCik}/facts.json");
+        }
+
         [TestMethod]
         public async Task Query_GetsTicker()
         {
