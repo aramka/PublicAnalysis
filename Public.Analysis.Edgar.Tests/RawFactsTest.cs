@@ -19,7 +19,7 @@ namespace Public.Analysis.Edgar.Tests
 {
 
     [TestClass]
-    public class Test
+    public class RawFactsTest
     {
 
         readonly int aaplCik = 1234;
@@ -35,7 +35,7 @@ namespace Public.Analysis.Edgar.Tests
         private readonly FactsDataOptions factsDataOptions;
         private readonly EdgarOptions edgarOptions;
 
-        public Test()
+        public RawFactsTest()
         {
 
             tickerCIKDataMoq.Setup(a => a.Query(It.Is<DataQuery>(q => q.Path[0] == aaplTicker))).ReturnsAsync(new TickerToCIKModel[] { new TickerToCIKModel { CikStr = aaplCik, Ticker = aaplTicker } });
