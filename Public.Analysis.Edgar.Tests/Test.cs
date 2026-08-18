@@ -62,6 +62,20 @@ namespace Public.Analysis.Edgar.Tests
         }
 
         [TestMethod]
+        public async Task Query_ThrowsResponseException()
+        {
+            HttpRequestMessage actualRequestMessage = null;
+            httpHandlerMoq.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage(System.Net.HttpStatusCode.NotFound))
+            .Callback<HttpRequestMessage, CancellationToken>((req, token) =>
+            {
+                actualRequestMessage = req;
+            });
+            await Assert.ThrowsAsync<HttpRequestException>(async () => await rawFacts.Query(new DataQuery(factsPath.ToArray())));
+        }
+
+        [TestMethod]
         public async Task Query_CallMakesCorrectHttp()
         {
             HttpRequestMessage actualRequestMessage = null;
