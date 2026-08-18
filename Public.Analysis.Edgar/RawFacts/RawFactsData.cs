@@ -9,6 +9,7 @@ using Json.More;
 using Json.Path;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
+using Public.Frameworks.JsonQuery;
 
 namespace Public.Analysis.Edgar.RawFacts
 {
@@ -17,6 +18,7 @@ namespace Public.Analysis.Edgar.RawFacts
         private readonly ITickerToCIKData tickerToCIKData;
         private readonly IDataQueryValidation dataQueryValidation;
         private readonly HttpClient http;
+        private readonly IJsonQuery queryJson;
         private readonly EdgarOptions edgarOptions;
         private readonly FactsDataOptions factsDataOptions;
 
@@ -24,11 +26,12 @@ namespace Public.Analysis.Edgar.RawFacts
 
         public DataMeta Meta => new DataMeta(this.Name, [new KeyValuePair<string, Type>("Ticker", typeof(string))], DataReturnTypesEnum.UserDefined);
 
-        public RawFactsData(ITickerToCIKData tickerToCIKData, IDataQueryValidation dataQueryValidation, HttpClient http, IOptions<EdgarOptions> edgarOptions, IOptions<FactsDataOptions> factsDataOptions)
+        public RawFactsData(ITickerToCIKData tickerToCIKData, IDataQueryValidation dataQueryValidation, HttpClient http, IOptions<EdgarOptions> edgarOptions, IOptions<FactsDataOptions> factsDataOptions, Frameworks.JsonQuery.IJsonQuery queryJson)
         {
             this.tickerToCIKData = tickerToCIKData;
             this.dataQueryValidation = dataQueryValidation;
             this.http = http;
+            this.queryJson = queryJson;
             this.edgarOptions = edgarOptions.Value;
             this.factsDataOptions = factsDataOptions.Value;
         }
@@ -55,11 +58,7 @@ namespace Public.Analysis.Edgar.RawFacts
 
             JsonNode? jsonNode = await JsonNode.ParseAsync(contentStream);
 
-            string jsonPathQueryString = $"${string.Join(string.Empty, dataSetQuery.Path.Select(p => $"['{p}']"))}";
-            JsonPath jsonPath = JsonPath.Parse(jsonPathQueryString);
-            var pathResult = jsonPath.Evaluate(jsonNode);
-            
-            return pathResult.Matches.Select(n=>n.Value).ToList();
+            return this.queryJson.Query(jsonNode, dataSetQuery.Path.Skip(1));
 		}
     }
 }

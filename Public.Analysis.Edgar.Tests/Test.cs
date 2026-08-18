@@ -12,6 +12,8 @@ using System.Linq;
 using System.Text.Json.Nodes;
 using System.Text.Json;
 using AwesomeAssertions;
+using System.Collections.ObjectModel;
+using Public.Frameworks.JsonQuery;
 
 namespace Public.Analysis.Edgar.Tests
 {
@@ -19,14 +21,20 @@ namespace Public.Analysis.Edgar.Tests
     [TestClass]
     public class Test
     {
-        [TestMethod]
-        public async Task  Test1()
-        {
-            int aaplCik = 1234;
-            string aaplTicker = "AAPL";
 
-            Mock<ITickerToCIKData> tickerCIKDataMoq = new Mock<ITickerToCIKData>();
-            tickerCIKDataMoq.Setup(a => a.Query(It.IsAny<DataQuery>())).ReturnsAsync(new TickerToCIKModel[] { new TickerToCIKModel { CikStr = aaplCik, Ticker = aaplTicker } });
+        readonly int aaplCik = 1234;
+        readonly string aaplTicker = "AAPL";
+        private readonly RawFactsData rawFacts;
+
+        private readonly string[] factsPath = new string[] { "AAPL", "facts", "us-gaap", "AccountsPayable", "units", "USD" };
+
+        private readonly Mock<ITickerToCIKData> tickerCIKDataMoq = new Mock<ITickerToCIKData>();
+        private readonly Mock<IJsonQuery> jsonQueryMoq = new Mock<IJsonQuery>();
+
+        public Test()
+        {
+
+            tickerCIKDataMoq.Setup(a => a.Query(It.Is<DataQuery>(q => q.Path[0] == aaplTicker))).ReturnsAsync(new TickerToCIKModel[] { new TickerToCIKModel { CikStr = aaplCik, Ticker = aaplTicker } });
 
             Mock<IDataQueryValidation> dataQueryValidationMoq = new Mock<IDataQueryValidation>();
             string applFactsJsonString = EdgarFactsFactory.EdgarFactsAPJsonString; // File.ReadAllText("EdgarFactsJSONData\\2026-AAPL-CIK0000320193-Facts-AccountsPayable.json");
@@ -47,17 +55,51 @@ namespace Public.Analysis.Edgar.Tests
             Mock<IOptions<FactsDataOptions>> factsOptionsMoq = new Mock<IOptions<FactsDataOptions>>();
             factsOptionsMoq.Setup(a => a.Value).Returns(factsDataOptions);
 
-            RawFactsData rawFacts = new RawFactsData(tickerCIKDataMoq.Object, dataQueryValidationMoq.Object, clientHttp, edgarOptionsMoq.Object, factsOptionsMoq.Object);
-            List<string> factsPath = new List<string> { "facts", "us-gaap", "AccountsPayable","units","USD" };
-
+            this.rawFacts = new RawFactsData(tickerCIKDataMoq.Object, dataQueryValidationMoq.Object, clientHttp, edgarOptionsMoq.Object, factsOptionsMoq.Object, jsonQueryMoq.Object);
+            
+        }
+        [TestMethod]
+        public async Task Query_GetsTicker()
+        {
+            
             var actual = await rawFacts.Query(new DataQuery(factsPath.ToArray()));
-            var match = actual.Cast<JsonNode>().ToList(); //the single matching node
-            JsonArray jArray = match[0].AsArray();
-            Assert.HasCount(2, jArray);
+            
+            this.tickerCIKDataMoq.Verify(a => a.Query(It.Is<DataQuery>(q => q.Path[0] == aaplTicker)), Times.Once);
 
-            var actualItems = jArray.Deserialize<AccountEntry[]>();
+        }
 
-            actualItems.Should().BeEquivalentTo(EdgarFactsFactory.PayablesEntriesExpected);
+        [TestMethod]
+        public async Task Query_ThrowsIfNoTicker()
+        {
+            await Assert.ThrowsAsync<ArgumentException>(async () => await rawFacts.Query(new DataQuery(new string[] { "NOTICKER", "facts", "us-gaap", "AccountsPayable", "units", "USD" })));
+        }
+
+        [TestMethod]
+        public async Task Query_CallsIQueryJson()
+        {
+            JsonNode jsonNodePassedToQuery = null;
+            IEnumerable<string> pathPassedToQuery = null;
+
+            var expectedReturn = new List<JsonNode> { JsonNode.Parse("{\"val\": 1234}")! };
+            jsonQueryMoq.Setup(a => a.Query(It.IsAny<JsonNode>(), It.IsAny<IEnumerable<string>>()))
+                .Returns(expectedReturn)
+                .Callback<JsonNode, IEnumerable<string>>((jsonNode, path) =>
+                {
+                    jsonNodePassedToQuery = jsonNode;
+                    pathPassedToQuery = path;
+                });
+
+            var actualReturn = await rawFacts.Query(new DataQuery(factsPath.ToArray()));
+
+            actualReturn.Should().BeEquivalentTo(expectedReturn);
+
+            pathPassedToQuery.Should().BeEquivalentTo(factsPath.Skip(1)); // Skip the ticker in the path
+            jsonNodePassedToQuery.Should().NotBeNull();
+
+            var nodePassedToQueryExpeced = JsonNode.Parse(EdgarFactsFactory.EdgarFactsAPJsonString);
+            jsonNodePassedToQuery.ToString().Should().BeEquivalentTo(nodePassedToQueryExpeced!.ToString());
+
+
 
         }
     }
