@@ -62,5 +62,15 @@ namespace Public.Frameworks.Tests
             Assert.AreEqual(100, firstItem["units"]!["USD"]!.GetValue<int>());
             Assert.AreEqual(200, secondItem["units"]!["USD"]!.GetValue<int>());
         }
+
+        [TestMethod]
+        public void Query_ArrayPath_WithFilter() { 
+            Assert.Fail("must implement. add new filter parameter to the Query method in IJsonQuery and JsonPathJsonQuery. Then implement the filter logic in JsonPathJsonQuery.Query method. Finally, implement this test to verify the filter functionality.");
+        }
+        [TestMethod]
+        public void Query_WithProjection() { 
+            Assert.Fail("must implement. add new projection parameter to the Query method in IJsonQuery and JsonPathJsonQuery. Then implement the projection logic in JsonPathJsonQuery.Query method. Finally, implement this test to verify the projection functionality.");
+        }
     }
+    
 }
