@@ -5,6 +5,10 @@ using Public.Analysis.Edgar.TickerToCIK;
 using System.Collections;
 using System.Linq;
 using System.Text.Json;
+using Json.More;
+using Json.Path;
+using System.Runtime.CompilerServices;
+using System.Text.Json.Nodes;
 
 namespace Public.Analysis.Edgar.RawFacts
 {
@@ -49,9 +53,13 @@ namespace Public.Analysis.Edgar.RawFacts
 
             using var contentStream = await response.Content.ReadAsStreamAsync();
 
-            using JsonDocument jsonDoc = await JsonDocument.ParseAsync(contentStream);
+            JsonNode? jsonNode = await JsonNode.ParseAsync(contentStream);
+
+            string jsonPathQueryString = $"${string.Join(string.Empty, dataSetQuery.Path.Select(p => $"['{p}']"))}";
+            JsonPath jsonPath = JsonPath.Parse(jsonPathQueryString);
+            var pathResult = jsonPath.Evaluate(jsonNode);
             
-            return new JsonElement[] { jsonDoc.RootElement };
+            return pathResult.Matches.Select(n=>n.Value).ToList();
 		}
     }
 }

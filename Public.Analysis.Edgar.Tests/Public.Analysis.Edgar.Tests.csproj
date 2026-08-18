@@ -7,13 +7,28 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="EdgarFactsJSONData\**" />
+    <EmbeddedResource Remove="EdgarFactsJSONData\**" />
+    <None Remove="EdgarFactsJSONData\**" />
+  </ItemGroup>
+
   <ItemGroup><!--<Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />-->
+  
+    <PackageReference Include="AwesomeAssertions" />
+  
+    <PackageReference Include="Castle.Core" />
   
     <PackageReference Include="Microsoft.ApplicationInsights" />
     <PackageReference Include="Microsoft.IdentityModel.Abstractions" />
+    <PackageReference Include="Moq" />
     <PackageReference Include="MSTest" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="System.Security.Cryptography.ProtectedData" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Public.Analysis.Edgar\Public.Analysis.Edgar.csproj" />
   </ItemGroup>
 
 </Project>
