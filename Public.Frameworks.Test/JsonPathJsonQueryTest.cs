@@ -10,14 +10,14 @@ namespace Public.Frameworks.Tests
     public class JsonPathJsonQueryTest
     {
         [TestMethod]
-        public void Query()
+        public void Query_SingleValuePath()
         {
             // Arrange
             var jsonQuery = new JsonPathJsonQuery();
             var jsonNode = JsonNode.Parse("{\"AAPL\":{\"facts\":{\"us-gaap\":{\"AccountsPayable\":{\"units\":{\"USD\":100}}}}}}");
             var path = new string[] { "AAPL", "facts", "us-gaap", "AccountsPayable", "units", "USD" };
             // Act
-            var result = jsonQuery.Query(jsonNode, path);
+            var result = jsonQuery.Query(jsonNode!, path);
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count());

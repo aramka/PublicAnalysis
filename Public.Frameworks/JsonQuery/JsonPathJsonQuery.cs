@@ -13,7 +13,7 @@ namespace Public.Frameworks.JsonQuery
             string jsonPathQueryString = $"${string.Join(string.Empty, path.Select(p => $"['{p}']"))}";
             JsonPath jsonPath = JsonPath.Parse(jsonPathQueryString);
             var pathResult = jsonPath.Evaluate(jsonNode);
-            return pathResult.Matches.Select(m => m.Value);
+            return pathResult?.Matches!.Select(m => m.Value!) ?? Enumerable.Empty<JsonNode>();
         }
     }
 }
