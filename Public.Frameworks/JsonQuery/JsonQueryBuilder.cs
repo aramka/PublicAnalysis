@@ -6,7 +6,13 @@ namespace Public.Frameworks.JsonQuery
 {
     public class JsonQueryBuilder
     {
+        private readonly IThrowIfNotValidConsecutiveJsonQueryExpressions throwIfNotValid;
         private List<IJsonQueryExpression> expressions = new List<IJsonQueryExpression>();
+
+        public JsonQueryBuilder(IThrowIfNotValidConsecutiveJsonQueryExpressions throwIfNotValidConsecutiveExpressions)
+        {
+            this.throwIfNotValid = throwIfNotValidConsecutiveExpressions;
+        }
 
         public IEnumerable<IJsonQueryFilterExpression> Filters => this.expressions.Where(e=>e is IJsonQueryFilterExpression).Cast<IJsonQueryFilterExpression>().ToArray();
 
@@ -16,7 +22,7 @@ namespace Public.Frameworks.JsonQuery
             {
                 throw new ArgumentNullException(nameof(expression));
             }
-           
+           this.throwIfNotValid.ThrowIfNotValid(this.expressions.LastOrDefault(),expression);
             this.expressions.Add(expression);
             return this;
         }
