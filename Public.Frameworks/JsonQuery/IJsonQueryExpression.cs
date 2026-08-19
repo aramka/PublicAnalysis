@@ -4,7 +4,8 @@ using System.Text;
 
 namespace Public.Frameworks.JsonQuery
 {
-    public interface IJsonQueryFilterExpression : IJsonQueryExpression
+    public interface IJsonQueryExpression
     {
+        string AsQueryExpressionString();
     }
 }

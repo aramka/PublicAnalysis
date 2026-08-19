@@ -4,11 +4,31 @@ using System.Text;
 
 namespace Public.Frameworks.JsonQuery
 {
-    public record JsonQueryFilter(string Target, JsonQueryFilterOperators Operator, object Value) : IJsonQueryFilterExpression
+    public class JsonQueryFilter : IJsonQueryFilterExpression
     {
-        public string AsJsonPathQueryExpression()
+        private readonly List<IJsonQueryExpression> nextExpressions;
+
+        public JsonQueryFilter(string target, JsonQueryFilterOperators @operator, object value)
         {
-            return $"@.{Target}{Operator}{Value}";
+            this.nextExpressions = new List<IJsonQueryExpression>();
+            Target = target;
+            Operator = @operator;
+            Value = value;
+        }
+
+        public string Target { get; }
+        public JsonQueryFilterOperators Operator { get; }
+        public object Value { get; }
+
+        public string AsQueryExpressionString()
+        {
+            return string.Join(" ", new string[] { $"@.{Target}{Operator}{Value}" }.Concat(this.nextExpressions.Select(e => e.AsQueryExpressionString())));
+        }
+
+        public IJsonQueryExpression Concat(IJsonQueryExpression nextExpression)
+        {
+            this.nextExpressions.Add(nextExpression);
+            return this;
         }
     }
 }

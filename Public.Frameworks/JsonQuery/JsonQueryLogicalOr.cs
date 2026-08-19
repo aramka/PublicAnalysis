@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Public.Frameworks.JsonQuery
 {
-    public class JsonQueryLogicalOr : IJsonQueryFilterExpression
+    public class JsonQueryLogicalOr : IJsonQueryExpression
     {
-        public string AsJsonPathQueryExpression()
+        public string AsQueryExpressionString()
         {
             return "||";
         }
