@@ -64,8 +64,22 @@ namespace Public.Frameworks.Tests
         }
 
         [TestMethod]
-        public void Query_ArrayPath_WithFilter() { 
-            Assert.Fail("must implement. add new filter parameter to the Query method in IJsonQuery and JsonPathJsonQuery. Then implement the filter logic in JsonPathJsonQuery.Query method. Finally, implement this test to verify the filter functionality.");
+        public void Query_ArrayPath_WithEqualsFilter() {
+            // Arrange
+            var jsonQuery = new JsonPathJsonQuery();
+            var jsonNode = JsonNode.Parse("{\"AAPL\":{\"facts\":{\"us-gaap\":{\"AccountsPayable\":[{\"units\":{\"USD\":100}},{\"units\":{\"USD\":200}}]}}}}");
+            var path = new string[] { "AAPL", "facts", "us-gaap", "AccountsPayable" };
+            var filter = new IJsonQueryFilterExpression[] { new JsonQueryFilter("units.USD", JsonQueryFilterOperators.Eq, 100) };
+            // Act
+            var result = jsonQuery.Query(jsonNode!, path, filter);
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count());
+            var unitsNode = result.ElementAt(0)!["units"] as JsonObject;
+            Assert.IsNotNull(unitsNode);
+            var usdNode = unitsNode!["USD"] as JsonValue;
+            Assert.IsNotNull(usdNode);
+            Assert.AreEqual(100, usdNode.GetValue<int>());
         }
         [TestMethod]
         public void Query_WithProjection() { 
