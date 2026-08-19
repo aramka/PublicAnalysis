@@ -6,5 +6,6 @@ namespace Public.Frameworks.JsonQuery
 {
     public interface IJsonQueryFilterExpression
     {
+        string AsJsonPathQueryExpression();
     }
 }

@@ -4,11 +4,11 @@ using System.Text;
 
 namespace Public.Frameworks.JsonQuery
 {
-    public record JsonQueryFilter(string Target, JsonQueryFilterOperators Operator, object Value) : IJsonQueryFilterExpression
+    public class JsonQueryLogicalAnd : IJsonQueryFilterExpression
     {
         public string AsJsonPathQueryExpression()
         {
-            return $"@.{Target}{Operator}{Value}";
+            return "&&";
         }
     }
 }

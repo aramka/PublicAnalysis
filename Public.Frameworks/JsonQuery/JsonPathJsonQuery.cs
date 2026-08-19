@@ -10,15 +10,11 @@ namespace Public.Frameworks.JsonQuery
     {
         public IEnumerable<JsonNode> Query(JsonNode jsonNode, IEnumerable<string> path, IJsonQueryFilterExpression[] filter=null)
         {
-            var pIs = path switch
-            {
-                List<string> l => throw new ArgumentNullException(nameof(path)),
-                _ => "notknown"
-            };
             string jsonPathQueryString = $"${string.Join(string.Empty, path.Select(p => $"['{p}']"))}";
             string filterQueryString = BuildQueryFilter(filter);  
-
+            
             JsonPath jsonPath = JsonPath.Parse($"{jsonPathQueryString}{filterQueryString}");
+            
             var pathResult = jsonPath.Evaluate(jsonNode);
             return pathResult?.Matches!.Select(m => m.Value!) ?? Enumerable.Empty<JsonNode>();
         }
@@ -30,7 +26,7 @@ namespace Public.Frameworks.JsonQuery
             var s = filter
                 .Select(f => f switch
                 {
-                    JsonQueryFilter eq => $"@.{eq.Target}{eq.Operator}{eq.Value}",
+                    JsonQueryFilter qf => $"@.{qf.Target}{qf.Operator}{qf.Value}",
                     _ => throw new NotImplementedException($"Filter type {f.GetType().Name} is not implemented.")
                 });
 
