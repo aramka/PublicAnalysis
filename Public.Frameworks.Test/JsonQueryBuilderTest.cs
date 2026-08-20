@@ -23,27 +23,14 @@ namespace Public.Frameworks.Tests
 
         [TestMethod]
         [DynamicData(nameof(GetSequencesAndOutcomes))]
-        public void AsJsonPathQueryString_2((List<IJsonQueryExpression>, string) sequenceAndOutcome)
+        public void AsJsonPathQueryString((List<IJsonQueryExpression>, string) sequenceAndOutcome)
         {
-            /*
-                $['AAPL']['facts']['us-gaap']['AccountsPayable'][? @.units.USD && @.units.USD==200]['units']['USD']
-
-                [Path][Path]
-                [Filter AndOr]
-                [Path][Path][Filter AndOr Filter AndOr][Path][Path]
-                [Filter AndOr Filter AndOr][Path][Path][Filter AndOr Filter AndOr]
-             
-             */
-
-            //foreach ((List<IJsonQueryExpression> sequence, string expected) in sequencesAndOutcomes)
-            //{
             (List<IJsonQueryExpression> sequence, string expected) = sequenceAndOutcome;
             var queryBuilder = new JsonQueryBuilder(this.throwIfNotValidMoq.Object);
             foreach (IJsonQueryExpression expression in sequence) { queryBuilder = queryBuilder.AddExpression(expression); }
             var actual = queryBuilder.AsJsonPathQueryString();
 
             Assert.AreEqual(expected, actual, message: $"Failed for sequence: {string.Join(", ", sequence.Select(s => s.AsQueryExpressionString()))}");
-            //}
         }
 
         public static List<(List<IJsonQueryExpression>, string)>  GetSequencesAndOutcomes()
@@ -82,18 +69,15 @@ namespace Public.Frameworks.Tests
         }
 
         [TestMethod]
-        public void AsJsonPathQueryString()
+        public void AsJsonPathQueryString_Unknown_IJsonQueryExpression()
         {
             var queryBuilder = this.underTest;
             var expressions = Enumerable.Range(1, 5).Select((i) => { var expressionMoq = new Mock<IJsonQueryExpression>(); expressionMoq.Setup(a => a.AsQueryExpressionString()).Returns($"Expression_{i}"); return expressionMoq.Object; });
 
             foreach(IJsonQueryExpression expression in expressions) { queryBuilder = queryBuilder.AddExpression(expression); }
 
-            var actual = this.underTest.AsJsonPathQueryString();
+            Assert.Throws<InvalidOperationException>(() => this.underTest.AsJsonPathQueryString());
 
-            var expected = string.Join("", expressions.Select(e => e.AsQueryExpressionString()));
-            expected = $"${expected}";
-            Assert.AreEqual(expected, actual);
         }
         [TestMethod]
         public void AddExpression_CallsValidator()

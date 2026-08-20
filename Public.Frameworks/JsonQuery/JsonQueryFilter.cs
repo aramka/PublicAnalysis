@@ -24,11 +24,5 @@ namespace Public.Frameworks.JsonQuery
         {
             return string.Join(" ", new string[] { $"@.{Target}{Operator}{Value}" }.Concat(this.nextExpressions.Select(e => e.AsQueryExpressionString())));
         }
-
-        public IJsonQueryExpression Concat(IJsonQueryExpression nextExpression)
-        {
-            this.nextExpressions.Add(nextExpression);
-            return this;
-        }
     }
 }

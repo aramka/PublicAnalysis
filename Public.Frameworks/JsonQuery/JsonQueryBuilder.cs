@@ -24,19 +24,8 @@ namespace Public.Frameworks.JsonQuery
             return this;
         }
 
-        //public JsonQueryBuilder AddPath(string v)
-        //{
-        //    paths.Add($"['{v}']");
-        //    return this;
-        //}
-
         public string AsJsonPathQueryString()
         {
-            /*
-                 [Filter][logical][Filter][Logical]=>[? Filter logical Filter]
-
-               
-             */
             List<List<IJsonQueryExpression>> allGroups = new List<List<IJsonQueryExpression>>();
             List<IJsonQueryExpression> filterAndLogicalExpressionGroup = new List<IJsonQueryExpression>();
             foreach (var expression in this.expressions)
@@ -54,6 +43,8 @@ namespace Public.Frameworks.JsonQuery
                         filterAndLogicalExpressionGroup = new List<IJsonQueryExpression>();
                         allGroups.Add(new List<IJsonQueryExpression> { path });
                         break;
+                    default:
+                        throw new InvalidOperationException($"Expression type {expression.GetType().Name} is not supported.");
                 }
             }
             RemoveLastIfIsLogicalThenAddToGroups(allGroups, filterAndLogicalExpressionGroup);
