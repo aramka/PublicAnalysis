@@ -18,5 +18,11 @@ namespace Public.Frameworks.Tests
             // Assert
             Assert.AreEqual($"'test'", result);
         }
+
+        [TestMethod]
+        public void TestNullPath()
+        {
+            Assert.Throws<ArgumentNullException>(() => new JsonQueryPath(null));
+        }
     }
 }

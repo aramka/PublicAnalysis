@@ -101,8 +101,9 @@ namespace Public.Frameworks.Tests
             Assert.AreEqual(100, usdNode.GetValue<int>());
         }
         [TestMethod]
-        public void Query_WithProjection() { 
-            Assert.Fail("must implement. add new projection parameter to the Query method in IJsonQuery and JsonPathJsonQuery. Then implement the projection logic in JsonPathJsonQuery.Query method. Finally, implement this test to verify the projection functionality.");
+        public void ToDo()
+        {
+            Assert.Fail("Make this an integration test between JsonQueryBuilder and JsonPathJsonQuery");
         }
     }
     

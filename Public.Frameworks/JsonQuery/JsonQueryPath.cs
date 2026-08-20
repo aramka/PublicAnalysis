@@ -8,6 +8,10 @@ namespace Public.Frameworks.JsonQuery
     {
         public JsonQueryPath(string path)
         {
+            if(string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
             Path = path;
         }
 
