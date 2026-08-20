@@ -9,6 +9,22 @@ namespace Public.Frameworks.Tests
     [TestClass]
     public class JsonQueryFilterTest
     {
+        [TestMethod]
+        public void TestNullTarget()
+        {
+            Assert.Throws<ArgumentNullException>(() => new JsonQueryFilter(null, JsonQueryFilterOperators.Eq, 1));
+        }
+        [TestMethod]
+        public void TestNullOperator()
+        {
+            Assert.Throws<ArgumentNullException>(() => new JsonQueryFilter("someNodeName", null, 1));
+        }
+        [TestMethod]
+        public void TestNullValue()
+        {
+            Assert.Throws<ArgumentNullException>(() => new JsonQueryFilter("someNodeName", JsonQueryFilterOperators.Eq, null));
+        }
+
         [DynamicData(nameof(GetTestCases))]
         [TestMethod]
         public void TestJsonQueryFilter(string target, JsonQueryFilterOperators @operator, object val,string expectation)

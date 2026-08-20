@@ -9,6 +9,10 @@ namespace Public.Frameworks.JsonQuery
 
         public JsonQueryFilter(string target, JsonQueryFilterOperators @operator, object value)
         {
+            if(target is null || @operator is null || value is null)
+            {
+                throw new ArgumentNullException($"Arguments {nameof(target)}, {nameof(@operator)}, and {nameof(value)} cannot be null.");
+            }
             Target = target;
             Operator = @operator;
             Value = value;
