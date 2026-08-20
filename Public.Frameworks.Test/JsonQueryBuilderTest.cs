@@ -18,6 +18,60 @@ namespace Public.Frameworks.Tests
 
             this.throwIfNotValidMoq = new Mock<IThrowIfNotValidConsecutiveJsonQueryExpressions>();
             this.underTest = new JsonQueryBuilder(throwIfNotValidMoq.Object);
+
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(GetSequencesAndOutcomes))]
+        public void AsJsonPathQueryString_2((List<IJsonQueryExpression>, string) sequenceAndOutcome)
+        {
+            /*
+                $['AAPL']['facts']['us-gaap']['AccountsPayable'][? @.units.USD && @.units.USD==200]['units']['USD']
+
+                [Path][Path]
+                [Filter AndOr]
+                [Path][Path][Filter AndOr Filter AndOr][Path][Path]
+                [Filter AndOr Filter AndOr][Path][Path][Filter AndOr Filter AndOr]
+             
+             */
+
+            //foreach ((List<IJsonQueryExpression> sequence, string expected) in sequencesAndOutcomes)
+            //{
+            (List<IJsonQueryExpression> sequence, string expected) = sequenceAndOutcome;
+            var queryBuilder = new JsonQueryBuilder(this.throwIfNotValidMoq.Object);
+            foreach (IJsonQueryExpression expression in sequence) { queryBuilder = queryBuilder.AddExpression(expression); }
+            var actual = queryBuilder.AsJsonPathQueryString();
+
+            Assert.AreEqual(expected, actual, message: $"Failed for sequence: {string.Join(", ", sequence.Select(s => s.AsQueryExpressionString()))}");
+            //}
+        }
+
+        public static List<(List<IJsonQueryExpression>, string)>  GetSequencesAndOutcomes()
+        {
+            Mock<IJsonQueryPathExpression> pathExpressionMoq = new Mock<IJsonQueryPathExpression>();
+            pathExpressionMoq.Setup(a => a.AsQueryExpressionString()).Returns("Path");
+            Mock<IJsonQueryFilterExpression> filterExpressionMoq = new Mock<IJsonQueryFilterExpression>();
+            filterExpressionMoq.Setup(a => a.AsQueryExpressionString()).Returns("Filter");
+            Mock<IJsonQueryLogicalExpression> logicalExpressionMoq = new Mock<IJsonQueryLogicalExpression>();
+            logicalExpressionMoq.Setup(a => a.AsQueryExpressionString()).Returns("AndOr");
+
+            // var pathSequenc
+            var pathPathSequence = new List<IJsonQueryExpression> { pathExpressionMoq.Object, pathExpressionMoq.Object };
+            var filterLogicalSequence = new List<IJsonQueryExpression> { filterExpressionMoq.Object, logicalExpressionMoq.Object };
+            IJsonQueryExpression[] pathPathFilterLogicalFilterLogicalPathPathSequence = [.. pathPathSequence, .. filterLogicalSequence, .. filterLogicalSequence, .. pathPathSequence];
+            IJsonQueryExpression[] filterLogicalFilterLogicalPathPathFilterLogicalFilterLogicalSequence = [.. filterLogicalSequence, .. filterLogicalSequence, .. pathPathSequence, .. filterLogicalSequence, .. filterLogicalSequence];
+
+            var sequencesAndOutcomes = Enumerable.Empty<int>().Select((_) => new { Sequence = new List<IJsonQueryExpression>(), Expected = string.Empty }).ToList();
+
+            sequencesAndOutcomes.Add(new { Sequence = pathPathSequence[0..1], Expected = "$[Path]" });//single path
+            sequencesAndOutcomes.Add(new { Sequence = pathPathSequence, Expected = "$[Path][Path]" });
+            // sequencesAndOutcomes.Add(new { Sequence = [ .. pathPathSequence[0..1], .. filterLogicalSequence[0..1]], Expected = "$[? Filter]" });//path filter 
+            sequencesAndOutcomes.Add(new { Sequence = filterLogicalSequence[0..1], Expected = "$[? Filter]" });//single filter
+            sequencesAndOutcomes.Add(new { Sequence = filterLogicalSequence, Expected = "$[? Filter]" });//filter with logical operator at end
+            sequencesAndOutcomes.Add(new { Sequence = pathPathFilterLogicalFilterLogicalPathPathSequence.ToList(), Expected = "$[Path][Path][? Filter AndOr Filter][Path][Path]" });
+            sequencesAndOutcomes.Add(new { Sequence = filterLogicalFilterLogicalPathPathFilterLogicalFilterLogicalSequence.ToList(), Expected = "$[? Filter AndOr Filter][Path][Path][? Filter AndOr Filter]" });
+
+            return sequencesAndOutcomes.Select(a => (a.Sequence, a.Expected)).ToList();
         }
 
         [TestMethod]

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Public.Frameworks.JsonQuery
 {
-    public class JsonQueryLogicalOr : IJsonQueryExpression
+    public class JsonQueryLogicalOr : IJsonQueryLogicalExpression
     {
         public string AsQueryExpressionString()
         {

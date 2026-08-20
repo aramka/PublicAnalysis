@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Public.Frameworks.JsonQuery
 {
-    public class JsonQueryPath : IJsonQueryExpression
+    public class JsonQueryPath : IJsonQueryPathExpression
     {
         public string AsQueryExpressionString()
         {
