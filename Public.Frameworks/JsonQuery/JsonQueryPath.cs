@@ -6,9 +6,16 @@ namespace Public.Frameworks.JsonQuery
 {
     public class JsonQueryPath : IJsonQueryPathExpression
     {
+        public JsonQueryPath(string path)
+        {
+            Path = path;
+        }
+
+        public string Path { get; }
+
         public string AsQueryExpressionString()
         {
-            throw new NotImplementedException();
+            return $"'{this.Path}'";
         }
     }
 }

@@ -50,7 +50,7 @@ namespace Public.Frameworks.Tests
                     Type t when t == typeof(JsonQueryFilter) => new JsonQueryFilter(caseName, JsonQueryFilterOperators.Eq, caseName),
                     Type t when t == typeof(JsonQueryLogicalAnd) => new JsonQueryLogicalAnd(),
                     Type t when t == typeof(JsonQueryLogicalOr) => new JsonQueryLogicalOr(),
-                    Type t when t == typeof(JsonQueryPath) => new JsonQueryPath(),
+                    Type t when t == typeof(JsonQueryPath) => new JsonQueryPath(caseName),
                     _ => throw new NotImplementedException($"Type {type} is not implemented.")
                 };
             });
