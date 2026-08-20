@@ -55,8 +55,10 @@ namespace Public.Frameworks.Tests
             Mock<IJsonQueryLogicalExpression> logicalExpressionMoq = new Mock<IJsonQueryLogicalExpression>();
             logicalExpressionMoq.Setup(a => a.AsQueryExpressionString()).Returns("AndOr");
 
-            // var pathSequenc
-            var pathPathSequence = new List<IJsonQueryExpression> { pathExpressionMoq.Object, pathExpressionMoq.Object };
+            var pathSequence = new List<IJsonQueryExpression> { pathExpressionMoq.Object };
+            List<IJsonQueryExpression>  pathPathSequence = [.. pathSequence, pathExpressionMoq.Object ];
+
+            var filterSequence = new List<IJsonQueryExpression> { filterExpressionMoq.Object };
             var filterLogicalSequence = new List<IJsonQueryExpression> { filterExpressionMoq.Object, logicalExpressionMoq.Object };
             IJsonQueryExpression[] pathPathFilterLogicalFilterLogicalPathPathSequence = [.. pathPathSequence, .. filterLogicalSequence, .. filterLogicalSequence, .. pathPathSequence];
             IJsonQueryExpression[] filterLogicalFilterLogicalPathPathFilterLogicalFilterLogicalSequence = [.. filterLogicalSequence, .. filterLogicalSequence, .. pathPathSequence, .. filterLogicalSequence, .. filterLogicalSequence];
@@ -65,9 +67,14 @@ namespace Public.Frameworks.Tests
 
             sequencesAndOutcomes.Add(new { Sequence = pathPathSequence[0..1], Expected = "$[Path]" });//single path
             sequencesAndOutcomes.Add(new { Sequence = pathPathSequence, Expected = "$[Path][Path]" });
-            // sequencesAndOutcomes.Add(new { Sequence = [ .. pathPathSequence[0..1], .. filterLogicalSequence[0..1]], Expected = "$[? Filter]" });//path filter 
-            sequencesAndOutcomes.Add(new { Sequence = filterLogicalSequence[0..1], Expected = "$[? Filter]" });//single filter
+            List<IJsonQueryExpression> pathFilterSequence = [ ..pathPathSequence[0..1], ..filterLogicalSequence[0..1]];
+            sequencesAndOutcomes.Add(new { Sequence = pathFilterSequence, Expected = "$[Path][? Filter]" });//path filter 
+
+            sequencesAndOutcomes.Add(new { Sequence = filterSequence, Expected = "$[? Filter]" });//single filter
             sequencesAndOutcomes.Add(new { Sequence = filterLogicalSequence, Expected = "$[? Filter]" });//filter with logical operator at end
+            List<IJsonQueryExpression> filterPathSequence = [.. filterSequence, .. pathSequence];
+            sequencesAndOutcomes.Add(new { Sequence = filterPathSequence, Expected = "$[? Filter][Path]" });//filter path
+
             sequencesAndOutcomes.Add(new { Sequence = pathPathFilterLogicalFilterLogicalPathPathSequence.ToList(), Expected = "$[Path][Path][? Filter AndOr Filter][Path][Path]" });
             sequencesAndOutcomes.Add(new { Sequence = filterLogicalFilterLogicalPathPathFilterLogicalFilterLogicalSequence.ToList(), Expected = "$[? Filter AndOr Filter][Path][Path][? Filter AndOr Filter]" });
 
