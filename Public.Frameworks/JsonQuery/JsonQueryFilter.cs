@@ -6,11 +6,9 @@ namespace Public.Frameworks.JsonQuery
 {
     public class JsonQueryFilter : IJsonQueryFilterExpression
     {
-        private readonly List<IJsonQueryExpression> nextExpressions;
 
         public JsonQueryFilter(string target, JsonQueryFilterOperators @operator, object value)
         {
-            this.nextExpressions = new List<IJsonQueryExpression>();
             Target = target;
             Operator = @operator;
             Value = value;
@@ -22,7 +20,7 @@ namespace Public.Frameworks.JsonQuery
 
         public string AsQueryExpressionString()
         {
-            return string.Join(" ", new string[] { $"@.{Target}{Operator}{Value}" }.Concat(this.nextExpressions.Select(e => e.AsQueryExpressionString())));
+            return $"@.{Target}{Operator}{Value switch { object item when double.TryParse(item.ToString(), out double v) => Value.ToString(), _ => $"'{Value}'" }}";
         }
     }
 }
