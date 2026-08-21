@@ -8,6 +8,6 @@ namespace Public.Frameworks.JsonQuery
 {
     public interface IJsonQuery
     {
-        IEnumerable<JsonNode> Query(JsonNode jsonNode, IEnumerable<string> path, IJsonQueryFilterExpression[] filter=null);
+        IEnumerable<JsonNode> Query(JsonNode jsonNode, IEnumerable<IJsonQueryExpression> jsonQueryExpressions);
     }
 }

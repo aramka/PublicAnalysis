@@ -17,7 +17,7 @@ namespace Public.Frameworks.Tests
             // Arrange
             var jsonQuery = new JsonPathJsonQuery(qb);
             var jsonNode = JsonNode.Parse("{\"AAPL\":{\"facts\":{\"us-gaap\":{\"AccountsPayable\":{\"units\":{\"USD\":100}}}}}}");
-            var path = new string[] { "AAPL", "facts", "us-gaap", "AccountsPayable", "units", "USD" };
+            var path = new IJsonQueryExpression[] { new JsonQueryPath( "AAPL" ), new JsonQueryPath("facts"), new JsonQueryPath("us-gaap"), new JsonQueryPath("AccountsPayable"), new JsonQueryPath("units"), new JsonQueryPath("USD") };
             // Act
             var result = jsonQuery.Query(jsonNode!, path);
             // Assert
@@ -35,7 +35,7 @@ namespace Public.Frameworks.Tests
             // Arrange
             var jsonQuery = new JsonPathJsonQuery(qb);
             var jsonNode = JsonNode.Parse("{\"AAPL\":{\"facts\":{\"us-gaap\":{\"AccountsPayable\":{\"units\":{\"USD\":100,\"EUR\":90}}}}}}");
-            var path = new string[] { "AAPL", "facts", "us-gaap", "AccountsPayable", "units" };
+            var path = new IJsonQueryExpression[] { new JsonQueryPath("AAPL"), new JsonQueryPath("facts"), new JsonQueryPath("us-gaap"), new JsonQueryPath("AccountsPayable"), new JsonQueryPath("units") };
             // Act
             var result = jsonQuery.Query(jsonNode!, path);
             // Assert
@@ -54,7 +54,7 @@ namespace Public.Frameworks.Tests
             // Arrange
             var jsonQuery = new JsonPathJsonQuery(qb);
             var jsonNode = JsonNode.Parse("{\"AAPL\":{\"facts\":{\"us-gaap\":{\"AccountsPayable\":[{\"units\":{\"USD\":100}},{\"units\":{\"USD\":200}}]}}}}");
-            var path = new string[] { "AAPL", "facts", "us-gaap", "AccountsPayable" };
+            var path = new IJsonQueryExpression[] { new JsonQueryPath("AAPL"), new JsonQueryPath("facts"), new JsonQueryPath("us-gaap"), new JsonQueryPath("AccountsPayable") };
             // Act
             var result = jsonQuery.Query(jsonNode!, path);
             // Assert
@@ -77,10 +77,9 @@ namespace Public.Frameworks.Tests
             // Arrange
             var jsonQuery = new JsonPathJsonQuery(qb);
             var jsonNode = JsonNode.Parse("{\"AAPL\":{\"facts\":{\"us-gaap\":{\"AccountsPayable\":[{\"units\":{\"USD\":100}},{\"units\":{\"USD\":200}}]}}}}");
-            var path = new string[] { "AAPL", "facts", "us-gaap", "AccountsPayable" };
-            var filter = new IJsonQueryFilterExpression[] { new JsonQueryFilter("units.USD", JsonQueryFilterOperators.Eq, 100) };
+            var path = new IJsonQueryExpression[] { new JsonQueryPath("AAPL"), new JsonQueryPath("facts"), new JsonQueryPath("us-gaap"), new JsonQueryPath("AccountsPayable") , new JsonQueryFilter("units.USD", JsonQueryFilterOperators.Eq, 100) };
             // Act
-            var result = jsonQuery.Query(jsonNode!, path, filter);
+            var result = jsonQuery.Query(jsonNode!, path);
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count());
@@ -98,10 +97,9 @@ namespace Public.Frameworks.Tests
             // Arrange
             var jsonQuery = new JsonPathJsonQuery(qb);
             var jsonNode = JsonNode.Parse("{\"AAPL\":{\"facts\":{\"us-gaap\":{\"AccountsPayable\":[{\"units\":{\"USD\":100}},{\"units\":{\"USD\":200}}]}}}}");
-            var path = new string[] { "AAPL", "facts", "us-gaap", "AccountsPayable" };
-            var filter = new IJsonQueryFilterExpression[] { new JsonQueryFilter("units.USD", JsonQueryFilterOperators.Eq, 100) };
+            var path = new IJsonQueryExpression[] { new JsonQueryPath("AAPL"), new JsonQueryPath("facts"), new JsonQueryPath("us-gaap"), new JsonQueryPath("AccountsPayable"), new JsonQueryFilter("units.USD", JsonQueryFilterOperators.Eq, 100) };
             // Act
-            var result = jsonQuery.Query(jsonNode!, path, filter);
+            var result = jsonQuery.Query(jsonNode!, path);
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count());

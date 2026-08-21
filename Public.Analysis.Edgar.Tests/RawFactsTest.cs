@@ -116,22 +116,22 @@ namespace Public.Analysis.Edgar.Tests
         public async Task Query_CallsIQueryJson()
         {
             JsonNode jsonNodePassedToQuery = null;
-            IEnumerable<string> pathPassedToQuery = null;
+            IEnumerable<IJsonQueryExpression> pathPassedToQuery = null;
 
             var expectedReturn = new List<JsonNode> { JsonNode.Parse("{\"val\": 1234}")! };
-            jsonQueryMoq.Setup(a => a.Query(It.IsAny<JsonNode>(), It.IsAny<IEnumerable<string>>()))
+            jsonQueryMoq.Setup(a => a.Query(It.IsAny<JsonNode>(), It.IsAny<IEnumerable<IJsonQueryExpression>>()))
                 .Returns(expectedReturn)
-                .Callback<JsonNode, IEnumerable<string>>((jsonNode, path) =>
+                .Callback<JsonNode, IEnumerable<IJsonQueryExpression>>((jsonNode, path) =>
                 {
                     jsonNodePassedToQuery = jsonNode;
-                    pathPassedToQuery = path;
+                    pathPassedToQuery = path.ToList();
                 });
 
             var actualReturn = await rawFacts.Query(new DataQuery(factsPath.ToArray()));
 
             actualReturn.Should().BeEquivalentTo(expectedReturn);
 
-            pathPassedToQuery.Should().BeEquivalentTo(factsPath.Skip(1)); // Skip the ticker in the path
+            pathPassedToQuery.Should().BeEquivalentTo(factsPath.Skip(1).Select(p => new JsonQueryPath(p))); // Skip the ticker in the path
             jsonNodePassedToQuery.Should().NotBeNull();
 
             var nodePassedToQueryExpeced = JsonNode.Parse(EdgarFactsFactory.EdgarFactsAPJsonString);

@@ -58,7 +58,7 @@ namespace Public.Analysis.Edgar.RawFacts
 
             JsonNode? jsonNode = await JsonNode.ParseAsync(contentStream);
 
-            return this.queryJson.Query(jsonNode, dataSetQuery.Path.Skip(1));
+            return this.queryJson.Query(jsonNode, dataSetQuery.Path.Skip(1).Select(p => new JsonQueryPath(p) as IJsonQueryExpression));
 		}
     }
 }

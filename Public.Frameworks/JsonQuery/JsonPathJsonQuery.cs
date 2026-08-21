@@ -14,13 +14,13 @@ namespace Public.Frameworks.JsonQuery
         {
             this.queryBuilder = queryBuilder;
         }
-        public IEnumerable<JsonNode> Query(JsonNode jsonNode, IEnumerable<string> path, IJsonQueryFilterExpression[] filter=null)
+
+        public IEnumerable<JsonNode> Query(JsonNode jsonNode, IEnumerable<IJsonQueryExpression> jsonQueryExpressions)
         {
-            var jsonQueryExpressions = path.Select(p => new JsonQueryPath(p) as IJsonQueryExpression).Concat(filter ?? Enumerable.Empty<IJsonQueryFilterExpression>());
             var queryString = queryBuilder.AddExpressions(jsonQueryExpressions).AsJsonPathQueryString();
 
             JsonPath jsonPath = JsonPath.Parse(queryString);
-            
+
             var pathResult = jsonPath.Evaluate(jsonNode);
             return pathResult?.Matches!.Select(m => m.Value!) ?? Enumerable.Empty<JsonNode>();
         }
