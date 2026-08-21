@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using AwesomeAssertions;
+using Moq;
 using Public.Frameworks.JsonQuery;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,23 @@ namespace Public.Frameworks.Tests
     [TestClass]
     public class JsonPathJsonQueryJsonQueryBuilderIntegrationTest
     {
+        [TestMethod]
+        public void Query_EmptyPath()
+        {
+            JsonQueryBuilder qb = new JsonQueryBuilder();
+            // Arrange
+            var jsonQuery = new JsonPathJsonQuery(qb);
+            var jsonNode = JsonNode.Parse("{\"AAPL\":{\"facts\":{\"us-gaap\":{\"AccountsPayable\":{\"units\":{\"USD\":100}}}}}}");
+            // Act
+            var result = jsonQuery.Query(jsonNode!, Enumerable.Empty<IJsonQueryExpression>());
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count());
+
+            var actual = result.First() as JsonObject;
+
+            actual.Should().BeEquivalentTo(jsonNode);
+        }
         [TestMethod]
         public void Query_SingleValuePath()
         {
