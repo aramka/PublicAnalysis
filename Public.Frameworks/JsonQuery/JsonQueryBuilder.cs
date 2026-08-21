@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Public.Frameworks.JsonQuery
 {
-    public class JsonQueryBuilder
+    public class JsonQueryBuilder : IJsonQueryBuilder
     {
         private readonly IThrowIfNotValidConsecutiveJsonQueryExpressions throwIfNotValid;
         private List<IJsonQueryExpression> expressions = new List<IJsonQueryExpression>();
@@ -16,7 +16,14 @@ namespace Public.Frameworks.JsonQuery
         }
 
         public IEnumerable<IJsonQueryFilterExpression> Filters => this.expressions.Where(e => e is IJsonQueryFilterExpression).Cast<IJsonQueryFilterExpression>().ToArray();
-
+        public JsonQueryBuilder AddExpressions(IEnumerable<IJsonQueryExpression> expressions)
+        {
+            foreach (var expression in expressions)
+            {
+                this.AddExpression(expression);
+            }
+            return this;
+        }
         public JsonQueryBuilder AddExpression(IJsonQueryExpression expression)
         {
             this.throwIfNotValid.ThrowIfNotValid(this.expressions.LastOrDefault(), expression);
@@ -52,12 +59,10 @@ namespace Public.Frameworks.JsonQuery
                 .Where(g => g.Any())
                 .Select(g => g.First() switch
                 {
-                    IJsonQueryFilterExpression filter => 
-                    $"[?{
-                            g.Select(e => $" {e.AsQueryExpressionString()}")
+                    IJsonQueryFilterExpression filter =>
+                    $"[?{g.Select(e => $" {e.AsQueryExpressionString()}")
                             .Aggregate(new StringBuilder(), (sb, current) => { sb.Append(current); return sb; })
-                            .ToString()
-                        }]",
+                            .ToString()}]",
                     _ => g.Select(e => $"[{e.AsQueryExpressionString()}]").Aggregate(new StringBuilder(), (sb, current) => { sb.Append(current); return sb; }).ToString()
                 });
             var query = segments.Aggregate(new StringBuilder(), (sb, currentSegment) => { sb.Append(currentSegment); return sb; }).ToString();

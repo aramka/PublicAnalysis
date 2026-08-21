@@ -8,29 +8,21 @@ namespace Public.Frameworks.JsonQuery
 {
     public class JsonPathJsonQuery : IJsonQuery
     {
+        private readonly IJsonQueryBuilder queryBuilder;
+
+        public JsonPathJsonQuery(IJsonQueryBuilder queryBuilder)
+        {
+            this.queryBuilder = queryBuilder;
+        }
         public IEnumerable<JsonNode> Query(JsonNode jsonNode, IEnumerable<string> path, IJsonQueryFilterExpression[] filter=null)
         {
-            string jsonPathQueryString = $"${string.Join(string.Empty, path.Select(p => $"['{p}']"))}";
-            string filterQueryString = BuildQueryFilter(filter);  
-            
-            JsonPath jsonPath = JsonPath.Parse($"{jsonPathQueryString}{filterQueryString}");
+            var jsonQueryExpressions = path.Select(p => new JsonQueryPath(p) as IJsonQueryExpression).Concat(filter ?? Enumerable.Empty<IJsonQueryFilterExpression>());
+            var queryString = queryBuilder.AddExpressions(jsonQueryExpressions).AsJsonPathQueryString();
+
+            JsonPath jsonPath = JsonPath.Parse(queryString);
             
             var pathResult = jsonPath.Evaluate(jsonNode);
             return pathResult?.Matches!.Select(m => m.Value!) ?? Enumerable.Empty<JsonNode>();
-        }
-
-        private string BuildQueryFilter(IJsonQueryFilterExpression[] filter)
-        {
-            filter = filter ?? Enumerable.Empty<IJsonQueryFilterExpression>().ToArray();
-
-            var s = filter
-                .Select(f => f switch
-                {
-                    JsonQueryFilter qf => $"@.{qf.Target}{qf.Operator}{qf.Value}",
-                    _ => throw new NotImplementedException($"Filter type {f.GetType().Name} is not implemented.")
-                });
-
-            return s.Any() ? $"[? {string.Join(" && ", s)} ]" : string.Empty;
         }
     }
 }

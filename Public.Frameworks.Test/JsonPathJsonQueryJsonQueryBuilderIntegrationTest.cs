@@ -1,4 +1,5 @@
-﻿using Public.Frameworks.JsonQuery;
+﻿using Moq;
+using Public.Frameworks.JsonQuery;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,13 +8,14 @@ using System.Text.Json.Nodes;
 namespace Public.Frameworks.Tests
 {
     [TestClass]
-    public class JsonPathJsonQueryTest
+    public class JsonPathJsonQueryJsonQueryBuilderIntegrationTest
     {
         [TestMethod]
         public void Query_SingleValuePath()
         {
+            JsonQueryBuilder qb = new JsonQueryBuilder();
             // Arrange
-            var jsonQuery = new JsonPathJsonQuery();
+            var jsonQuery = new JsonPathJsonQuery(qb);
             var jsonNode = JsonNode.Parse("{\"AAPL\":{\"facts\":{\"us-gaap\":{\"AccountsPayable\":{\"units\":{\"USD\":100}}}}}}");
             var path = new string[] { "AAPL", "facts", "us-gaap", "AccountsPayable", "units", "USD" };
             // Act
@@ -27,8 +29,11 @@ namespace Public.Frameworks.Tests
         [TestMethod]
         public void Query_JsonObjectPath()
         {
+
             // Arrange
-            var jsonQuery = new JsonPathJsonQuery();
+            JsonQueryBuilder qb = new JsonQueryBuilder();
+            // Arrange
+            var jsonQuery = new JsonPathJsonQuery(qb);
             var jsonNode = JsonNode.Parse("{\"AAPL\":{\"facts\":{\"us-gaap\":{\"AccountsPayable\":{\"units\":{\"USD\":100,\"EUR\":90}}}}}}");
             var path = new string[] { "AAPL", "facts", "us-gaap", "AccountsPayable", "units" };
             // Act
@@ -45,7 +50,9 @@ namespace Public.Frameworks.Tests
         public void Query_ArrayPath()
         {
             // Arrange
-            var jsonQuery = new JsonPathJsonQuery();
+            JsonQueryBuilder qb = new JsonQueryBuilder();
+            // Arrange
+            var jsonQuery = new JsonPathJsonQuery(qb);
             var jsonNode = JsonNode.Parse("{\"AAPL\":{\"facts\":{\"us-gaap\":{\"AccountsPayable\":[{\"units\":{\"USD\":100}},{\"units\":{\"USD\":200}}]}}}}");
             var path = new string[] { "AAPL", "facts", "us-gaap", "AccountsPayable" };
             // Act
@@ -66,7 +73,9 @@ namespace Public.Frameworks.Tests
         [TestMethod]
         public void Query_ArrayPath_WithEqualsFilter() {
             // Arrange
-            var jsonQuery = new JsonPathJsonQuery();
+            JsonQueryBuilder qb = new JsonQueryBuilder();
+            // Arrange
+            var jsonQuery = new JsonPathJsonQuery(qb);
             var jsonNode = JsonNode.Parse("{\"AAPL\":{\"facts\":{\"us-gaap\":{\"AccountsPayable\":[{\"units\":{\"USD\":100}},{\"units\":{\"USD\":200}}]}}}}");
             var path = new string[] { "AAPL", "facts", "us-gaap", "AccountsPayable" };
             var filter = new IJsonQueryFilterExpression[] { new JsonQueryFilter("units.USD", JsonQueryFilterOperators.Eq, 100) };
@@ -85,7 +94,9 @@ namespace Public.Frameworks.Tests
         public void Query_ArrayPath_WithAndFilter()
         {
             // Arrange
-            var jsonQuery = new JsonPathJsonQuery();
+            JsonQueryBuilder qb = new JsonQueryBuilder();
+            // Arrange
+            var jsonQuery = new JsonPathJsonQuery(qb);
             var jsonNode = JsonNode.Parse("{\"AAPL\":{\"facts\":{\"us-gaap\":{\"AccountsPayable\":[{\"units\":{\"USD\":100}},{\"units\":{\"USD\":200}}]}}}}");
             var path = new string[] { "AAPL", "facts", "us-gaap", "AccountsPayable" };
             var filter = new IJsonQueryFilterExpression[] { new JsonQueryFilter("units.USD", JsonQueryFilterOperators.Eq, 100) };
@@ -99,11 +110,6 @@ namespace Public.Frameworks.Tests
             var usdNode = unitsNode!["USD"] as JsonValue;
             Assert.IsNotNull(usdNode);
             Assert.AreEqual(100, usdNode.GetValue<int>());
-        }
-        [TestMethod]
-        public void ToDo()
-        {
-            Assert.Fail("Make this an integration test between JsonQueryBuilder and JsonPathJsonQuery");
         }
     }
     
