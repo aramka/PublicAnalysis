@@ -12,7 +12,7 @@ namespace Public.Frameworks.JsonQuery
 
         public JsonQueryBuilder(IThrowIfNotValidConsecutiveJsonQueryExpressions throwIfNotValidConsecutiveExpressions)
         {
-            this.throwIfNotValid = throwIfNotValidConsecutiveExpressions;
+            this.throwIfNotValid = new ThrowIfNotValidConsecutiveJsonQueryExpressions(); // throwIfNotValidConsecutiveExpressions;
         }
 
         public IEnumerable<IJsonQueryFilterExpression> Filters => this.expressions.Where(e => e is IJsonQueryFilterExpression).Cast<IJsonQueryFilterExpression>().ToArray();

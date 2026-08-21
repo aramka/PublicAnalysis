@@ -23,17 +23,21 @@ namespace Public.Frameworks.Tests
 
         [TestMethod]
         [DynamicData(nameof(GetSequencesAndOutcomes))]
-        public void AsJsonPathQueryString((List<IJsonQueryExpression>, string) sequenceAndOutcome)
+        public void AsJsonPathQueryString(int i, List<IJsonQueryExpression> sequence, string expected)
         {
-            (List<IJsonQueryExpression> sequence, string expected) = sequenceAndOutcome;
             var queryBuilder = new JsonQueryBuilder(this.throwIfNotValidMoq.Object);
-            foreach (IJsonQueryExpression expression in sequence) { queryBuilder = queryBuilder.AddExpression(expression); }
+            int j = 0;
+            foreach (IJsonQueryExpression expression in sequence) { 
+
+                queryBuilder = queryBuilder.AddExpression(expression);
+                ++j;
+            }
             var actual = queryBuilder.AsJsonPathQueryString();
 
             Assert.AreEqual(expected, actual, message: $"Failed for sequence: {string.Join(", ", sequence.Select(s => s.AsQueryExpressionString()))}");
         }
 
-        public static List<(List<IJsonQueryExpression>, string)>  GetSequencesAndOutcomes()
+        public static List<(int i, List<IJsonQueryExpression>, string)>  GetSequencesAndOutcomes()
         {
             Mock<IJsonQueryPathExpression> pathExpressionMoq = new Mock<IJsonQueryPathExpression>();
             pathExpressionMoq.Setup(a => a.AsQueryExpressionString()).Returns("Path");
@@ -47,8 +51,8 @@ namespace Public.Frameworks.Tests
 
             var filterSequence = new List<IJsonQueryExpression> { filterExpressionMoq.Object };
             var filterLogicalSequence = new List<IJsonQueryExpression> { filterExpressionMoq.Object, logicalExpressionMoq.Object };
-            IJsonQueryExpression[] pathPathFilterLogicalFilterLogicalPathPathSequence = [.. pathPathSequence, .. filterLogicalSequence, .. filterLogicalSequence, .. pathPathSequence];
-            IJsonQueryExpression[] filterLogicalFilterLogicalPathPathFilterLogicalFilterLogicalSequence = [.. filterLogicalSequence, .. filterLogicalSequence, .. pathPathSequence, .. filterLogicalSequence, .. filterLogicalSequence];
+            IJsonQueryExpression[] pathPathFilterLogicalFilterLogicalPathPathSequence = [.. pathPathSequence, .. filterLogicalSequence, .. filterSequence, .. pathPathSequence];
+            IJsonQueryExpression[] filterLogicalFilterLogicalPathPathFilterLogicalFilterLogicalSequence = [.. filterLogicalSequence, .. filterSequence, .. pathPathSequence, .. filterLogicalSequence, .. filterLogicalSequence];
 
             var sequencesAndOutcomes = Enumerable.Empty<int>().Select((_) => new { Sequence = new List<IJsonQueryExpression>(), Expected = string.Empty }).ToList();
 
@@ -65,7 +69,7 @@ namespace Public.Frameworks.Tests
             sequencesAndOutcomes.Add(new { Sequence = pathPathFilterLogicalFilterLogicalPathPathSequence.ToList(), Expected = "$[Path][Path][? Filter AndOr Filter][Path][Path]" });
             sequencesAndOutcomes.Add(new { Sequence = filterLogicalFilterLogicalPathPathFilterLogicalFilterLogicalSequence.ToList(), Expected = "$[? Filter AndOr Filter][Path][Path][? Filter AndOr Filter]" });
 
-            return sequencesAndOutcomes.Select(a => (a.Sequence, a.Expected)).ToList();
+            return sequencesAndOutcomes.Select((a,i) => (i+1, a.Sequence, a.Expected)).ToList();
         }
 
         [TestMethod]
@@ -82,8 +86,8 @@ namespace Public.Frameworks.Tests
         [TestMethod]
         public void AddExpression_CallsValidator()
         {
-            var first = new Mock<IJsonQueryExpression>();
-            var second = new Mock<IJsonQueryExpression>();
+            var first = new Mock<IJsonQueryFilterExpression>();
+            var second = new Mock<IJsonQueryFilterExpression>();
             ArgumentException expectedException = new ArgumentException();
             this.throwIfNotValidMoq.Setup(a => a.ThrowIfNotValid(first.Object, second.Object)).Throws(expectedException);
 
