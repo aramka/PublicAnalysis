@@ -9,70 +9,63 @@ namespace Public.Frameworks.Tests
     [TestClass]
     public class ThrowIfNotValidConsecutiveJsonQueryExpressionsTest
     {
-        Dictionary<(Type?, Type?), bool> cases = new Dictionary<(Type?, Type?), bool>();
-        public ThrowIfNotValidConsecutiveJsonQueryExpressionsTest()
-        {
-
-            cases.Add((null, null), false);
-            cases.Add((null, typeof(JsonQueryFilter)), true);
-            cases.Add((null, typeof(JsonQueryLogicalAnd)), false);
-            cases.Add((null, typeof(JsonQueryLogicalOr)), false);
-            cases.Add((null, typeof(JsonQueryPath)), true);
-            cases.Add((typeof(JsonQueryFilter), null), false);
-            cases.Add((typeof(JsonQueryFilter), typeof(JsonQueryFilter)), false);
-            cases.Add((typeof(JsonQueryFilter), typeof(JsonQueryLogicalAnd)), true);
-            cases.Add((typeof(JsonQueryFilter), typeof(JsonQueryLogicalOr)), true);
-            cases.Add((typeof(JsonQueryFilter), typeof(JsonQueryPath)), true);
-            cases.Add((typeof(JsonQueryLogicalAnd), null), false);
-            cases.Add((typeof(JsonQueryLogicalAnd), typeof(JsonQueryFilter)), true);
-            cases.Add((typeof(JsonQueryLogicalAnd), typeof(JsonQueryLogicalAnd)), false);
-            cases.Add((typeof(JsonQueryLogicalAnd), typeof(JsonQueryLogicalOr)), false);
-            cases.Add((typeof(JsonQueryLogicalAnd), typeof(JsonQueryPath)), false);
-            cases.Add((typeof(JsonQueryLogicalOr), null), false);
-            cases.Add((typeof(JsonQueryLogicalOr), typeof(JsonQueryFilter)), true);
-            cases.Add((typeof(JsonQueryLogicalOr), typeof(JsonQueryLogicalAnd)), false);
-            cases.Add((typeof(JsonQueryLogicalOr), typeof(JsonQueryLogicalOr)), false);
-            cases.Add((typeof(JsonQueryLogicalOr), typeof(JsonQueryPath)), false);
-            cases.Add((typeof(JsonQueryPath), null), false);
-            cases.Add((typeof(JsonQueryPath), typeof(JsonQueryFilter)), true);
-            cases.Add((typeof(JsonQueryPath), typeof(JsonQueryLogicalAnd)), false);
-            cases.Add((typeof(JsonQueryPath), typeof(JsonQueryLogicalOr)), false);
-            cases.Add((typeof(JsonQueryPath), typeof(JsonQueryPath)), true);
-        }
-
-
-
+  
         [TestMethod]
-        public void TestThrowIfNotValid()
+        [DynamicData(nameof(GetTestCases))]
+        public void TestThrowIfNotValid(IJsonQueryExpression? first, IJsonQueryExpression? second, bool expected)
         {
-            var getInstanceOfJsonQueryExpression = new Func<Type?,string, IJsonQueryExpression?>((Type? type, string caseName) =>
+            var getInstanceOfJsonQueryExpression = new Func<Type?, string, IJsonQueryExpression?>((Type? type, string caseName) =>
             {
                 return type switch
                 {
                     null => null,
-                    Type t when t == typeof(JsonQueryFilter) => new Mock<IJsonQueryFilterExpression>().Object, // new JsonQueryFilter(caseName, JsonQueryFilterOperators.Eq, caseName),
-                    Type t when t == typeof(JsonQueryLogicalAnd) => new Mock<IJsonQueryLogicalExpression>().Object, // new JsonQueryLogicalAnd(),
-                    Type t when t == typeof(JsonQueryLogicalOr) => new Mock<IJsonQueryLogicalExpression>().Object, // new JsonQueryLogicalOr(),
-                    Type t when t == typeof(JsonQueryPath) => new Mock<IJsonQueryPathExpression>().Object, // new JsonQueryPath(caseName),
+                    Type t when t == typeof(JsonQueryFilter) => new Mock<IJsonQueryFilterExpression>().Object,
+                    Type t when t == typeof(JsonQueryLogicalAnd) => new Mock<IJsonQueryLogicalExpression>().Object,
+                    Type t when t == typeof(JsonQueryLogicalOr) => new Mock<IJsonQueryLogicalExpression>().Object,
+                    Type t when t == typeof(JsonQueryPath) => new Mock<IJsonQueryPathExpression>().Object,
                     _ => throw new NotImplementedException($"Type {type} is not implemented.")
                 };
             });
 
-            var cases = this.cases
-                .Select((kvp) => new { First = getInstanceOfJsonQueryExpression(kvp.Key.Item1, $"Case_{kvp.Key.Item1}_{kvp.Key.Item2}"), Second = getInstanceOfJsonQueryExpression(kvp.Key.Item2, $"Case_{kvp.Key.Item2}_{kvp.Key.Item1}"), Expected = kvp.Value });
-        
             var underTest = new ThrowIfNotValidConsecutiveJsonQueryExpressions();
-            foreach (var testCase in cases)
+            if (!expected)
             {
-                if (!testCase.Expected)
-                {
-                    Assert.Throws<ArgumentException>(() => underTest.ThrowIfNotValid(testCase.First, testCase.Second));
-                }
-                else
-                {
-                    underTest.ThrowIfNotValid(testCase.First, testCase.Second);
-                }
+                Assert.Throws<ArgumentException>(() => underTest.ThrowIfNotValid(first, second));
             }
+            else
+            {
+                underTest.ThrowIfNotValid(first, second);
+            }
+        }
+
+        private static IEnumerable<(IJsonQueryExpression? first, IJsonQueryExpression? second, bool expected)> GetTestCases()
+        {
+
+            yield return (null, null, false);
+            yield return (null,new Mock<IJsonQueryFilterExpression>().Object, true);
+            yield return (null, new Mock<IJsonQueryLogicalExpression>().Object, false);
+            yield return (null, new Mock<IJsonQueryLogicalExpression>().Object, false);
+            yield return (null, new Mock<IJsonQueryPathExpression>().Object, true);
+            yield return (new Mock<IJsonQueryFilterExpression>().Object, null, false);
+            yield return (new Mock<IJsonQueryFilterExpression>().Object, new Mock<IJsonQueryFilterExpression>().Object, false);
+            yield return (new Mock<IJsonQueryFilterExpression>().Object, new Mock<IJsonQueryLogicalExpression>().Object, true);
+            yield return (new Mock<IJsonQueryFilterExpression>().Object, new Mock<IJsonQueryLogicalExpression>().Object, true);
+            yield return (new Mock<IJsonQueryFilterExpression>().Object, new Mock<IJsonQueryPathExpression>().Object, true);
+            yield return (new Mock<IJsonQueryLogicalExpression>().Object, null, false);
+            yield return (new Mock<IJsonQueryLogicalExpression>().Object, new Mock<IJsonQueryFilterExpression>().Object, true);
+            yield return (new Mock<IJsonQueryLogicalExpression>().Object, new Mock<IJsonQueryLogicalExpression>().Object, false);
+            yield return (new Mock<IJsonQueryLogicalExpression>().Object, new Mock<IJsonQueryLogicalExpression>().Object, false);
+            yield return (new Mock<IJsonQueryLogicalExpression>().Object, new Mock<IJsonQueryPathExpression>().Object, false);
+            yield return (new Mock<IJsonQueryLogicalExpression>().Object, null, false);
+            yield return (new Mock<IJsonQueryLogicalExpression>().Object, new Mock<IJsonQueryFilterExpression>().Object, true);
+            yield return (new Mock<IJsonQueryLogicalExpression>().Object, new Mock<IJsonQueryLogicalExpression>().Object, false);
+            yield return (new Mock<IJsonQueryLogicalExpression>().Object, new Mock<IJsonQueryLogicalExpression>().Object, false);
+            yield return (new Mock<IJsonQueryLogicalExpression>().Object, new Mock<IJsonQueryPathExpression>().Object, false);
+            yield return (new Mock<IJsonQueryPathExpression>().Object, null, false);
+            yield return (new Mock<IJsonQueryPathExpression>().Object, new Mock<IJsonQueryFilterExpression>().Object, true);
+            yield return (new Mock<IJsonQueryPathExpression>().Object, new Mock<IJsonQueryLogicalExpression>().Object, false);
+            yield return (new Mock<IJsonQueryPathExpression>().Object, new Mock<IJsonQueryLogicalExpression>().Object, false);
+            yield return (new Mock<IJsonQueryPathExpression>().Object, new Mock<IJsonQueryPathExpression>().Object, true);
         }
     }
 }
