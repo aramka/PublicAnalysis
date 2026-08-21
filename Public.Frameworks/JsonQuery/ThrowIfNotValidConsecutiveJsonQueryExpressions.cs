@@ -38,11 +38,25 @@ namespace Public.Frameworks.JsonQuery
         }
         public void ThrowIfNotValid(IJsonQueryExpression? current, IJsonQueryExpression? next)
         {
-            var key = (current?.GetType(), next?.GetType());
-            if (!cases.TryGetValue(key, out bool expected) || !expected)
+            Type? t1 = GetExpressionType(current);
+            Type? t2 = GetExpressionType(next);
+
+            if (!cases.TryGetValue((t1, t2), out bool expected) || !expected)
             {
                 throw new ArgumentException($"Consecutive JSON query expressions of types '{current?.GetType().Name}' and '{next?.GetType().Name}' are not valid.");
             }
+        }
+
+        private static Type? GetExpressionType(IJsonQueryExpression? current)
+        {
+            return current switch
+            {
+                null => null,
+                IJsonQueryFilterExpression => typeof(JsonQueryFilter),
+                IJsonQueryLogicalExpression => typeof(JsonQueryLogicalAnd),
+                IJsonQueryPathExpression => typeof(JsonQueryPath),
+                _ => throw new NotImplementedException($"Type {current.GetType()} is not implemented.")
+            };
         }
     }
 }

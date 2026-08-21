@@ -1,4 +1,5 @@
-﻿using Public.Frameworks.JsonQuery;
+﻿using Moq;
+using Public.Frameworks.JsonQuery;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -39,6 +40,8 @@ namespace Public.Frameworks.Tests
             cases.Add((typeof(JsonQueryPath), typeof(JsonQueryPath)), true);
         }
 
+
+
         [TestMethod]
         public void TestThrowIfNotValid()
         {
@@ -47,10 +50,10 @@ namespace Public.Frameworks.Tests
                 return type switch
                 {
                     null => null,
-                    Type t when t == typeof(JsonQueryFilter) => new JsonQueryFilter(caseName, JsonQueryFilterOperators.Eq, caseName),
-                    Type t when t == typeof(JsonQueryLogicalAnd) => new JsonQueryLogicalAnd(),
-                    Type t when t == typeof(JsonQueryLogicalOr) => new JsonQueryLogicalOr(),
-                    Type t when t == typeof(JsonQueryPath) => new JsonQueryPath(caseName),
+                    Type t when t == typeof(JsonQueryFilter) => new Mock<IJsonQueryFilterExpression>().Object, // new JsonQueryFilter(caseName, JsonQueryFilterOperators.Eq, caseName),
+                    Type t when t == typeof(JsonQueryLogicalAnd) => new Mock<IJsonQueryLogicalExpression>().Object, // new JsonQueryLogicalAnd(),
+                    Type t when t == typeof(JsonQueryLogicalOr) => new Mock<IJsonQueryLogicalExpression>().Object, // new JsonQueryLogicalOr(),
+                    Type t when t == typeof(JsonQueryPath) => new Mock<IJsonQueryPathExpression>().Object, // new JsonQueryPath(caseName),
                     _ => throw new NotImplementedException($"Type {type} is not implemented.")
                 };
             });
