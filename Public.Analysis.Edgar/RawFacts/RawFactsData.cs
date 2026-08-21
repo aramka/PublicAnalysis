@@ -26,7 +26,7 @@ namespace Public.Analysis.Edgar.RawFacts
 
         public DataMeta Meta => new DataMeta(this.Name, [new KeyValuePair<string, Type>("Ticker", typeof(string))], DataReturnTypesEnum.UserDefined);
 
-        public RawFactsData(ITickerToCIKData tickerToCIKData, IDataQueryValidation dataQueryValidation, HttpClient http, IOptions<EdgarOptions> edgarOptions, IOptions<FactsDataOptions> factsDataOptions, Frameworks.JsonQuery.IJsonQuery queryJson)
+        public RawFactsData(ITickerToCIKData tickerToCIKData, IDataQueryValidation dataQueryValidation, HttpClient http, IOptions<EdgarOptions> edgarOptions, IOptions<FactsDataOptions> factsDataOptions, IJsonQuery queryJson)
         {
             this.tickerToCIKData = tickerToCIKData;
             this.dataQueryValidation = dataQueryValidation;

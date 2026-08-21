@@ -6,6 +6,7 @@ using Public.Analysis.Data;
 using Public.Analysis.Edgar.TickerToCIK;
 using Public.Analysis.Edgar.RawFacts;
 using Public.Analysis.Edgar.Models;
+using Public.Frameworks.JsonQuery;
 
 namespace Public.Analysis.Edgar
 {
@@ -28,6 +29,13 @@ namespace Public.Analysis.Edgar
             services.AddTransient((sp) => {
                 return sp.GetRequiredService<TickerToCIKData>() as IMustBeLoaded;
             });
+
+            services.AddSingleton<JsonQueryBuilder>();
+            services.AddSingleton<IJsonQueryBuilder>((sp) => sp.GetRequiredService<JsonQueryBuilder>());
+
+            services.AddSingleton<JsonPathJsonQuery>();
+            services.AddSingleton<IJsonQuery>((sp) => sp.GetRequiredService<JsonPathJsonQuery>());
+
             services.AddSingleton<IEnumerable<IEdgarData>>((sp) => {
 
                 return typeof(EdgarRegistrations)
