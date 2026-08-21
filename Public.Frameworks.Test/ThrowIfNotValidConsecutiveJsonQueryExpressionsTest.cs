@@ -61,7 +61,7 @@ namespace Public.Frameworks.Tests
             var underTest = new ThrowIfNotValidConsecutiveJsonQueryExpressions();
             foreach (var testCase in cases)
             {
-                if (testCase.Expected)
+                if (!testCase.Expected)
                 {
                     Assert.Throws<ArgumentException>(() => underTest.ThrowIfNotValid(testCase.First, testCase.Second));
                 }
