@@ -1,31 +1,24 @@
 ﻿using AwesomeAssertions;
+using Moq;
 using Public.Frameworks.JsonQuery;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using Moq;
+using System.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Public.Frameworks.Tests
 {
     [TestClass]
     public class JsonQueryBuilderTest
     {
-        private readonly Mock<IThrowIfNotValidConsecutiveJsonQueryExpressions> throwIfNotValidMoq;
-        private readonly JsonQueryBuilder underTest;
 
-        public JsonQueryBuilderTest() {
-
-            this.throwIfNotValidMoq = new Mock<IThrowIfNotValidConsecutiveJsonQueryExpressions>();
-            this.underTest = new JsonQueryBuilder(throwIfNotValidMoq.Object);
-
-        }
 
         [TestMethod]
         [DynamicData(nameof(GetSequencesAndOutcomes))]
         public void AsJsonPathQueryString(int i, List<IJsonQueryExpression> sequence, string expected)
         {
-            var queryBuilder = new JsonQueryBuilder(this.throwIfNotValidMoq.Object);
+            var queryBuilder = new JsonQueryBuilder();
             int j = 0;
             foreach (IJsonQueryExpression expression in sequence) { 
 
@@ -51,12 +44,6 @@ namespace Public.Frameworks.Tests
             logicalExpressionMoq.Setup(a => a.AsQueryExpressionString()).Returns("AndOr");
             var logicalAndOrExpression = logicalExpressionMoq.Object;
 
-            //var pathSequence = new List<IJsonQueryExpression> { pathExpressionMoq.Object };
-            //List<IJsonQueryExpression>  pathExpression, pathExpression = [.. pathSequence, pathExpressionMoq.Object ];
-
-            //var filterSequence = new List<IJsonQueryExpression> { filterExpressionMoq.Object };
-            //var filterLogicalSequence = new List<IJsonQueryExpression> { filterExpressionMoq.Object, logicalExpressionMoq.Object };
-
 
             yield return (1, [pathExpression],"$[Path]");//single path
             yield return (2, [pathExpression, pathExpression], "$[Path][Path]");
@@ -70,39 +57,37 @@ namespace Public.Frameworks.Tests
         }
 
         [TestMethod]
-        public void AsJsonPathQueryString_Unknown_IJsonQueryExpression()
+        [DynamicData(nameof(InvalidSequences))]
+        public void AddExpression_InvalidSequences(IEnumerable<IJsonQueryExpression?> invalidSequence)
         {
-            var queryBuilder = this.underTest;
-            var expressions = Enumerable.Range(1, 5).Select((i) => { var expressionMoq = new Mock<IJsonQueryExpression>(); expressionMoq.Setup(a => a.AsQueryExpressionString()).Returns($"Expression_{i}"); return expressionMoq.Object; });
-
-            foreach(IJsonQueryExpression expression in expressions) { queryBuilder = queryBuilder.AddExpression(expression); }
-
-            Assert.Throws<InvalidOperationException>(() => this.underTest.AsJsonPathQueryString());
-
-        }
-        [TestMethod]
-        public void AddExpression_CallsValidator()
-        {
-            var first = new Mock<IJsonQueryFilterExpression>();
-            var second = new Mock<IJsonQueryFilterExpression>();
-            ArgumentException expectedException = new ArgumentException();
-            this.throwIfNotValidMoq.Setup(a => a.ThrowIfNotValid(first.Object, second.Object)).Throws(expectedException);
-
-            this.underTest.AddExpression(first.Object);
+            var queryBuilder = new JsonQueryBuilder();
             ArgumentException actual = null;
             try
             {
-                underTest.AddExpression(second.Object);
-            }
-            catch (ArgumentException ex) {
+                foreach (var expression in invalidSequence)
+                {
+                    queryBuilder.AddExpression(expression);
+                }
 
+            }
+            catch (ArgumentException ex)
+            {
                 actual = ex;
             }
 
-            actual.Should().Be(expectedException);
+            Assert.IsNotNull(actual);
 
-            this.throwIfNotValidMoq.Verify(a => a.ThrowIfNotValid(It.IsAny<IJsonQueryExpression>(), It.IsAny<IJsonQueryExpression>()), Times.Exactly(2));
+        }
 
+        public static IEnumerable<IEnumerable<IJsonQueryExpression?>> InvalidSequences()
+        {
+            yield return new IJsonQueryExpression?[] { null };
+            yield return new IJsonQueryExpression?[] { new Mock<IJsonQueryFilterExpression>().Object, null };
+            yield return new IJsonQueryExpression?[] { new Mock<IJsonQueryFilterExpression>().Object, new Mock<IJsonQueryFilterExpression>().Object };
+            yield return new IJsonQueryExpression?[] { new Mock<IJsonQueryLogicalExpression>().Object };
+            yield return new IJsonQueryExpression?[] { new Mock<IJsonQueryPathExpression>().Object, null };
+            yield return new IJsonQueryExpression?[] { new Mock<IJsonQueryPathExpression>().Object, new Mock<IJsonQueryLogicalExpression>().Object };
+            yield return new IJsonQueryExpression?[] { new Mock<IJsonQueryExpression>().Object };
         }
         
     }

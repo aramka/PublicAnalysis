@@ -10,7 +10,7 @@ namespace Public.Frameworks.JsonQuery
         private readonly IThrowIfNotValidConsecutiveJsonQueryExpressions throwIfNotValid;
         private List<IJsonQueryExpression> expressions = new List<IJsonQueryExpression>();
 
-        public JsonQueryBuilder(IThrowIfNotValidConsecutiveJsonQueryExpressions throwIfNotValidConsecutiveExpressions)
+        public JsonQueryBuilder()
         {
             this.throwIfNotValid = new ThrowIfNotValidConsecutiveJsonQueryExpressions(); // throwIfNotValidConsecutiveExpressions;
         }

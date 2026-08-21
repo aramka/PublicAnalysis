@@ -46,7 +46,7 @@ namespace Public.Frameworks.JsonQuery
                 IJsonQueryFilterExpression => typeof(IJsonQueryFilterExpression),
                 IJsonQueryLogicalExpression => typeof(IJsonQueryLogicalExpression),
                 IJsonQueryPathExpression => typeof(IJsonQueryPathExpression),
-                _ => throw new NotImplementedException($"Type {current.GetType()} is not implemented.")
+                _ => throw new ArgumentException($"Type {current.GetType()} is not supported.")
             };
         }
     }
