@@ -10,30 +10,21 @@ namespace Public.Frameworks.JsonQuery
         public ThrowIfNotValidConsecutiveJsonQueryExpressions() {
 
             cases.Add((null, null), false);
-            cases.Add((null, typeof(JsonQueryFilter)), true);
-            cases.Add((null, typeof(JsonQueryLogicalAnd)), false);
-            cases.Add((null, typeof(JsonQueryLogicalOr)), false);
-            cases.Add((null, typeof(JsonQueryPath)), true);
-            cases.Add((typeof(JsonQueryFilter), null), false);
-            cases.Add((typeof(JsonQueryFilter), typeof(JsonQueryFilter)), false);
-            cases.Add((typeof(JsonQueryFilter), typeof(JsonQueryLogicalAnd)), true);
-            cases.Add((typeof(JsonQueryFilter), typeof(JsonQueryLogicalOr)), true);
-            cases.Add((typeof(JsonQueryFilter), typeof(JsonQueryPath)), true);
-            cases.Add((typeof(JsonQueryLogicalAnd), null), false);
-            cases.Add((typeof(JsonQueryLogicalAnd), typeof(JsonQueryFilter)), true);
-            cases.Add((typeof(JsonQueryLogicalAnd), typeof(JsonQueryLogicalAnd)), false);
-            cases.Add((typeof(JsonQueryLogicalAnd), typeof(JsonQueryLogicalOr)), false);
-            cases.Add((typeof(JsonQueryLogicalAnd), typeof(JsonQueryPath)), false);
-            cases.Add((typeof(JsonQueryLogicalOr), null), false);
-            cases.Add((typeof(JsonQueryLogicalOr), typeof(JsonQueryFilter)), true);
-            cases.Add((typeof(JsonQueryLogicalOr), typeof(JsonQueryLogicalAnd)), false);
-            cases.Add((typeof(JsonQueryLogicalOr), typeof(JsonQueryLogicalOr)), false);
-            cases.Add((typeof(JsonQueryLogicalOr), typeof(JsonQueryPath)), false);
-            cases.Add((typeof(JsonQueryPath), null), false);
-            cases.Add((typeof(JsonQueryPath), typeof(JsonQueryFilter)), true);
-            cases.Add((typeof(JsonQueryPath), typeof(JsonQueryLogicalAnd)), false);
-            cases.Add((typeof(JsonQueryPath), typeof(JsonQueryLogicalOr)), false);
-            cases.Add((typeof(JsonQueryPath), typeof(JsonQueryPath)), true);
+            cases.Add((null, typeof(IJsonQueryFilterExpression)), true);
+            cases.Add((null, typeof(IJsonQueryLogicalExpression)), false);
+            cases.Add((null, typeof(IJsonQueryPathExpression)), true);
+            cases.Add((typeof(IJsonQueryFilterExpression), null), false);
+            cases.Add((typeof(IJsonQueryFilterExpression), typeof(IJsonQueryFilterExpression)), false);
+            cases.Add((typeof(IJsonQueryFilterExpression), typeof(IJsonQueryLogicalExpression)), true);
+            cases.Add((typeof(IJsonQueryFilterExpression), typeof(IJsonQueryPathExpression)), true);
+            cases.Add((typeof(IJsonQueryLogicalExpression), null), false);
+            cases.Add((typeof(IJsonQueryLogicalExpression), typeof(IJsonQueryFilterExpression)), true);
+            cases.Add((typeof(IJsonQueryLogicalExpression), typeof(IJsonQueryLogicalExpression)), false);
+            cases.Add((typeof(IJsonQueryLogicalExpression), typeof(IJsonQueryPathExpression)), false);
+            cases.Add((typeof(IJsonQueryPathExpression), null), false);
+            cases.Add((typeof(IJsonQueryPathExpression), typeof(IJsonQueryFilterExpression)), true);
+            cases.Add((typeof(IJsonQueryPathExpression), typeof(IJsonQueryLogicalExpression)), false);
+            cases.Add((typeof(IJsonQueryPathExpression), typeof(IJsonQueryPathExpression)), true);
 
         }
         public void ThrowIfNotValid(IJsonQueryExpression? current, IJsonQueryExpression? next)
@@ -52,9 +43,9 @@ namespace Public.Frameworks.JsonQuery
             return current switch
             {
                 null => null,
-                IJsonQueryFilterExpression => typeof(JsonQueryFilter),
-                IJsonQueryLogicalExpression => typeof(JsonQueryLogicalAnd),
-                IJsonQueryPathExpression => typeof(JsonQueryPath),
+                IJsonQueryFilterExpression => typeof(IJsonQueryFilterExpression),
+                IJsonQueryLogicalExpression => typeof(IJsonQueryLogicalExpression),
+                IJsonQueryPathExpression => typeof(IJsonQueryPathExpression),
                 _ => throw new NotImplementedException($"Type {current.GetType()} is not implemented.")
             };
         }
