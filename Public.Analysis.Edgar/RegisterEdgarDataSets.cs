@@ -23,10 +23,14 @@ namespace Public.Analysis.Edgar
             services.Configure<FactsDataOptions>(configuration.GetSection(GetSectionName(nameof(FactsDataOptions))));
 
             services.AddSingleton<HttpClient>();
+            
             services.AddSingleton<RawFactsData>();
+            services.AddSingleton<IEdgarData>((sp) => sp.GetRequiredService<RawFactsData>());
+
             services.AddSingleton<TickerToCIKData>();
             services.AddSingleton<ITickerToCIKData>((sp) => sp.GetRequiredService<TickerToCIKData>());
-            services.AddTransient((sp) => {
+            services.AddSingleton<IEdgarData>((sp) => sp.GetRequiredService<TickerToCIKData>());
+            services.AddSingleton((sp) => {
                 return sp.GetRequiredService<TickerToCIKData>() as IMustBeLoaded;
             });
 
@@ -36,17 +40,6 @@ namespace Public.Analysis.Edgar
             services.AddSingleton<JsonPathJsonQuery>();
             services.AddSingleton<IJsonQuery>((sp) => sp.GetRequiredService<JsonPathJsonQuery>());
 
-            services.AddSingleton<IEnumerable<IEdgarData>>((sp) => {
-
-                return typeof(EdgarRegistrations)
-                .Assembly
-                .GetTypes()
-                .Where(t => typeof(IEdgarData).IsAssignableFrom(t) && t.IsClass)
-                .Select(t =>
-                {
-                    return sp.GetRequiredService(t) as IEdgarData;
-                }).ToList()!;
-            });
             services.AddTransient<IDataSet, EdgarDataSet>();
             return services;
         }
