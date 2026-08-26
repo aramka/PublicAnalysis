@@ -1,21 +1,14 @@
 ﻿namespace Public.Analysis.Console
 {
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Public.Frameworks.Initialization;
     using Public.Analysis.Data;
     using Public.Analysis.Edgar;
-    using System;
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Text;
-    using System.Text.Json;
-
+    using Microsoft.OpenApi.Models;
     internal class AspNetWebApi
     {
         internal static async Task StartWebApi(string[] args)
@@ -30,14 +23,15 @@
             webBuilder.Services.AddSwaggerGen();
 
             var app = webBuilder.Build();
-            if (app.Environment.IsDevelopment())
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Public.Analysis API V1");
+                c.RoutePrefix = string.Empty; // serve UI at "/"
+            });
             app.MapControllers();
 
-             // --- existing startup work (unchanged) ---
+            // --- existing startup work (unchanged) ---
             var mustBeLoaded = serviceProvider.GetRequiredService<IEnumerable<IMustBeLoaded>>();
 
             foreach (var iMustBeLoaded in mustBeLoaded)
@@ -47,7 +41,7 @@
 
             await app.RunAsync();
 
-           
+
 
             // graceful shutdown of web host
             await app.StopAsync();
