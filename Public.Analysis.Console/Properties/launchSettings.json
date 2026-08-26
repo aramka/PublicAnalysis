@@ -1,8 +1,11 @@
 {
   "profiles": {
-    "Public.Analysis.StartWebApi": {
+    "Public.Analysis.AspNetWebApi": {
       "commandName": "Project",
       "commandLineArgs": "StartWebApi"
+    },
+    "Public.Analysis.InteractiveConsoleApp": {
+      "commandName": "Project"
     }
   }
 }
