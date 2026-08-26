@@ -1,6 +1,6 @@
 ﻿
 namespace Public.Analysis.Console
-{
+{ 
     using System.Collections;
     using System.Text.Json;
     using Microsoft.Extensions.Configuration;
@@ -11,101 +11,25 @@ namespace Public.Analysis.Console
     using Public.Analysis.Data;
     using Public.Analysis.Edgar;
     using Console = System.Console;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.AspNetCore.Mvc;
 
     public class Program
     {
 
         public static async Task Main(string[] args)
         {
-            var serviceProvider = Startup();
-
-            var mustBeLoaded = serviceProvider.GetRequiredService<IEnumerable<IMustBeLoaded>>();
-
-            foreach (var iMustBeLoaded in mustBeLoaded)
+            if (args.Any())
             {
-                await iMustBeLoaded.Load();
-            }
-
-            var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
-            var dataSets = serviceProvider.GetRequiredService<Dictionary<string, IDataSet>>();
-
-            string prompt = $"Enter a path or type quit to stop:";
-            Console.WriteLine(prompt);
-
-            string? path = Console.ReadLine();
-            IDataSet? dataSet = null;
-
-            while (path?.ToLower() is not null && path is not "quit")
-            {
-                try
-                {
-                    var segments = path.Split('/');
-
-                    if (!segments.Any())
-                    {
-
-                    }
-                    else if (segments[0] == "datasets")
-                    {
-                        if (segments.Length == 1) //show me all the datasets
-                        {
-                            Console.WriteLine($"{JsonSerializer.Serialize(dataSets.Select(kvp => kvp.Key))}");
-                        }
-                        else if (segments.Length == 2 && dataSets.TryGetValue(segments[1], out dataSet)) //show info about the datas available in a particular dataset
-                        {
-                            Console.WriteLine(JsonSerializer.Serialize(dataSet.MetaData));
-                        }
-                        else if (dataSet is not null && dataSet[segments[2]] is not null) //show me the data for a particular datasets data
-                        {
-                            var restOfPath = segments[3..];
-                            var dataSetQuery = new DataQuery(restOfPath);
-                            IEnumerable data = await dataSet[segments[2]]!.Query(dataSetQuery);
-
-                            Console.WriteLine(JsonSerializer.Serialize(data));
-                        }
-
-                    }
-                    
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, ex.Message);
-                }
-
-                Console.WriteLine(prompt);
-
-                path = Console.ReadLine();
 
             }
-            serviceProvider.Dispose();
+            else
+            {
+                await InteractiveConsoleApp.StartConsole();
+            }
         }
 
-        static ServiceProvider Startup()
-        {
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
-
-
-            var services = new ServiceCollection();
-
-            services.AddLogging(builder =>
-            {
-                builder.AddConsole();
-                builder.AddConfiguration(configuration.GetSection("Logging"));
-            });
-
-            services.AddSingleton<IConfiguration>(configuration);
-            services.RegisterEdgarDataSet(configuration);
-            services.AddSingleton(provider =>
-            {
-                var dataSets = provider.GetRequiredService<IEnumerable<IDataSet>>().ToDictionary(ds => ds.Name);
-                return dataSets;
-            });
-
-            return services.BuildServiceProvider();
-        }
     }
 }
