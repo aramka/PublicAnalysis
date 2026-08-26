@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Public.Analysis.StartWebApi": {
+      "commandName": "Project",
+      "commandLineArgs": "StartWebApi"
+    }
+  }
+}

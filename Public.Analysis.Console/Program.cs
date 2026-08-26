@@ -23,7 +23,7 @@ namespace Public.Analysis.Console
         {
             if (args.Any())
             {
-
+                await AspNetWebApi.StartWebApi(args);
             }
             else
             {
