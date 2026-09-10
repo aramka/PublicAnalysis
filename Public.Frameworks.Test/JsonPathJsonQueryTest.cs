@@ -13,8 +13,8 @@ namespace Public.Frameworks.Tests
         [TestMethod]
         public void Query_Null_Node_Throws()
         {
-            Mock<IJsonQueryBuilder> queryBuilderMoq = new Mock<IJsonQueryBuilder>();
-            JsonPathJsonQuery underTest = new JsonPathJsonQuery(queryBuilderMoq.Object);
+            Mock<IJsonQueryBuilderFactory> queryBuilderFactoryMoq = new Mock<IJsonQueryBuilderFactory>();
+            JsonPathJsonQuery underTest = new JsonPathJsonQuery(queryBuilderFactoryMoq.Object);
 
 
             Assert.Throws<ArgumentNullException>(() => underTest.Query(null, Enumerable.Empty<IJsonQueryExpression>()));

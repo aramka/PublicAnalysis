@@ -8,15 +8,18 @@ namespace Public.Frameworks.JsonQuery
 {
     public class JsonPathJsonQuery : IJsonQuery
     {
-        private readonly IJsonQueryBuilder queryBuilder;
+        private readonly IJsonQueryBuilderFactory queryBuilderFactory;
 
-        public JsonPathJsonQuery(IJsonQueryBuilder queryBuilder)
+        public JsonPathJsonQuery(IJsonQueryBuilderFactory queryBuilderFactory)
         {
-            this.queryBuilder = queryBuilder;
+            this.queryBuilderFactory = queryBuilderFactory;
         }
 
         public IEnumerable<JsonNode> Query(JsonNode jsonNode, IEnumerable<IJsonQueryExpression> jsonQueryExpressions)
         {
+            if(jsonNode is null) throw new ArgumentNullException(nameof(jsonNode));
+
+            var queryBuilder = queryBuilderFactory.Create();
             var queryString = queryBuilder.AddExpressions(jsonQueryExpressions).AsJsonPathQueryString();
 
             JsonPath jsonPath = JsonPath.Parse(queryString);

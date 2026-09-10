@@ -34,8 +34,8 @@ namespace Public.Analysis.Edgar
                 return sp.GetRequiredService<TickerToCIKData>() as IMustBeLoaded;
             });
 
-            services.AddSingleton<JsonQueryBuilder>();
-            services.AddSingleton<IJsonQueryBuilder>((sp) => sp.GetRequiredService<JsonQueryBuilder>());
+            services.AddSingleton<JsonQueryBuilderFactory>();
+            services.AddSingleton<IJsonQueryBuilderFactory>((sp) => sp.GetRequiredService<JsonQueryBuilderFactory>());
 
             services.AddSingleton<JsonPathJsonQuery>();
             services.AddSingleton<IJsonQuery>((sp) => sp.GetRequiredService<JsonPathJsonQuery>());
