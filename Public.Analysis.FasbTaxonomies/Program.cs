@@ -129,15 +129,43 @@ namespace Public.Analysis.FasbTaxonomies
         }
 
         /*
+         * <link:linkbase xmlns:link='http://www.xbrl.org/2003/linkbase' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='http://www.xbrl.org/2003/linkbase http://www.xbrl.org/2003/xbrl-linkbase-2003-12-31.xsd'>
+         * linkbase element
+         *      namespace must be link
+         *      must have exactly 2 types of elements: roleRef and presentationLink
+         * <link:roleRef roleURI='http://fasb.org/us-gaap/role/statement/StatementOfIncome' xlink:href='../elts/us-roles-2026.xsd#soi' xlink:type='simple' />
+         * roleRef element
+         *      namespace must be link
+         *      must have exactly 3 attributes: roleURI, xlink:href, xlink:type
+         *      attribute values:
+         *          roleURI:
+         *              must be a valid URI
+         *              must be of the form http://fasb.org/us-gaap/role/statement/{statement_name}
+         *              must be unique across all roleRef elements in the same linkbase
+         *          xlink:href:
+         *              must be a valid URI
+         *              must be of the form {definitionXsdUri}#{eltsXsElementId}
+         *                  definitionXsdUri must be found in the elts by Uri dictionary
+         *                  eltsXsElementId must be found in the elts by Uri dictionary's dictionary of eltsXsElementIds
+         *          xlink:type:
+         *              must be 'simple'
+         * <link:presentationLink xlink:role='http://fasb.org/us-gaap/role/statement/StatementOfIncome' xlink:type='extended'>
+         * presentationLink element
+         *      must have exactly 2 types of elements: loc and presentationArc
+         *      must have exactly 2 attributes: xlink:role, xlink:type
+         *      attribute values:
+         *          role:
+         *              must be a valid URI
+         *              must be in the roleUri dictionary
          * <link:loc xlink:href='../elts/us-gaap-2026.xsd#us-gaap_IncomeStatementAbstract' xlink:label='loc_IncomeStatementAbstract' xlink:type='locator' />
          * loc element
          *      namespace must be link
          *      must have exactly 3 attributes: xlink:href, xlink:label, xlink:type
          *      attribute values:
          *          xlink:href:
-         *              must be of the form {definitionXsdUri}#{definitionXsdElementId}
-         *              definitionXsdUri must be found in the set of known definitionXsdUris
-         *              definitionXsdElementId must be found in the definitionXsdUri's set of known definitionXsdElementIds
+         *              must be of the form {definitionXsdUri}#{eltsXsElementId}
+         *                  definitionXsdUri must be found in the elts by Uri dictionary
+         *                  eltsXsElementId must be found in the elts by Uri dictionary's dictionary of eltsXsElementIds
          *              must be unique across all loc elements in the same presentationLink
          *          xlink:label:
          *              must have at least one item in the link:presentationArc dictionary whose xlink:from or xlink:to attribute value matches the xlink:label attribute value
@@ -158,6 +186,7 @@ namespace Public.Analysis.FasbTaxonomies
          *              must have a corresponding xlink:label in a <link:loc> element
          *          xlink:to:
          *              must have a corresponding xlink:label in a <link:loc> element
+         *              must be unique across all <link:presentationArc> elements in the same <link:presentationLink>
          *          xlink:type:
          *              must be 'arc'
          */
