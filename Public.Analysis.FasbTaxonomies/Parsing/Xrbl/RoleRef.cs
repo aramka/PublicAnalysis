@@ -42,7 +42,7 @@ namespace Public.Analysis.FasbTaxonomies.Parsing.Xrbl
             {
                 if (this.roleUri is null)
                 {
-                    string roleUriString = this.roleRefElement.GetAttributeValue(LocalNamesAndPrefixes.RoleUri);
+                    string roleUriString = this.roleRefElement.GetAttributeValue(LocalNamesAndPrefixes.RoleUriAttribute);
                     this.roleUri = new Uri(roleUriString);
                 }
                 return this.roleUri;
@@ -55,7 +55,7 @@ namespace Public.Analysis.FasbTaxonomies.Parsing.Xrbl
             {
                 if (this.xLinkType is null)
                 {
-                    this.xLinkType = this.roleRefElement.GetAttributeValue(LocalNamesAndPrefixes.Type, LocalNamesAndPrefixes.XLinkPrefix, this.nameSpaces);
+                    this.xLinkType = this.roleRefElement.GetAttributeValue(LocalNamesAndPrefixes.TypeAttribute, LocalNamesAndPrefixes.XLinkPrefix, this.nameSpaces);
                 }
                 return this.xLinkType;
             }

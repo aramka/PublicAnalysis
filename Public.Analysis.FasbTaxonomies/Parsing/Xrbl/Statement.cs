@@ -40,7 +40,7 @@ namespace Public.Analysis.FasbTaxonomies.Parsing.Xrbl
                     return this.presentationLink;
                 }
 
-                var xElement = this.statementDoc.GetDescendant(LocalNamesAndPrefixes.PresentationLink, LocalNamesAndPrefixes.LinkPrefix, this.namespacesByPrefix);
+                var xElement = this.statementDoc.GetDescendant(LocalNamesAndPrefixes.PresentationLinkElement, LocalNamesAndPrefixes.LinkPrefix, this.namespacesByPrefix);
                 this.presentationLink = new PresentationLink(xElement, this.namespacesByPrefix);
                 return this.presentationLink;
             }

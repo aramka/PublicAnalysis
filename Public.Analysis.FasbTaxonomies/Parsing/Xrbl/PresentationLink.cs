@@ -41,7 +41,7 @@ namespace Public.Analysis.FasbTaxonomies.Parsing.Xrbl
                     return this.xLinkTypeAttributeValue;
                 }
 
-                this.xLinkTypeAttributeValue = this.presentationLinkElement.GetAttributeValue(LocalNamesAndPrefixes.Type, LocalNamesAndPrefixes.XLinkPrefix, this.nameSpacesByPrefix);
+                this.xLinkTypeAttributeValue = this.presentationLinkElement.GetAttributeValue(LocalNamesAndPrefixes.TypeAttribute, LocalNamesAndPrefixes.XLinkPrefix, this.nameSpacesByPrefix);
                 return this.xLinkTypeAttributeValue;
             }
         }

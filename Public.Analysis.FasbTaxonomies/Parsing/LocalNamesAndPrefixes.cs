@@ -14,11 +14,11 @@ namespace Public.Analysis.FasbTaxonomies.Parsing
 
         public const string HRefAttribute = "href";
 
-        public const string RoleUri = "roleURI";
+        public const string RoleUriAttribute = "roleURI";
 
-        public const string Type = "type";
+        public const string TypeAttribute = "type";
 
-        public const string PresentationLink = "presentationLink";
+        public const string PresentationLinkElement = "presentationLink";
 
         public static string RoleAttribute = "role";
     }
