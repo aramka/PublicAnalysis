@@ -39,11 +39,10 @@ namespace Public.Analysis.FasbTaxonomies.XmlLinq
         }
         private static XNamespace GetExpandedNameSpaceForPrefix(this XContainer xElement, string prefix, IReadOnlyDictionary<string, XNamespace>? nameSpaces)
         {
-            if(nameSpaces is null)
+            if (nameSpaces is null || !nameSpaces.TryGetValue(prefix, out XNamespace? ns))
             {
                 return XNamespace.None;
             }
-            XNamespace ns = nameSpaces.TryGetValue(prefix, out XNamespace? v) switch { true => v, _ => XNamespace.None };
             return ns;
         }
     }

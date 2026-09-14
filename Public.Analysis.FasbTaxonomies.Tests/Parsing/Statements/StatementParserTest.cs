@@ -16,9 +16,9 @@ namespace Public.Analysis.FasbTaxonomies.Parsing.Statements
         public void RoleRefTest()
         {
 
-            var statementParser = new StatementParser(FasbXmlElements.StatementDoc, FasbXmlElements.NameSpacesByPrefix);
+            var statementParser = new Statement(FasbXmlElements.StatementDoc, FasbXmlElements.NameSpacesByPrefix);
 
-            var roleRef = statementParser.RoleRef();
+            var roleRef = statementParser.RoleRef;
 
             var expectedRoleRef = new RoleRef(FasbXmlElements.RoleRefElement, FasbXmlElements.NameSpacesByPrefix);
 
@@ -30,9 +30,9 @@ namespace Public.Analysis.FasbTaxonomies.Parsing.Statements
         {
             var statement = FasbXmlElements.StatementDoc;
             statement.Descendants(FasbXmlElements.NameSpacesByPrefix["link"] + "roleRef").Remove();
-            var statementParser = new StatementParser(statement, FasbXmlElements.NameSpacesByPrefix);
+            var statementParser = new Statement(statement, FasbXmlElements.NameSpacesByPrefix);
 
-            Assert.ThrowsExactly<InvalidOperationException>(()=>statementParser.RoleRef());
+            Assert.ThrowsExactly<InvalidOperationException>(()=>statementParser.RoleRef);
         }
         [TestMethod]
         public void PresentationLinkTest()
