@@ -10,44 +10,55 @@ namespace Public.Analysis.FasbTaxonomies.Parsing.Xrbl
     public class RoleRef
     {
         private XElement roleRefElement;
+        private readonly IReadOnlyDictionary<string, XNamespace>? nameSpaces;
         private HRef? hRef=null;
         private Uri? roleUri=null;
         private string? xLinkType=null;
 
-        public RoleRef(XElement roleRefElement)
+        public RoleRef(XElement roleRefElement, IReadOnlyDictionary<string, XNamespace>? nameSpaces = null)
         {
             this.roleRefElement = roleRefElement;
+            this.nameSpaces = nameSpaces;
         }
 
-        public HRef HRef(IReadOnlyDictionary<string, XNamespace>? nameSpaces = null)
+        public HRef HRef
         {
-            if (this.hRef is null)
+            get
             {
+                if (this.hRef is null)
+                {
 
-                string href = this.roleRefElement.GetAttributeValue("href", "xlink", nameSpaces);
-                this.hRef = new HRef(href);
+                    string href = this.roleRefElement.GetAttributeValue("href", "xlink", this.nameSpaces);
+                    this.hRef = new HRef(href);
+                }
+
+                return this.hRef;
             }
-
-            return this.hRef;
         }
 
-        public Uri RoleUri()
+        public Uri RoleUri
         {
-            if (this.roleUri is null)
+            get
             {
-                string roleUriString = this.roleRefElement.GetAttributeValue("roleURI");
-                this.roleUri = new Uri(roleUriString);
+                if (this.roleUri is null)
+                {
+                    string roleUriString = this.roleRefElement.GetAttributeValue("roleURI");
+                    this.roleUri = new Uri(roleUriString);
+                }
+                return this.roleUri;
             }
-            return this.roleUri;
         }
 
-        public string XLinkType(IReadOnlyDictionary<string, XNamespace>? nameSpaces = null)
+        public string XLinkType
         {
-            if (this.xLinkType is null)
+            get
             {
-                this.xLinkType = this.roleRefElement.GetAttributeValue("type", "xlink", nameSpaces);
+                if (this.xLinkType is null)
+                {
+                    this.xLinkType = this.roleRefElement.GetAttributeValue("type", "xlink", this.nameSpaces);
+                }
+                return this.xLinkType;
             }
-            return this.xLinkType;
         }
 
     }

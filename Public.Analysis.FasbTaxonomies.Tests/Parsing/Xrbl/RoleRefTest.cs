@@ -14,9 +14,9 @@ namespace Public.Analysis.FasbTaxonomies.Parsing.Xrbl
         [TestMethod]
         public void RoleUriTest()
         {
-            var roleRefElement = new RoleRef(FasbXmlElements.RoleRefElement);
+            var roleRefElement = new RoleRef(FasbXmlElements.RoleRefElement, FasbXmlElements.NameSpacesByPrefix);
             var expectedRoleUri = new Uri("http://fasb.org/us-gaap/role/statement/StatementOfCashFlowsIndirectDepositBasedOperations");
-            var actualRoleUri = roleRefElement.RoleUri();
+            var actualRoleUri = roleRefElement.RoleUri;
             Assert.AreEqual(expectedRoleUri, actualRoleUri);
         }
         [TestMethod]
@@ -25,14 +25,14 @@ namespace Public.Analysis.FasbTaxonomies.Parsing.Xrbl
             var roleRefElement =  FasbXmlElements.RoleRefElement;
             roleRefElement.Attribute("roleURI")!.Remove();
 
-            var roleRef = new RoleRef(roleRefElement);
-            Assert.Throws<InvalidOperationException>(() => roleRef.RoleUri());
+            var roleRef = new RoleRef(roleRefElement, FasbXmlElements.NameSpacesByPrefix);
+            Assert.Throws<InvalidOperationException>(() => roleRef.RoleUri);
         }
         [TestMethod]
         public void HRefTest()
         {
-            var roleRefElement = new RoleRef(FasbXmlElements.RoleRefElement);
-            HRef hRef = roleRefElement.HRef(FasbXmlElements.NameSpacesByElementName);
+            var roleRefElement = new RoleRef(FasbXmlElements.RoleRefElement, FasbXmlElements.NameSpacesByPrefix);
+            HRef hRef = roleRefElement.HRef;
             var expectedHRef = new HRef(FasbXmlElements.roleXLinkHRef);
             hRef.Should().BeEquivalentTo(expectedHRef);
         }
@@ -41,14 +41,14 @@ namespace Public.Analysis.FasbTaxonomies.Parsing.Xrbl
         {
             var roleRefElement = FasbXmlElements.RoleRefElement;
             roleRefElement.Attribute(XName.Get("href", "http://www.w3.org/1999/xlink"))!.Remove();
-            var roleRef = new RoleRef(roleRefElement);
-            Assert.Throws<InvalidOperationException>(() => roleRef.HRef(FasbXmlElements.NameSpacesByElementName));
+            var roleRef = new RoleRef(roleRefElement, FasbXmlElements.NameSpacesByPrefix);
+            Assert.Throws<InvalidOperationException>(() => roleRef.HRef);
         }
         [TestMethod]
         public void XLinkTypeTest()
         {
-            var roleRefElement = new RoleRef(FasbXmlElements.RoleRefElement);
-            var actualXLinkType = roleRefElement.XLinkType(FasbXmlElements.NameSpacesByElementName);
+            var roleRefElement = new RoleRef(FasbXmlElements.RoleRefElement, FasbXmlElements.NameSpacesByPrefix);
+            var actualXLinkType = roleRefElement.XLinkType;
             Assert.AreEqual(FasbXmlElements.roleXLinkType, actualXLinkType);
         }
         [TestMethod]
@@ -56,8 +56,8 @@ namespace Public.Analysis.FasbTaxonomies.Parsing.Xrbl
         {
             var roleRefElement = FasbXmlElements.RoleRefElement;
             roleRefElement.Attribute(XName.Get("type", "http://www.w3.org/1999/xlink"))!.Remove();
-            var roleRef = new RoleRef(roleRefElement);
-            Assert.Throws<InvalidOperationException>(() => roleRef.XLinkType(FasbXmlElements.NameSpacesByElementName));
+            var roleRef = new RoleRef(roleRefElement, FasbXmlElements.NameSpacesByPrefix);
+            Assert.Throws<InvalidOperationException>(() => roleRef.XLinkType);
         }
     }
 }
