@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml.Linq;
 
-namespace Public.Analysis.FasbTaxonomies.Parsing.XrblElements
+namespace Public.Analysis.FasbTaxonomies.Parsing.Xrbl
 {
     [TestClass]
     public class RoleRefTest
