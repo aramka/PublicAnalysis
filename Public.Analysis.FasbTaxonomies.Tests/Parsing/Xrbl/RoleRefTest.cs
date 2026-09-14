@@ -1,4 +1,6 @@
-﻿using Public.Analysis.FasbTaxonomies.Tests.Parsing;
+﻿using AwesomeAssertions;
+using Public.Analysis.FasbTaxonomies.Parsing.Xml;
+using Public.Analysis.FasbTaxonomies.Tests.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -30,8 +32,9 @@ namespace Public.Analysis.FasbTaxonomies.Parsing.Xrbl
         public void HRefTest()
         {
             var roleRefElement = new RoleRef(FasbXmlElements.RoleRefElement);
-            var actualHRef = roleRefElement.HRef(FasbXmlElements.NameSpacesByElementName);
-            Assert.AreEqual(FasbXmlElements.roleXLinkHRef, actualHRef);
+            HRef hRef = roleRefElement.HRef(FasbXmlElements.NameSpacesByElementName);
+            var expectedHRef = new HRef(FasbXmlElements.roleXLinkHRef);
+            hRef.Should().BeEquivalentTo(expectedHRef);
         }
         [TestMethod]
         public void HRefMissingTest()

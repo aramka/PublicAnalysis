@@ -20,8 +20,8 @@ namespace Public.Analysis.FasbTaxonomies.Parsing.Xml
             }
         }
 
-        public string Anchor() => parts[1];
+        public string Anchor => parts[1];
 
-        public string? Location() => parts[0];
+        public string? Location => parts[0];
     }
 }

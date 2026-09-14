@@ -17,8 +17,8 @@ namespace Public.Analysis.FasbTaxonomies.Parsing.Xrbl
         {
             HRef hRef = new HRef(hRefValue);
 
-            Assert.AreEqual(expectedLocation, hRef.Location());
-            Assert.AreEqual(expectedAnchor, hRef.Anchor());
+            Assert.AreEqual(expectedLocation, hRef.Location);
+            Assert.AreEqual(expectedAnchor, hRef.Anchor);
         }
         [TestMethod]
         [DataRow("theLocation#",DisplayName = "location#")]
