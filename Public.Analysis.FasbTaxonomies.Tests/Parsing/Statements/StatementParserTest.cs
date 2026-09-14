@@ -37,7 +37,11 @@ namespace Public.Analysis.FasbTaxonomies.Parsing.Statements
         [TestMethod]
         public void PresentationLinkTest()
         {
-            // var statementParser = new StatementParser(FasbXmlElements)
+            var statement = new Statement(FasbXmlElements.StatementDoc, FasbXmlElements.NameSpacesByPrefix);
+            PresentationLink presentationLink = statement.PresentationLink;
+            var expectedPresentationLink = new PresentationLink(FasbXmlElements.PresentationLinkElement, FasbXmlElements.NameSpacesByPrefix);
+
+            presentationLink.Should().BeEquivalentTo(expectedPresentationLink);
         }
     }
 }

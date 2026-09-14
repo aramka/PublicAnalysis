@@ -17,5 +17,9 @@ namespace Public.Analysis.FasbTaxonomies.Parsing
         public const string RoleUri = "roleURI";
 
         public const string Type = "type";
+
+        public const string PresentationLink = "presentationLink";
+
+        public static string RoleAttribute = "role";
     }
 }

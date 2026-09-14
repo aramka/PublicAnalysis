@@ -1,4 +1,5 @@
 ﻿using Microsoft.Identity.Client;
+using Public.Analysis.FasbTaxonomies.Parsing.Xrbl;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -35,5 +36,6 @@ namespace Public.Analysis.FasbTaxonomies.Tests.Parsing
         public static XElement RoleRefElement => new XElement(statementDoc.Descendants(NameSpacesByPrefix["link"] + "roleRef").Single());
 
         public static XElement PresentationLinkElement => new XElement(statementDoc.Descendants(NameSpacesByPrefix["link"] + "presentationLink").Single());
+
     }
 }

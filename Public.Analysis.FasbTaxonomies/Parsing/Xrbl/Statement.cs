@@ -18,6 +18,8 @@ namespace Public.Analysis.FasbTaxonomies.Parsing.Xrbl
         }
 
         private RoleRef? roleRef = null;
+        private PresentationLink presentationLink;
+
         public RoleRef RoleRef
         {
             get
@@ -27,6 +29,21 @@ namespace Public.Analysis.FasbTaxonomies.Parsing.Xrbl
                 this.roleRef = new RoleRef(roleRefElement, this.namespacesByPrefix);
                 return this.roleRef;
             }
-        } 
+        }
+
+        public PresentationLink PresentationLink
+        {
+            get
+            {
+                if(this.presentationLink is not null)
+                {
+                    return this.presentationLink;
+                }
+
+                var xElement = this.statementDoc.GetDescendant(LocalNamesAndPrefixes.PresentationLink, LocalNamesAndPrefixes.LinkPrefix, this.namespacesByPrefix);
+                this.presentationLink = new PresentationLink(xElement, this.namespacesByPrefix);
+                return this.presentationLink;
+            }
+        }
     }
 }
