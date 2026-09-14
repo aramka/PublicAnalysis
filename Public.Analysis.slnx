@@ -6,6 +6,7 @@
   <Project Path="Public.Analysis.Data/Public.Analysis.Data.csproj" />
   <Project Path="Public.Analysis.Edgar.Tests/Public.Analysis.Edgar.Tests.csproj" />
   <Project Path="Public.Analysis.Edgar/Public.Analysis.Edgar.csproj" />
+  <Project Path="Public.Analysis.FasbTaxonomies.Tests/Public.Analysis.FasbTaxonomies.Tests.csproj" />
   <Project Path="Public.Analysis.FasbTaxonomies/Public.Analysis.FasbTaxonomies.csproj" Id="4a773dd3-90a7-4368-ab89-c157e221b720" />
   <Project Path="Public.Frameworks.Test/Public.Frameworks.Tests.csproj" />
   <Project Path="Public.Frameworks/Public.Frameworks.csproj" />
