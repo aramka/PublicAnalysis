@@ -4,7 +4,7 @@ using Public.Analysis.FasbTaxonomies.Tests.Parsing;
 using System.Xml.Linq;
 using Public.Analysis.FasbTaxonomies.XmlParsing.XrblElementModels;
 
-namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblElement
+namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblElementModels
 {
     [TestClass]
     public class RoleRefTest
