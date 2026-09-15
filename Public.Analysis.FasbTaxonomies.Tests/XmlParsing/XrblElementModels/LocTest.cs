@@ -2,7 +2,6 @@ using AwesomeAssertions;
 using Public.Analysis.FasbTaxonomies.XmlParsing.Xml;
 using Public.Analysis.FasbTaxonomies.Tests.Parsing;
 using Public.Analysis.FasbTaxonomies.Parsing;
-using Public.Analysis.FasbTaxonomies.XmlParsing.XrblElementModels;
 
 namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblElementModels
 {

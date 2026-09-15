@@ -1,0 +1,22 @@
+﻿using Public.Analysis.FasbTaxonomies.Parsing;
+using Public.Analysis.FasbTaxonomies.Tests.Parsing;
+
+namespace Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq
+{
+    [TestClass]
+    public class XElementParsingHelperTest
+    {
+        [TestMethod]
+        public void AttributeMissingTest()
+        {
+
+            var locElement = FasbXmlElements.LocElement1;
+            locElement.Attribute(FasbXmlElements.NameSpacesByPrefix[LocalNamesAndPrefixes.XLinkPrefix] + LocalNamesAndPrefixes.LabelAttribute)!.Remove();
+
+            XElementParsingHelper helper = new XElementParsingHelper(locElement, FasbXmlElements.NameSpacesByPrefix);
+
+            Assert.Throws<InvalidOperationException>(() => helper.GetAttributeValue<string>(LocalNamesAndPrefixes.LabelAttribute, LocalNamesAndPrefixes.XLinkPrefix));
+        }
+
+    }
+}
