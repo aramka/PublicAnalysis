@@ -1,5 +1,5 @@
 ﻿using Microsoft.Identity.Client;
-using Public.Analysis.FasbTaxonomies.Parsing.Xrbl;
+using Public.Analysis.FasbTaxonomies.XmlParsing.Xrbl;
 using System;
 using System.Collections.Generic;
 using System.Text;

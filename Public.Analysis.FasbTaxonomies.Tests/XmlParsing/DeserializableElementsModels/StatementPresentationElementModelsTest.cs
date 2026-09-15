@@ -1,11 +1,10 @@
 ﻿using AwesomeAssertions;
-using Public.Analysis.FasbTaxonomies.Parsing.USGaapModels;
 using System.Xml.Serialization;
 
-namespace Public.Analysis.FasbTaxonomies.Parsing.Statements
+namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
 {
     [TestClass]
-    public class StatementPreModelsTest
+    public class StatementPresentationElementModelsTest
     {
         [Ignore]
         [TestMethod]

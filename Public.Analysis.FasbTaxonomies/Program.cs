@@ -84,36 +84,40 @@ namespace Public.Analysis.FasbTaxonomies
 
             Dictionary<string, Dictionary<string, Dictionary<string, string>>> allElts = new () { [ "../elts/us-gaap-2026.xsd" ] = usGaap2026EltsElements, ["https://xbrl.fasb.org/srt/2026/elts/srt-2026.xsd"] = srtEltsElements };
 
-            foreach (var statementPresentAndLocElements in allStatementsPresentationArcAndLocElements)
-            {
-                var notInPresentationArc = statementPresentAndLocElements.LocLabelAttributeValues.Where(l => !statementPresentAndLocElements.presentationArcToFrom.Contains(l)).ToList();
+            IEnumerable<string> allEltsAttributes = allElts.SelectMany(allEltsInFile => allEltsInFile.Value.Values.SelectMany(elt=>elt.Keys)).ToHashSet();
 
-                if(notInPresentationArc.Any())
-                {
-                    Console.WriteLine($"File: {statementPresentAndLocElements.File}");
-                    Console.WriteLine("Labels in <loc> but not in <presentationArc>:");
-                    foreach(var label in notInPresentationArc)
-                    {
-                        Console.WriteLine($"  {label}");
-                    }
-                }
-                int i = 0;
-                foreach (var eltsAndAnchor in statementPresentAndLocElements.EltsRelativeFileAndAnchor) {
-                    var loc = statementPresentAndLocElements.LocLabelAttributeValues[i];
-                    var hRefValues = string.Join(",", statementPresentAndLocElements.HRefAttributesValues[i]);
-                    if (eltsAndAnchor.Cnt is not 2)
-                    {
-                        Console.WriteLine($"Loc {loc} has unexpected href attribute values {hRefValues}");
-                    }
+            Console.WriteLine(string.Join(Environment.NewLine, allEltsAttributes));
 
-                    if (!allElts.TryGetValue(eltsAndAnchor.EltsUri, out var elts) || !elts.ContainsKey(eltsAndAnchor.Anchor))
-                    {
-                        Console.WriteLine($"loc {loc} has href attribute values {hRefValues} whose anchor {eltsAndAnchor.Anchor} is not found in any of the elts files");
-                    }
+            //foreach (var statementPresentAndLocElements in allStatementsPresentationArcAndLocElements)
+            //{
+            //    var notInPresentationArc = statementPresentAndLocElements.LocLabelAttributeValues.Where(l => !statementPresentAndLocElements.presentationArcToFrom.Contains(l)).ToList();
 
-                    ++i;
-                }
-            }
+            //    if(notInPresentationArc.Any())
+            //    {
+            //        Console.WriteLine($"File: {statementPresentAndLocElements.File}");
+            //        Console.WriteLine("Labels in <loc> but not in <presentationArc>:");
+            //        foreach(var label in notInPresentationArc)
+            //        {
+            //            Console.WriteLine($"  {label}");
+            //        }
+            //    }
+            //    int i = 0;
+            //    foreach (var eltsAndAnchor in statementPresentAndLocElements.EltsRelativeFileAndAnchor) {
+            //        var loc = statementPresentAndLocElements.LocLabelAttributeValues[i];
+            //        var hRefValues = string.Join(",", statementPresentAndLocElements.HRefAttributesValues[i]);
+            //        if (eltsAndAnchor.Cnt is not 2)
+            //        {
+            //            Console.WriteLine($"Loc {loc} has unexpected href attribute values {hRefValues}");
+            //        }
+
+            //        if (!allElts.TryGetValue(eltsAndAnchor.EltsUri, out var elts) || !elts.ContainsKey(eltsAndAnchor.Anchor))
+            //        {
+            //            Console.WriteLine($"loc {loc} has href attribute values {hRefValues} whose anchor {eltsAndAnchor.Anchor} is not found in any of the elts files");
+            //        }
+
+            //        ++i;
+            //    }
+            //}
 
 
             //var loc = elements["loc"].Select(e=>new {lable=e.Attributes().Single(a=>a.Name.LocalName== "label") }).ToList();

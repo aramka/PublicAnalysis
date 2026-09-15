@@ -20,8 +20,15 @@ namespace Public.Analysis.FasbTaxonomies.Parsing
 
         public const string PresentationLinkElement = "presentationLink";
 
-        public static string RoleAttribute = "role";
+        public const string RoleAttribute = "role";
 
-        public static string LabelAttribute = "label";
+        public const string LabelAttribute = "label";
+
+        public const string AbstractAttribute = "abstract";
+
+        public const string XsPrefix = "xs";
+        public const string IdAttribute = "id";
+
+        public const string Nillable = "nillable";
     }
 }

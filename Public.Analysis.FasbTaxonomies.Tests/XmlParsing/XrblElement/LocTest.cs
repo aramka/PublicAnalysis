@@ -1,10 +1,10 @@
 using AwesomeAssertions;
-using Public.Analysis.FasbTaxonomies.Parsing.Xml;
+using Public.Analysis.FasbTaxonomies.XmlParsing.Xml;
 using Public.Analysis.FasbTaxonomies.Tests.Parsing;
-using System;
-using System.Xml.Linq;
+using Public.Analysis.FasbTaxonomies.Parsing;
+using Public.Analysis.FasbTaxonomies.XmlParsing.Xrbl;
 
-namespace Public.Analysis.FasbTaxonomies.Parsing.Xrbl
+namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblElement
 {
     [TestClass]
     public class LocTest

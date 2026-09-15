@@ -1,7 +1,6 @@
-﻿using Public.Analysis.FasbTaxonomies.Parsing.USGaapModels;
-using Public.Analysis.FasbTaxonomies.Parsing.Xml;
+﻿using Public.Analysis.FasbTaxonomies.XmlParsing.Xml;
 
-namespace Public.Analysis.FasbTaxonomies.Parsing.USGaapModels
+namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
 {
     public static class Extensions
     {

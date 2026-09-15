@@ -1,12 +1,12 @@
 ﻿using AwesomeAssertions;
-using Public.Analysis.FasbTaxonomies.Parsing.Xrbl;
+using Public.Analysis.FasbTaxonomies.XmlParsing.Xrbl;
 using Public.Analysis.FasbTaxonomies.Tests.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml.Linq;
 
-namespace Public.Analysis.FasbTaxonomies.Parsing.Statements
+namespace Public.Analysis.FasbTaxonomies.Tests.XmlParsing.XrblElement
 {
     [TestClass]
     public class StatementParserTest

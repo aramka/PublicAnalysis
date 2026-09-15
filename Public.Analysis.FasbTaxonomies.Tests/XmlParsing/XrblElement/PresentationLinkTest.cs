@@ -1,9 +1,9 @@
-﻿using Public.Analysis.FasbTaxonomies.Parsing.Xrbl;
+﻿using Public.Analysis.FasbTaxonomies.XmlParsing.Xrbl;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Public.Analysis.FasbTaxonomies.Tests.Parsing.Xrbl
+namespace Public.Analysis.FasbTaxonomies.Tests.Parsing.XrblElement
 {
     [TestClass]
     public class PresentationLinkTest

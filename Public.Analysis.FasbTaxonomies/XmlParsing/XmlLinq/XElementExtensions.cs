@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml.Linq;
 
-namespace Public.Analysis.FasbTaxonomies.XmlLinq
+namespace Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq
 {
     public static class XElementExtensions
     {
@@ -19,6 +20,14 @@ namespace Public.Analysis.FasbTaxonomies.XmlLinq
             }
             return attribute.Value;
         }
+        public static T GetAttributeValue<T>(this XElement element, string localName, string namespacePrefix = "", IReadOnlyDictionary<string, XNamespace>? nameSpaces = null)
+        {
+            string rawValue = element.GetAttributeValue(localName, namespacePrefix, nameSpaces);
+
+            var converter = TypeDescriptor.GetConverter(typeof(T));
+            return (T)converter.ConvertFromString(rawValue)!;
+        }
+
         public static XElement GetDescendant(this XContainer element, string localName, string namespacePrefix = "", IReadOnlyDictionary<string,XNamespace>? nameSpaces = null)
         {
             XNamespace ns = element.GetExpandedNameSpaceForPrefix(namespacePrefix,nameSpaces);

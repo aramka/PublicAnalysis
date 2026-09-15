@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Public.Analysis.FasbTaxonomies.Parsing.Xml
+namespace Public.Analysis.FasbTaxonomies.XmlParsing.Xml
 {
     public class HRef
     {
