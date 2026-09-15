@@ -21,5 +21,7 @@ namespace Public.Analysis.FasbTaxonomies.Parsing
         public const string PresentationLinkElement = "presentationLink";
 
         public static string RoleAttribute = "role";
+
+        public static string LabelAttribute = "label";
     }
 }

@@ -1,9 +1,4 @@
 ﻿using Public.Analysis.FasbTaxonomies.Parsing.Xml;
-using Public.Analysis.FasbTaxonomies.Tests.Parsing;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml.Linq;
 
 namespace Public.Analysis.FasbTaxonomies.Parsing.Xrbl
 {
