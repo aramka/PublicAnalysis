@@ -1,5 +1,5 @@
 ﻿using AwesomeAssertions;
-using Public.Analysis.FasbTaxonomies.XmlParsing.Xrbl;
+using Public.Analysis.FasbTaxonomies.XmlParsing.XrblElementModels;
 using Public.Analysis.FasbTaxonomies.Tests.Parsing;
 using System;
 using System.Collections.Generic;

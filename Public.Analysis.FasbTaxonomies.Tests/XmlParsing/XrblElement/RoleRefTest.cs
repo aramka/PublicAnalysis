@@ -2,7 +2,7 @@
 using Public.Analysis.FasbTaxonomies.XmlParsing.Xml;
 using Public.Analysis.FasbTaxonomies.Tests.Parsing;
 using System.Xml.Linq;
-using Public.Analysis.FasbTaxonomies.XmlParsing.Xrbl;
+using Public.Analysis.FasbTaxonomies.XmlParsing.XrblElementModels;
 
 namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblElement
 {

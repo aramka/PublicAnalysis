@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml.Linq;
 
-namespace Public.Analysis.FasbTaxonomies.XmlParsing.Xrbl
+namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblElementModels
 {
     public class RoleRef
     {
