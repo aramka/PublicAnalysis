@@ -13,9 +13,9 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq
             var locElement = FasbXmlElements.LocElement1;
             locElement.Attribute(FasbXmlElements.NameSpacesByPrefix[LocalNamesAndPrefixes.XLinkPrefix] + LocalNamesAndPrefixes.LabelAttribute)!.Remove();
 
-            XElementParsingHelper helper = new XElementParsingHelper(locElement, FasbXmlElements.NameSpacesByPrefix);
+            XElementParsingUtility helper = new XElementParsingUtility();
 
-            Assert.Throws<InvalidOperationException>(() => helper.GetAttributeValue<string>(LocalNamesAndPrefixes.LabelAttribute, LocalNamesAndPrefixes.XLinkPrefix));
+            Assert.Throws<InvalidOperationException>(() => helper.GetAttributeValue<string>(locElement, FasbXmlElements.NameSpacesByPrefix, LocalNamesAndPrefixes.LabelAttribute, LocalNamesAndPrefixes.XLinkPrefix));
         }
 
     }
