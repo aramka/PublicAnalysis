@@ -16,9 +16,16 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.Xml
             this.namespaces = namespaces;
             this.parser = parser;
         }
-        public bool Abstract => this.parser.TryGetAttributeValue<bool>(this.xElement, LocalNamesAndPrefixes.AbstractAttribute, out bool value) ? value : false;
-        public string Id => this.parser.TryGetAttributeValue(this.xElement, LocalNamesAndPrefixes.IdAttribute, out string? id) ? id! : string.Empty;
-        public string Name => this.parser.TryGetAttributeValue(this.xElement, LocalNamesAndPrefixes.IdAttribute, out string? name ) ? name! : string.Empty;
-        public bool Nillable => this.parser.TryGetAttributeValue<bool>(this.xElement, LocalNamesAndPrefixes.Nillable, out bool value) ? value : false;
+        public bool Abstract { get {
+                try { 
+                    bool value = this.parser.GetAttributeValue<bool>(this.xElement, LocalNamesAndPrefixes.AbstractAttribute, LocalNamesAndPrefixes.XsPrefix, this.namespaces);
+                    return value;
+                } 
+                catch (InvalidOperationException) { return false; } 
+            } 
+        }
+        public string Id => this.parser.GetAttributeValue<string>(this.xElement, LocalNamesAndPrefixes.IdAttribute, LocalNamesAndPrefixes.XsPrefix, this.namespaces);
+        public string Name => this.parser.GetAttributeValue<string>(this.xElement, LocalNamesAndPrefixes.IdAttribute, LocalNamesAndPrefixes.XsPrefix, this.namespaces);
+        public bool Nillable => this.parser.GetAttributeValue<bool>(this.xElement, LocalNamesAndPrefixes.Nillable, LocalNamesAndPrefixes.XsPrefix, this.namespaces);
     }
 }

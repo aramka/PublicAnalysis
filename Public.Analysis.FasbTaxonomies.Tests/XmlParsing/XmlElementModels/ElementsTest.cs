@@ -36,12 +36,8 @@ Notice: Authorized Uses are Set Forth at https://xbrl.fasb.org/terms/TaxonomiesT
         {
             var helper = new XmlStringsHelper(eltsString);
             var missingAbstract = helper.GetDescendant(LocalNamesAndPrefixes.XsElement, LocalNamesAndPrefixes.XsPrefix, helper.RootNameSpacesByPrefix);
-            Mock<IXElementParsingUtility> parseHelperMoq = new Mock<IXElementParsingUtility>();
-            bool value = true;
-            parseHelperMoq.Setup(a => a.TryGetAttributeValue<bool>(missingAbstract, LocalNamesAndPrefixes.AbstractAttribute, out value));
             var element = new Element(missingAbstract, helper.RootNameSpacesByPrefix, new XElementParsingUtility());
             Assert.IsFalse(element.Abstract);
-            parseHelperMoq.Setup(a => a.GetAttributeValue<bool>(missingAbstract, LocalNamesAndPrefixes.AbstractAttribute, string.Empty, null, false));
         }
     }
 }
