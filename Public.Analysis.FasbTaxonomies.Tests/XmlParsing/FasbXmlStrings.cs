@@ -1,11 +1,5 @@
-﻿using Microsoft.Identity.Client;
-using Public.Analysis.FasbTaxonomies.XmlParsing.XrblElementModels;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml;
+﻿using Public.Analysis.FasbTaxonomies.Tests.XmlParsing;
 using System.Xml.Linq;
-using static System.Net.WebRequestMethods;
 
 namespace Public.Analysis.FasbTaxonomies.Tests.Parsing
 {
@@ -33,20 +27,15 @@ namespace Public.Analysis.FasbTaxonomies.Tests.Parsing
                 </link:presentationLink>
             </link:linkbase>
         ";
+        public static XmlStringsHelper helper = new XmlStringsHelper(statementDocXmlString);
 
-        private static readonly MemoryStream statementDocMemStream = new MemoryStream(Encoding.UTF8.GetBytes(statementDocXmlString));
+        public static IReadOnlyDictionary<string, XNamespace> NameSpacesByPrefix => helper.RootNameSpacesByPrefix;
 
-        private static readonly XDocument statementDoc = XDocument.Load(statementDocMemStream);
-        public static XDocument StatementDoc => new XDocument(statementDoc);
+        public static XElement RoleRefElement => new XElement(helper.XDoc.Descendants(helper.RootNameSpacesByPrefix["link"] + "roleRef").Single());
 
-        public static Dictionary<string,XNamespace> NameSpacesByPrefix => statementDoc.Root!.Attributes().Where(a => a.IsNamespaceDeclaration).ToDictionary(a => a.Name.LocalName, a => (XNamespace)a.Value);
+        public static XElement PresentationLinkElement => new XElement(helper.XDoc.Descendants(helper.RootNameSpacesByPrefix["link"] + "presentationLink").Single());
 
-
-        public static XElement RoleRefElement => new XElement(statementDoc.Descendants(NameSpacesByPrefix["link"] + "roleRef").Single());
-
-        public static XElement PresentationLinkElement => new XElement(statementDoc.Descendants(NameSpacesByPrefix["link"] + "presentationLink").Single());
-
-        public static XElement LocElement(string label) => new XElement(statementDoc.Descendants(NameSpacesByPrefix["link"] + "loc").Single(xe => { var attr = xe.Attribute(NameSpacesByPrefix["xlink"] + "label"); return attr is not null && attr.Value == label; }));
+        public static XElement LocElement(string label) => new XElement(helper.XDoc.Descendants(helper.RootNameSpacesByPrefix["link"] + "loc").Single(xe => { var attr = xe.Attribute(helper.RootNameSpacesByPrefix["xlink"] + "label"); return attr is not null && attr.Value == label; }));
 
         public static XElement LocElement1 => LocElement(locLabel1);
         public static XElement LocElement2 => LocElement(locLabel2);

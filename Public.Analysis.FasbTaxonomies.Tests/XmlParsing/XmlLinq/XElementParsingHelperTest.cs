@@ -15,7 +15,7 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq
 
             XElementParsingUtility helper = new XElementParsingUtility();
 
-            Assert.Throws<InvalidOperationException>(() => helper.GetAttributeValue<string>(locElement, FasbXmlElements.NameSpacesByPrefix, LocalNamesAndPrefixes.LabelAttribute, LocalNamesAndPrefixes.XLinkPrefix));
+            Assert.Throws<InvalidOperationException>(() => helper.GetAttributeValue<string>(locElement, LocalNamesAndPrefixes.LabelAttribute,  LocalNamesAndPrefixes.XLinkPrefix, FasbXmlElements.NameSpacesByPrefix));
         }
 
     }

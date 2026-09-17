@@ -30,5 +30,7 @@ namespace Public.Analysis.FasbTaxonomies.Parsing
         public const string IdAttribute = "id";
 
         public const string Nillable = "nillable";
+
+        public const string XsElement = "element";
     }
 }
