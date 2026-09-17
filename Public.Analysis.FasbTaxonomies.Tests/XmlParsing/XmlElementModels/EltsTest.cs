@@ -15,7 +15,6 @@ namespace Public.Analysis.FasbTaxonomies.Tests.XmlParsing.XmlElementModels
         [TestMethod]
         public void ReadAllElementsFromFile()
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(linkbase));
             var eltsFiles = new string[]
             {
                 @"C:\Users\Andrew\Development\fasb_taxonomies\us-gaap-2026\elts\us-gaap-2026.xsd",
