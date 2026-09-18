@@ -8,9 +8,9 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
     public partial class LabelLink
     {
 
-        private string roleField;
+        private string roleField=string.Empty;
 
-        private string typeField;
+        private string typeField = string.Empty;
         private Label[] labels = [];
         private Arc[] arcs = [];
         private Loc[] locs = [];

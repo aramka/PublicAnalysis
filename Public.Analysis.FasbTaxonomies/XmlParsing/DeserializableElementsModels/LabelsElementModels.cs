@@ -10,12 +10,12 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
 public partial class LabelLinkBase
 {
 
-    private linkbaseRoleRef roleRefField;
+    private RoleRef? roleRefField = null;
 
-    private LabelLink labelLinkField;
+    private LabelLink? labelLinkField = null;
 
-    
-    public linkbaseRoleRef roleRef
+    [XmlElement("roleRef")]
+    public RoleRef? roleRef
     {
         get
         {
@@ -28,7 +28,7 @@ public partial class LabelLinkBase
     }
 
     [XmlElement("labelLink")]
-    public LabelLink LabelLink
+    public LabelLink? LabelLink
     {
         get
         {
@@ -37,61 +37,6 @@ public partial class LabelLinkBase
         set
         {
             this.labelLinkField = value;
-        }
-    }
-}
-
-
-[Serializable()]
-[XmlType(AnonymousType = true, Namespace = "http://www.xbrl.org/2003/linkbase")]
-public partial class linkbaseRoleRef
-{
-
-    private string roleURIField;
-
-    private string hrefField;
-
-    private string typeField;
-
-    
-    [XmlAttribute()]
-    public string roleURI
-    {
-        get
-        {
-            return this.roleURIField;
-        }
-        set
-        {
-            this.roleURIField = value;
-        }
-    }
-
-    
-    [XmlAttribute(Form = XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-    public string href
-    {
-        get
-        {
-            return this.hrefField;
-        }
-        set
-        {
-            this.hrefField = value;
-        }
-    }
-
-    
-    [XmlAttribute(Form = XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-    public string type
-    {
-        get
-        {
-            return this.typeField;
-        }
-        set
-        {
-            this.typeField = value;
         }
     }
 }
