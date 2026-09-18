@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
+using System.Xml.Schema;
 
 namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
 {
@@ -12,15 +13,15 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
     public partial class Loc
     {
 
-        private string hrefField;
+        private string hrefField = string.Empty;
 
-        private string labelField;
+        private string labelField = string.Empty;
 
-        private string typeField;
+        private string typeField = string.Empty;
 
 
-        [XmlAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-        public string href
+        [XmlAttribute("href", Form = XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
+        public string Href
         {
             get
             {
@@ -33,11 +34,11 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
         }
 
         [XmlIgnore]
-        public HRef HRef => new HRef(this.href);
+        public HRef HRef => new HRef(this.Href);
 
 
-        [XmlAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-        public string label
+        [XmlAttribute("label", Form = XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
+        public string Label
         {
             get
             {
@@ -50,8 +51,8 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
         }
 
 
-        [XmlAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-        public string type
+        [XmlAttribute("type", Form = XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
+        public string Type
         {
             get
             {
