@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels.LabelsElementModels
 {
     [TestClass]
-    public class LabelsElementModelsTest
+    public class AllLabelsFilesParseTest
     {
         [TestMethod]
         public void ToDo()
@@ -13,7 +13,7 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
         }
         [DataRow(@"..\..\..\..\..\fasb_taxonomies\us-gaap-2026\elts", DisplayName = "elts")]
         [TestMethod]
-        public void LabelsXsdFileParses(string labelsFilesDirectory)
+        public void AllLabelsFilesParse(string labelsFilesDirectory)
         {
 
             XmlSerializer serializer = new XmlSerializer(typeof(linkbase));
@@ -30,9 +30,9 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
                     linkbase result = (linkbase)serializer.Deserialize(reader)!;
                     result.labelLink.Should().NotBeNull();
 
-                    var locs = result.labelLink.Items.Where(item => item is linkbaseLabelLinkLoc).ToList();
-                    var labels = result.labelLink.Items.Where(item => item is linkbaseLabelLinkLabel).ToList();
-                    var arcs = result.labelLink.Items.Where(item => item is linkbaseLabelLinkLabelArc).ToList();
+                    var locs = result.labelLink.Items.Where(item => item is Loc).ToList();
+                    var labels = result.labelLink.Items.Where(item => item is Label).ToList();
+                    var arcs = result.labelLink.Items.Where(item => item is Arc).ToList();
 
                     locs.Should().NotBeEmpty();
                     labels.Should().NotBeEmpty();

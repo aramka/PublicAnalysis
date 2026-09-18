@@ -113,9 +113,9 @@ public partial class linkbaseLabelLink
     private string typeField;
 
     /// <remarks/>
-    [System.Xml.Serialization.XmlElementAttribute("label", typeof(linkbaseLabelLinkLabel))]
-    [System.Xml.Serialization.XmlElementAttribute("labelArc", typeof(linkbaseLabelLinkLabelArc))]
-    [System.Xml.Serialization.XmlElementAttribute("loc", typeof(linkbaseLabelLinkLoc))]
+    [System.Xml.Serialization.XmlElementAttribute("label", typeof(Label))]
+    [System.Xml.Serialization.XmlElementAttribute("labelArc", typeof(Arc))]
+    [System.Xml.Serialization.XmlElementAttribute("loc", typeof(Loc))]
     public object[] Items
     {
         get
@@ -157,251 +157,59 @@ public partial class linkbaseLabelLink
     }
 }
 
-/// <remarks/>
-[System.SerializableAttribute()]
-[System.ComponentModel.DesignerCategoryAttribute("code")]
-[System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.xbrl.org/2003/linkbase")]
-public partial class linkbaseLabelLinkLabel
-{
+///// <remarks/>
+//[System.SerializableAttribute()]
+//[System.ComponentModel.DesignerCategoryAttribute("code")]
+//[System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.xbrl.org/2003/linkbase",TypeName ="loc")]
+//public partial class Loc
+//{
 
-    private string idField;
+//    private string hrefField;
 
-    private string labelField;
+//    private string labelField;
 
-    private string roleField;
+//    private string typeField;
 
-    private string typeField;
+//    /// <remarks/>
+//    [System.Xml.Serialization.XmlAttributeAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
+//    public string href
+//    {
+//        get
+//        {
+//            return this.hrefField;
+//        }
+//        set
+//        {
+//            this.hrefField = value;
+//        }
+//    }
 
-    private string langField;
+//    /// <remarks/>
+//    [System.Xml.Serialization.XmlAttributeAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
+//    public string label
+//    {
+//        get
+//        {
+//            return this.labelField;
+//        }
+//        set
+//        {
+//            this.labelField = value;
+//        }
+//    }
 
-    private string valueField;
-
-    /// <remarks/>
-    [System.Xml.Serialization.XmlAttributeAttribute()]
-    public string id
-    {
-        get
-        {
-            return this.idField;
-        }
-        set
-        {
-            this.idField = value;
-        }
-    }
-
-    /// <remarks/>
-    [System.Xml.Serialization.XmlAttributeAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-    public string label
-    {
-        get
-        {
-            return this.labelField;
-        }
-        set
-        {
-            this.labelField = value;
-        }
-    }
-
-    /// <remarks/>
-    [System.Xml.Serialization.XmlAttributeAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-    public string role
-    {
-        get
-        {
-            return this.roleField;
-        }
-        set
-        {
-            this.roleField = value;
-        }
-    }
-
-    /// <remarks/>
-    [System.Xml.Serialization.XmlAttributeAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-    public string type
-    {
-        get
-        {
-            return this.typeField;
-        }
-        set
-        {
-            this.typeField = value;
-        }
-    }
-
-    /// <remarks/>
-    [System.Xml.Serialization.XmlAttributeAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/XML/1998/namespace")]
-    public string lang
-    {
-        get
-        {
-            return this.langField;
-        }
-        set
-        {
-            this.langField = value;
-        }
-    }
-
-    /// <remarks/>
-    [System.Xml.Serialization.XmlTextAttribute()]
-    public string Value
-    {
-        get
-        {
-            return this.valueField;
-        }
-        set
-        {
-            this.valueField = value;
-        }
-    }
-}
-
-/// <remarks/>
-[System.SerializableAttribute()]
-[System.ComponentModel.DesignerCategoryAttribute("code")]
-[System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.xbrl.org/2003/linkbase")]
-public partial class linkbaseLabelLinkLabelArc
-{
-
-    private decimal orderField;
-
-    private string arcroleField;
-
-    private string fromField;
-
-    private string toField;
-
-    private string typeField;
-
-    /// <remarks/>
-    [System.Xml.Serialization.XmlAttributeAttribute()]
-    public decimal order
-    {
-        get
-        {
-            return this.orderField;
-        }
-        set
-        {
-            this.orderField = value;
-        }
-    }
-
-    /// <remarks/>
-    [System.Xml.Serialization.XmlAttributeAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-    public string arcrole
-    {
-        get
-        {
-            return this.arcroleField;
-        }
-        set
-        {
-            this.arcroleField = value;
-        }
-    }
-
-    /// <remarks/>
-    [System.Xml.Serialization.XmlAttributeAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-    public string from
-    {
-        get
-        {
-            return this.fromField;
-        }
-        set
-        {
-            this.fromField = value;
-        }
-    }
-
-    /// <remarks/>
-    [System.Xml.Serialization.XmlAttributeAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-    public string to
-    {
-        get
-        {
-            return this.toField;
-        }
-        set
-        {
-            this.toField = value;
-        }
-    }
-
-    /// <remarks/>
-    [System.Xml.Serialization.XmlAttributeAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-    public string type
-    {
-        get
-        {
-            return this.typeField;
-        }
-        set
-        {
-            this.typeField = value;
-        }
-    }
-}
-
-/// <remarks/>
-[System.SerializableAttribute()]
-[System.ComponentModel.DesignerCategoryAttribute("code")]
-[System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.xbrl.org/2003/linkbase")]
-public partial class linkbaseLabelLinkLoc
-{
-
-    private string hrefField;
-
-    private string labelField;
-
-    private string typeField;
-
-    /// <remarks/>
-    [System.Xml.Serialization.XmlAttributeAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-    public string href
-    {
-        get
-        {
-            return this.hrefField;
-        }
-        set
-        {
-            this.hrefField = value;
-        }
-    }
-
-    /// <remarks/>
-    [System.Xml.Serialization.XmlAttributeAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-    public string label
-    {
-        get
-        {
-            return this.labelField;
-        }
-        set
-        {
-            this.labelField = value;
-        }
-    }
-
-    /// <remarks/>
-    [System.Xml.Serialization.XmlAttributeAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-    public string type
-    {
-        get
-        {
-            return this.typeField;
-        }
-        set
-        {
-            this.typeField = value;
-        }
-    }
-}
+//    /// <remarks/>
+//    [System.Xml.Serialization.XmlAttributeAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
+//    public string type
+//    {
+//        get
+//        {
+//            return this.typeField;
+//        }
+//        set
+//        {
+//            this.typeField = value;
+//        }
+//    }
+//}
 

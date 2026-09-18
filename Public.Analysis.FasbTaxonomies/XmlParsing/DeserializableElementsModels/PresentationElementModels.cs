@@ -112,9 +112,9 @@ public partial class linkbaseRoleRef
 public partial class linkbasePresentationLink
 {
 
-    private linkbasePresentationLinkLoc[] locField;
+    private Loc[] locField;
 
-    private linkbasePresentationLinkPresentationArc[] presentationArcField;
+    private Arc[] presentationArcField;
 
     private string roleField;
 
@@ -122,7 +122,7 @@ public partial class linkbasePresentationLink
 
     
     [XmlElement("loc")]
-    public linkbasePresentationLinkLoc[] loc
+    public Loc[] loc
     {
         get
         {
@@ -136,7 +136,7 @@ public partial class linkbasePresentationLink
 
     
     [XmlElement("presentationArc")]
-    public linkbasePresentationLinkPresentationArc[] presentationArc
+    public Arc[] presentationArc
     {
         get
         {
@@ -173,180 +173,6 @@ public partial class linkbasePresentationLink
         set
         {
             this.typeField = value;
-        }
-    }
-}
-
-
-[Serializable]
-[XmlType(AnonymousType = true, Namespace = "http://www.xbrl.org/2003/linkbase")]
-public partial class linkbasePresentationLinkLoc
-{
-
-    private string hrefField;
-
-    private string labelField;
-
-    private string typeField;
-
-    
-    [XmlAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-    public string href
-    {
-        get
-        {
-            return this.hrefField;
-        }
-        set
-        {
-            this.hrefField = value;
-        }
-    }
-
-    
-    [XmlAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-    public string label
-    {
-        get
-        {
-            return this.labelField;
-        }
-        set
-        {
-            this.labelField = value;
-        }
-    }
-
-    
-    [XmlAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-    public string type
-    {
-        get
-        {
-            return this.typeField;
-        }
-        set
-        {
-            this.typeField = value;
-        }
-    }
-}
-
-
-[Serializable]
-[XmlType(AnonymousType = true, Namespace = "http://www.xbrl.org/2003/linkbase")]
-public partial class linkbasePresentationLinkPresentationArc
-{
-
-    private int orderField;
-
-    private string preferredLabelField;
-
-    private string arcroleField;
-
-    private string fromField;
-
-    private string toField;
-
-    private string typeField;
-
-    private string useField;
-
-    
-    [XmlAttribute]
-    public int order
-    {
-        get
-        {
-            return this.orderField;
-        }
-        set
-        {
-            this.orderField = value;
-        }
-    }
-
-    
-    [XmlAttribute]
-    public string preferredLabel
-    {
-        get
-        {
-            return this.preferredLabelField;
-        }
-        set
-        {
-            this.preferredLabelField = value;
-        }
-    }
-
-    
-    [XmlAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-    public string arcrole
-    {
-        get
-        {
-            return this.arcroleField;
-        }
-        set
-        {
-            this.arcroleField = value;
-        }
-    }
-
-    
-    [XmlAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-    public string from
-    {
-        get
-        {
-            return this.fromField;
-        }
-        set
-        {
-            this.fromField = value;
-        }
-    }
-
-    
-    [XmlAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-    public string to
-    {
-        get
-        {
-            return this.toField;
-        }
-        set
-        {
-            this.toField = value;
-        }
-    }
-
-    
-    [XmlAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-    public string type
-    {
-        get
-        {
-            return this.typeField;
-        }
-        set
-        {
-            this.typeField = value;
-        }
-    }
-
-    
-    [XmlAttribute]
-    public string use
-    {
-        get
-        {
-            return this.useField;
-        }
-        set
-        {
-            this.useField = value;
         }
     }
 }
