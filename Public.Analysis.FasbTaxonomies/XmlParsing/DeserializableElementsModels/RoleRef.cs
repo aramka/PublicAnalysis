@@ -8,7 +8,7 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
 {
 
 
-    [Serializable()]
+    [Serializable]
     [XmlType(AnonymousType = true, Namespace = "http://www.xbrl.org/2003/linkbase")]
     public partial class RoleRef
     {
@@ -20,8 +20,8 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
         private string typeField=string.Empty;
 
 
-        [XmlAttribute()]
-        public string roleURI
+        [XmlAttribute("roleURI")]
+        public string RoleUri
         {
             get
             {
@@ -34,8 +34,8 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
         }
 
 
-        [XmlAttribute(Form = XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-        public string href
+        [XmlAttribute("href", Form = XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
+        public string Href
         {
             get
             {
@@ -48,8 +48,8 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
         }
 
 
-        [XmlAttribute(Form = XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-        public string type
+        [XmlAttribute("type", Form = XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
+        public string Type
         {
             get
             {
