@@ -6,7 +6,12 @@ namespace Public.Analysis.FasbTaxonomies.Tests.XmlParsing.DeserializableElements
     [TestClass]
     public class LabelsElementModelsTest
     {
-        // [Ignore]
+        [TestMethod]
+        public void ToDo()
+        {
+            Assert.Fail("Maybe you need to parse srt labels file as well? Maybe you need to parse other srt files?")
+        }
+        [Ignore]
         [TestMethod]
         public void LabelsXsdFileParses()
         {
