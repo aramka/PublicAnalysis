@@ -1,6 +1,5 @@
 ﻿namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels.PresentationElementModels;
 
-using Public.Analysis.FasbTaxonomies.XmlParsing.Xml;
 using System.Xml.Serialization;
 
 

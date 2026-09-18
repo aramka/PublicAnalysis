@@ -17,8 +17,8 @@ namespace Public.Analysis.FasbTaxonomies.Tests.XmlParsing.XmlElementModels
         {
             var eltsFiles = new string[]
             {
-                @"C:\Users\Andrew\Development\fasb_taxonomies\us-gaap-2026\elts\us-gaap-2026.xsd",
-                @"C:\Users\Andrew\Development\fasb_taxonomies\us-gaap-2026\elts\srt-2026.xsd"
+                @"..\..\..\..\..\fasb_taxonomies\us-gaap-2026\elts\us-gaap-2026.xsd",
+                @"..\..\..\..\..\fasb_taxonomies\us-gaap-2026\elts\srt-2026.xsd"
             };
             int i = 0;
             foreach (string filePath in eltsFiles)
