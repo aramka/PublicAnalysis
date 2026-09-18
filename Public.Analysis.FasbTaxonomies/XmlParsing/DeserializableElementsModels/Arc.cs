@@ -1,29 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.ComponentModel;
+using System.Xml.Serialization;
+using System.Xml.Schema;
 
 namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
 {
     /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.xbrl.org/2003/linkbase")]
+    [Serializable]
+    [DesignerCategory("code")]
+    [XmlType(AnonymousType = true, Namespace = "http://www.xbrl.org/2003/linkbase")]
     public partial class Arc
     {
 
         private decimal orderField;
 
-        private string arcroleField;
+        private string arcroleField = string.Empty;
 
-        private string fromField;
+        private string fromField = string.Empty;
 
-        private string toField;
+        private string toField = string.Empty;
 
-        private string typeField;
+        private string typeField = string.Empty;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public decimal order
+        [XmlAttribute("order")]
+        public decimal Order
         {
             get
             {
@@ -36,8 +39,8 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-        public string arcrole
+        [XmlAttribute("arcrole", Form = XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
+        public string Arcrole
         {
             get
             {
@@ -50,8 +53,8 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-        public string from
+        [XmlAttribute("from", Form = XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
+        public string From
         {
             get
             {
@@ -64,8 +67,8 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-        public string to
+        [XmlAttribute("to", Form = XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
+        public string To
         {
             get
             {
@@ -78,8 +81,8 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-        public string type
+        [XmlAttribute("type", Form = XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
+        public string Type
         {
             get
             {
