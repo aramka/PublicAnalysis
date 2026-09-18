@@ -16,7 +16,7 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
         public void AllLabelsFilesParse(string labelsFilesDirectory)
         {
 
-            XmlSerializer serializer = new XmlSerializer(typeof(linkbase));
+            XmlSerializer serializer = new XmlSerializer(typeof(LabelLinkBase));
             HashSet<string> hasPresentationLink = new HashSet<string>();
             
             string labelsFileSearch = "*-lab-*";
@@ -27,12 +27,12 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
             {
                 using (StreamReader reader = new StreamReader(labelsFile))
                 {
-                    linkbase result = (linkbase)serializer.Deserialize(reader)!;
-                    result.labelLink.Should().NotBeNull();
+                    LabelLinkBase result = (LabelLinkBase)serializer.Deserialize(reader)!;
+                    result.LabelLink.Should().NotBeNull();
 
-                    var locs = result.labelLink.Items.Where(item => item is Loc).ToList();
-                    var labels = result.labelLink.Items.Where(item => item is Label).ToList();
-                    var arcs = result.labelLink.Items.Where(item => item is Arc).ToList();
+                    var locs = result.LabelLink.Locs;
+                    var labels = result.LabelLink.Labels;
+                    var arcs = result.LabelLink.Arcs;
 
                     locs.Should().NotBeEmpty();
                     labels.Should().NotBeEmpty();
