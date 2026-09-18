@@ -12,7 +12,7 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
         public void AllPresentationFilesParse(string presentationFilesDirectory)
         {
 
-            XmlSerializer serializer = new XmlSerializer(typeof(linkbase));
+            XmlSerializer serializer = new XmlSerializer(typeof(StatementLinkBase));
             
             
             string presentationXmlFileSearch = "*-pre-*";
@@ -24,11 +24,11 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
             {
                 using (StreamReader reader = new StreamReader(filePath))
                 {
-                    linkbase result = (linkbase)serializer.Deserialize(reader)!;
+                    StatementLinkBase result = (StatementLinkBase)serializer.Deserialize(reader)!;
 
                     result.presentationLink.Should().NotBeNull();
 
-                    var hRefs = result.presentationLink.loc.ToHRef().Where(l => string.IsNullOrWhiteSpace(l.Location) || string.IsNullOrWhiteSpace(l.Anchor));
+                    var hRefs = result.presentationLink.Locs.ToHRef().Where(l => string.IsNullOrWhiteSpace(l.Location) || string.IsNullOrWhiteSpace(l.Anchor));
 
                     hRefs.Should().BeEmpty();
 
