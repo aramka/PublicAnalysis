@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Public.Analysis.FasbTaxonomies.XmlParsing.Xml;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
@@ -30,6 +31,9 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
                 this.hrefField = value;
             }
         }
+
+        [XmlIgnore]
+        public HRef HRef => new HRef(this.href);
 
 
         [XmlAttribute(Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
