@@ -1,4 +1,5 @@
-﻿using Public.Analysis.FasbTaxonomies.XmlParsing.Xml;
+﻿using Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels.PresentationElementModels;
+using Public.Analysis.FasbTaxonomies.XmlParsing.Xml;
 
 namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
 {

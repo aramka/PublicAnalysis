@@ -1,7 +1,7 @@
 ﻿using AwesomeAssertions;
 using System.Xml.Serialization;
 
-namespace Public.Analysis.FasbTaxonomies.Tests.XmlParsing.DeserializableElementsModels
+namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels.LabelsElementModels
 {
     [TestClass]
     public class LabelsElementModelsTest
@@ -9,22 +9,27 @@ namespace Public.Analysis.FasbTaxonomies.Tests.XmlParsing.DeserializableElements
         [TestMethod]
         public void ToDo()
         {
-            Assert.Fail("Maybe you need to parse srt labels file as well? Maybe you need to parse other srt files?")
+            Assert.Fail("Maybe you need to parse srt labels file as well? Maybe you need to parse other srt files?");
         }
-        [Ignore]
+        [DataRow(@"..\..\..\..\..\fasb_taxonomies\us-gaap-2026\elts", DisplayName = "elts")]
         [TestMethod]
-        public void LabelsXsdFileParses()
+        public void LabelsXsdFileParses(string labelsFilesDirectory)
         {
 
             XmlSerializer serializer = new XmlSerializer(typeof(linkbase));
-            string labelFilePath = @"path to us-gaap-lab-2026.xml";
             HashSet<string> hasPresentationLink = new HashSet<string>();
-            using (StreamReader reader = new StreamReader(labelFilePath))
-            {
-                linkbase result = (linkbase)serializer.Deserialize(reader)!;
+            
+            string labelsFileSearch = "*-lab-*";
 
-                if (result.labelLink is not null)
+            var labelsFiles = Directory.GetFiles(labelsFilesDirectory, labelsFileSearch).ToList();
+
+            foreach (string labelsFile in labelsFiles)
+            {
+                using (StreamReader reader = new StreamReader(labelsFile))
                 {
+                    linkbase result = (linkbase)serializer.Deserialize(reader)!;
+                    result.labelLink.Should().NotBeNull();
+
                     var locs = result.labelLink.Items.Where(item => item is linkbaseLabelLinkLoc).ToList();
                     var labels = result.labelLink.Items.Where(item => item is linkbaseLabelLinkLabel).ToList();
                     var arcs = result.labelLink.Items.Where(item => item is linkbaseLabelLinkLabelArc).ToList();
@@ -34,9 +39,7 @@ namespace Public.Analysis.FasbTaxonomies.Tests.XmlParsing.DeserializableElements
                     arcs.Should().NotBeEmpty();
                 }
             }
-
         }
-
     }
 }
 
