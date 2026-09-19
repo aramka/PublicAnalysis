@@ -1,7 +1,7 @@
 ﻿using AwesomeAssertions;
 using Public.Analysis.FasbTaxonomies.Tests.Parsing;
 using Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels;
-using Public.Analysis.FasbTaxonomies.XmlParsing.XmlElementModels;
+using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels;
 using Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq;
 using System.Text;
 using System.Xml.Linq;
@@ -10,7 +10,7 @@ using System.Xml.Serialization;
 namespace Public.Analysis.FasbTaxonomies.Tests.XmlParsing.XmlElementModels
 {
     [TestClass]
-    public class EltsTest
+    public class USGaapElementsFilesTest
     {
         [TestMethod]
         public void ReadAllElementsFromFile()

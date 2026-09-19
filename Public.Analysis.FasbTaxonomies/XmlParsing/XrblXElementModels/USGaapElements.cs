@@ -1,12 +1,7 @@
-﻿using Public.Analysis.FasbTaxonomies.Parsing;
-using Public.Analysis.FasbTaxonomies.XmlParsing.Xml;
-using Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq;
 using System.Xml.Linq;
 
-namespace Public.Analysis.FasbTaxonomies.XmlParsing.XmlElementModels
+namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels
 {
     public class USGaapElements
     {

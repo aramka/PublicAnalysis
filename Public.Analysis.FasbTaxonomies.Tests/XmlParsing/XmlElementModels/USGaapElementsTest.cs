@@ -1,7 +1,7 @@
 ﻿using Moq;
-using Public.Analysis.FasbTaxonomies.Parsing;
+using Public.Analysis.FasbTaxonomies.XmlParsing;
 using Public.Analysis.FasbTaxonomies.Tests.Parsing;
-using Public.Analysis.FasbTaxonomies.XmlParsing.Xml;
+using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels;
 using Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Text;
 namespace Public.Analysis.FasbTaxonomies.Tests.XmlParsing.XmlElementModels
 {
     [TestClass]
-    public class ElementsTest
+    public class USGaapElementsTest
     {
         string eltsString = @"<?xml version='1.0' encoding='UTF-8'?>
 
@@ -36,7 +36,7 @@ Notice: Authorized Uses are Set Forth at https://xbrl.fasb.org/terms/TaxonomiesT
         {
             var helper = new XmlStringsHelper(eltsString);
             var missingAbstract = helper.GetDescendant(LocalNamesAndPrefixes.XsElement, LocalNamesAndPrefixes.XsPrefix, helper.RootNameSpacesByPrefix);
-            var element = new Element(missingAbstract, helper.RootNameSpacesByPrefix, new XElementParsingUtility());
+            var element = new USGaapElement(missingAbstract, helper.RootNameSpacesByPrefix, new XElementParsingUtility());
             Assert.IsFalse(element.Abstract);
         }
     }

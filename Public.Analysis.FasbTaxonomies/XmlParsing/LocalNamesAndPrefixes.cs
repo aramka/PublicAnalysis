@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Public.Analysis.FasbTaxonomies.Parsing
+namespace Public.Analysis.FasbTaxonomies.XmlParsing
 {
     public static class LocalNamesAndPrefixes
     {
@@ -32,5 +32,8 @@ namespace Public.Analysis.FasbTaxonomies.Parsing
         public const string Nillable = "nillable";
 
         public const string XsElement = "element";
+        public const string RoleTypeElement = "roleType";
+
+        public const string DefinitionElement = "definition";
     }
 }

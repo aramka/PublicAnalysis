@@ -1,6 +1,6 @@
-﻿using Public.Analysis.FasbTaxonomies.XmlParsing.Xml;
+﻿using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels;
 
-namespace Public.Analysis.FasbTaxonomies.XmlParsing.XmlElementModels
+namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels
 {
     [TestClass]
     public class HRefTest

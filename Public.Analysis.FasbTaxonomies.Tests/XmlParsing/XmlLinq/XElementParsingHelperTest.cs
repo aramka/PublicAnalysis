@@ -1,4 +1,4 @@
-﻿using Public.Analysis.FasbTaxonomies.Parsing;
+﻿using Public.Analysis.FasbTaxonomies.XmlParsing;
 using Public.Analysis.FasbTaxonomies.Tests.Parsing;
 
 namespace Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq
