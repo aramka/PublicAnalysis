@@ -27,7 +27,7 @@ namespace Public.Analysis.FasbTaxonomies.Tests.XmlParsing.XmlElementModels
                 {
                     XDocument xDoc = XDocument.Load(reader);
 
-                    var elts = new Elts(xDoc, new XElementParsingUtility());
+                    var elts = new USGaapElements(xDoc, new XElementParsingUtility());
 
                     var allElements = elts.GetElements().ToList();
 

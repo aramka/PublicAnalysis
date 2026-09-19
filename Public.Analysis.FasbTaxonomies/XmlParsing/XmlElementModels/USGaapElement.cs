@@ -4,13 +4,13 @@ using System.Xml.Linq;
 
 namespace Public.Analysis.FasbTaxonomies.XmlParsing.Xml
 {
-    public class Element
+    public class USGaapElement
     {
         private readonly XElement xElement;
         private readonly IReadOnlyDictionary<string, XNamespace> namespaces;
         private readonly IXElementParsingUtility parser;
 
-        public Element(XElement xElement, IReadOnlyDictionary<string, XNamespace> namespaces, IXElementParsingUtility parser)
+        public USGaapElement(XElement xElement, IReadOnlyDictionary<string, XNamespace> namespaces, IXElementParsingUtility parser)
         {
             this.xElement = xElement;
             this.namespaces = namespaces;

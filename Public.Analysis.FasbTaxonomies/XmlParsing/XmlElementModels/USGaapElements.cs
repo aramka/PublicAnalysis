@@ -8,26 +8,26 @@ using System.Xml.Linq;
 
 namespace Public.Analysis.FasbTaxonomies.XmlParsing.XmlElementModels
 {
-    public class Elts
+    public class USGaapElements
     {
         private readonly XDocument eltsXDoc;
         private IReadOnlyDictionary<string, XNamespace> namespacesByPrefix;
         private readonly IXElementParsingUtility xElementParsingUtility;
 
-        public Elts(XDocument eltsXsdDoc, IXElementParsingUtility xElementParsingUtility)
+        public USGaapElements(XDocument eltsXsdDoc, IXElementParsingUtility xElementParsingUtility)
         {
             this.eltsXDoc = eltsXsdDoc;
             this.xElementParsingUtility = xElementParsingUtility;
             this.namespacesByPrefix = this.xElementParsingUtility.RootNameSpacesByPrefix(eltsXsdDoc);
         }
 
-        public IEnumerable<Element> GetElements()
+        public IEnumerable<USGaapElement> GetElements()
         {
 
             return this.xElementParsingUtility.GetDescendants(this.eltsXDoc, LocalNamesAndPrefixes.XsElement, LocalNamesAndPrefixes.XsPrefix, this.namespacesByPrefix)
-                .Select(xElement=>new Element(xElement, this.namespacesByPrefix, this.xElementParsingUtility))
+                .Select(xElement=>new USGaapElement(xElement, this.namespacesByPrefix, this.xElementParsingUtility))
                 .ToList() 
-                ?? Enumerable.Empty<Element>();
+                ?? Enumerable.Empty<USGaapElement>();
         }
     }
 }
