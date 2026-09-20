@@ -60,7 +60,42 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
         [TestMethod]
         public void ElementNotFound()
         {
+            var missing = this.labelLink.Locs[1];
+            this.labelLink.Locs = this.labelLink.Locs.Take(1).Concat(this.labelLink.Locs.Skip(2)).ToArray();
 
+            LabelsBuilder builder = new LabelsBuilder();
+            InvalidOperationException? actual = null;
+            try
+            {
+                builder.BuildLabels(this.labelLink);
+
+            }catch(InvalidOperationException e)
+            {
+                actual = e;
+            }
+
+            actual.Should().NotBeNull();
+            actual.Message.Should().Be($"Arc from {missing.XLinkLabel} was not found in {nameof(LabelLink.Locs)}.");
+        }
+        [TestMethod]
+        public void LabelNotFound()
+        {
+            var missing = this.labelLink.Labels[1];
+            this.labelLink.Labels = this.labelLink.Labels.Take(1).Concat(this.labelLink.Labels.Skip(2)).ToArray();
+
+            LabelsBuilder builder = new LabelsBuilder();
+            InvalidOperationException? actual = null;
+            try
+            {
+                builder.BuildLabels(this.labelLink);
+            }
+            catch (InvalidOperationException e)
+            {
+                actual = e;
+            }
+
+            actual.Should().NotBeNull();
+            actual.Message.Should().Be($"Label from {missing.XLinkLabel} was not found in {nameof(LabelLink.Labels)}.");
         }
     }
 }

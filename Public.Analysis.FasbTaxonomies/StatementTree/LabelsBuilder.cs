@@ -1,6 +1,7 @@
 ﻿using Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 namespace Public.Analysis.FasbTaxonomies.StatementTree
@@ -11,9 +12,21 @@ namespace Public.Analysis.FasbTaxonomies.StatementTree
         {
             var elementLocsByXLinkLabel = labelLink.Locs.ToDictionary(l => l.XLinkLabel);
             var labelLocsByXLinkLabel = labelLink.Labels.ToDictionary(l => l.XLinkLabel);
+            Dictionary<ElementIdRecord, string> labelsDict = new Dictionary<ElementIdRecord, string>();
 
-            var labelsDict = labelLink.Arcs.ToDictionary(a => elementLocsByXLinkLabel[a.From].ElementId, arc => labelLocsByXLinkLabel[arc.To].Value);
-
+            foreach(Arc link in labelLink.Arcs)
+            {
+                if(!elementLocsByXLinkLabel.TryGetValue(link.From, out Loc? elementLocator))
+                {
+                    throw new InvalidOperationException($"Arc from {link.From} was not found in {nameof(LabelLink.Locs)}.");
+                }
+                if(!labelLocsByXLinkLabel.TryGetValue(link.To, out Label? labelLocator))
+                {
+                    throw new InvalidOperationException($"Label from {link.To} was not found in {nameof(LabelLink.Labels)}.");
+                }
+                labelsDict[elementLocator.ElementId] = labelLocator.Value;
+            }
+           
             return labelsDict;
         }
     }
