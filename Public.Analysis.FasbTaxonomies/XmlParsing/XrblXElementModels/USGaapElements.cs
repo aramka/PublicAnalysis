@@ -16,13 +16,13 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels
             this.namespacesByPrefix = this.xElementParsingUtility.RootNameSpacesByPrefix(eltsXsdDoc);
         }
 
-        public IEnumerable<USGaapElement> GetElements()
+        public IEnumerable<XsElement> GetElements()
         {
 
             return this.xElementParsingUtility.GetDescendants(this.eltsXDoc, LocalNamesAndPrefixes.XsElement, LocalNamesAndPrefixes.XsPrefix, this.namespacesByPrefix)
-                .Select(xElement=>new USGaapElement(xElement, this.namespacesByPrefix, this.xElementParsingUtility))
+                .Select(xElement=>new XsElement(xElement, this.namespacesByPrefix, this.xElementParsingUtility))
                 .ToList() 
-                ?? Enumerable.Empty<USGaapElement>();
+                ?? Enumerable.Empty<XsElement>();
         }
     }
 }

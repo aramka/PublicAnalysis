@@ -3,7 +3,7 @@ using System.Xml.Linq;
 
 namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels
 {
-    public class USRoleType
+    public class USRoleType : IUSRoleType
     {
         private XElement xElement;
         private IReadOnlyDictionary<string, XNamespace> namespacesByPrefix;

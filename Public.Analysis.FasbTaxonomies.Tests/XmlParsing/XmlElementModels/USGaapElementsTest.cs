@@ -36,7 +36,7 @@ Notice: Authorized Uses are Set Forth at https://xbrl.fasb.org/terms/TaxonomiesT
         {
             var helper = new XmlStringsHelper(eltsString);
             var missingAbstract = helper.GetDescendant(LocalNamesAndPrefixes.XsElement, LocalNamesAndPrefixes.XsPrefix, helper.RootNameSpacesByPrefix);
-            var element = new USGaapElement(missingAbstract, helper.RootNameSpacesByPrefix, new XElementParsingUtility());
+            var element = new XsElement(missingAbstract, helper.RootNameSpacesByPrefix, new XElementParsingUtility());
             Assert.IsFalse(element.Abstract);
         }
     }

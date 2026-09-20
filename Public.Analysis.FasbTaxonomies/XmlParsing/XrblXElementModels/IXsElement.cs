@@ -1,6 +1,6 @@
 ﻿namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels
 {
-    public interface IUSGaapElement
+    public interface IXsElement
     {
         bool Abstract { get; }
         string Balance { get; }

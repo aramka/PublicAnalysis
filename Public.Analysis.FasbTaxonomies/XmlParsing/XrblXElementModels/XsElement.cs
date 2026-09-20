@@ -5,13 +5,13 @@ using System.Xml.Linq;
 
 namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels
 {
-    public class USGaapElement : IUSGaapElement
+    public class XsElement : IXsElement
     {
         private readonly XElement xElement;
         private readonly IReadOnlyDictionary<string, XNamespace> namespaces;
         private readonly IXElementParsingUtility parser;
 
-        public USGaapElement(XElement xElement, IReadOnlyDictionary<string, XNamespace> namespaces, IXElementParsingUtility parser)
+        public XsElement(XElement xElement, IReadOnlyDictionary<string, XNamespace> namespaces, IXElementParsingUtility parser)
         {
             this.xElement = xElement;
             this.namespaces = namespaces;
