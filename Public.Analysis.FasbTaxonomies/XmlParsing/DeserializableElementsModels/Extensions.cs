@@ -5,6 +5,6 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
 {
     public static class Extensions
     {
-        public static IEnumerable<HRef> ToHRef(this IEnumerable<Loc>? loc) => loc?.Select(l => new HRef(l.Href)) ?? Enumerable.Empty<HRef>();
+        public static IEnumerable<LocationAndAnchor> ToHRef(this IEnumerable<Loc>? loc) => loc?.Select(l => new LocationAndAnchor(l.Href)) ?? Enumerable.Empty<LocationAndAnchor>();
     }
 }

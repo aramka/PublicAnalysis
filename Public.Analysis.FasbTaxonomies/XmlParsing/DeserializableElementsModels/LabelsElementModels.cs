@@ -2,7 +2,7 @@
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
-namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels.LabelsElementModels;
+namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels;
 
 [Serializable()]
 [XmlType(AnonymousType = true, Namespace = "http://www.xbrl.org/2003/linkbase", TypeName ="linkbase")]

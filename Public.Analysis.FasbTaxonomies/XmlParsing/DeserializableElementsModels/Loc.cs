@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
 using System.Xml.Schema;
+using Public.Analysis.FasbTaxonomies.StatementTree;
 
 namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
 {
@@ -34,11 +35,14 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
         }
 
         [XmlIgnore]
-        public HRef HRef => new HRef(this.Href);
+        public LocationAndAnchor LocationAndAnchor => new LocationAndAnchor(this.Href);
+
+        [XmlIgnore]
+        public ElementIdRecord ElementId => this.LocationAndAnchor.ElementIdRecord;
 
 
         [XmlAttribute("label", Form = XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
-        public string Label
+        public string XLinkLabel
         {
             get
             {

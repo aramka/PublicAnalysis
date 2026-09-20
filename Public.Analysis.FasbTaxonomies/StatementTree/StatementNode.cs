@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Public.Analysis.FasbTaxonomies.StatementNodesBuilder
+namespace Public.Analysis.FasbTaxonomies.StatementTree
 {
     public interface IStatementNode
     {

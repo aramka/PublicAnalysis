@@ -1,16 +1,17 @@
-﻿using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels;
+﻿using Public.Analysis.FasbTaxonomies.StatementTree;
+using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels;
 
 namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels
 {
     [TestClass]
-    public class HRefTest
+    public class LocationAndAnchorTest
     {
 
         [TestMethod]
         [DataRow($"theLocation#theAnchor", "theLocation", "theAnchor")]
         public void LocationAndAnchor(string hRefValue, string expectedLocation, string expectedAnchor)
         {
-            HRef hRef = new HRef(hRefValue);
+            LocationAndAnchor hRef = new LocationAndAnchor(hRefValue);
 
             Assert.AreEqual(expectedLocation, hRef.Location);
             Assert.AreEqual(expectedAnchor, hRef.Anchor);
@@ -27,7 +28,16 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels
         [DataRow("#", DisplayName = "hash")]
         public void HRefValueNotValid_Throws(string invalidHRef)
         {
-            Assert.ThrowsExactly<InvalidOperationException>(() => new HRef(invalidHRef));
+            Assert.ThrowsExactly<InvalidOperationException>(() => new LocationAndAnchor(invalidHRef));
+        }
+
+        [TestMethod]
+        [DataRow("location#elementId","elementId")]
+        public void ElementIdRecord(string hRefValue, string id)
+        {
+            LocationAndAnchor hRef = new LocationAndAnchor(hRefValue);
+            ElementIdRecord expectedIdRecord = new ElementIdRecord(id);
+            Assert.AreEqual(expectedIdRecord, hRef.ElementIdRecord);
         }
     }
 }

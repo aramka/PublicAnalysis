@@ -28,7 +28,7 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
 
                     result.presentationLink.Should().NotBeNull();
 
-                    var hRefs = result.presentationLink.Locs.Where(l => string.IsNullOrWhiteSpace(l.HRef.Location) || string.IsNullOrWhiteSpace(l.HRef.Anchor));
+                    var hRefs = result.presentationLink.Locs.Where(l => string.IsNullOrWhiteSpace(l.LocationAndAnchor.Location) || string.IsNullOrWhiteSpace(l.LocationAndAnchor.Anchor));
 
                     hRefs.Should().BeEmpty();
 

@@ -1,14 +1,15 @@
-﻿using System;
+﻿using Public.Analysis.FasbTaxonomies.StatementTree;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels
 {
-    public class HRef
+    public class LocationAndAnchor
     {
         private readonly string[] parts;
 
-        public HRef(string hRef)
+        public LocationAndAnchor(string hRef)
         {
             this.parts = hRef?.Split('#', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
 
@@ -21,5 +22,7 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels
         public string Anchor => parts[1];
 
         public string? Location => parts[0];
+
+        public ElementIdRecord ElementIdRecord => new ElementIdRecord(this.Anchor);
     }
 }
