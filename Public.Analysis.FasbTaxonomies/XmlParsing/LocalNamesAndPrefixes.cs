@@ -35,5 +35,8 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing
         public const string RoleTypeElement = "roleType";
 
         public const string DefinitionElement = "definition";
+        internal static string BalanceAttribute = "balance";
+        internal static string PeriodTypeAttribute="periodType";
+        internal static string XbrliPrefix = "xbrli";
     }
 }
