@@ -11,14 +11,14 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
     public class LabelsBuilderTest
     {
         private readonly LabelLink labelLink;
-        private readonly Dictionary<ElementIdRecord, string> expectedDict;
+        private readonly Dictionary<ElementId, string> expectedDict;
 
         public LabelsBuilderTest()
         {
             List<Loc> elementLocs = new List<Loc>();
             List<Label> labelLocs = new List<Label>();
             List<Arc> links = new List<Arc>();
-            this.expectedDict = new Dictionary<ElementIdRecord, string>();
+            this.expectedDict = new Dictionary<ElementId, string>();
             for (int i = 1; i <= 3; i++)
             {
                 Loc elementLocator = new Loc();

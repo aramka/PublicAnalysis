@@ -38,7 +38,7 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
         public LocationAndAnchor LocationAndAnchor => new LocationAndAnchor(this.Href);
 
         [XmlIgnore]
-        public ElementIdRecord ElementId => this.LocationAndAnchor.ElementIdRecord;
+        public ElementId ElementId => this.LocationAndAnchor.ElementIdRecord;
 
 
         [XmlAttribute("label", Form = XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]

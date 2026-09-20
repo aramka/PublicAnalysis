@@ -8,11 +8,11 @@ namespace Public.Analysis.FasbTaxonomies.StatementTree
 {
     public class LabelsBuilder : ILabelsBuilder
     {
-        public IReadOnlyDictionary<ElementIdRecord, string> BuildLabels(LabelLink labelLink)
+        public IReadOnlyDictionary<ElementId, string> BuildLabels(LabelLink labelLink)
         {
             var elementLocsByXLinkLabel = labelLink.Locs.ToDictionary(l => l.XLinkLabel);
             var labelLocsByXLinkLabel = labelLink.Labels.ToDictionary(l => l.XLinkLabel);
-            Dictionary<ElementIdRecord, string> labelsDict = new Dictionary<ElementIdRecord, string>();
+            Dictionary<ElementId, string> labelsDict = new Dictionary<ElementId, string>();
 
             foreach(Arc link in labelLink.Arcs)
             {

@@ -1,4 +1,5 @@
-﻿using Public.Analysis.FasbTaxonomies.XmlParsing;
+﻿using Public.Analysis.FasbTaxonomies.StatementTree;
+using Public.Analysis.FasbTaxonomies.XmlParsing;
 using Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq;
 using System.Runtime.CompilerServices;
 using System.Xml.Linq;
@@ -38,5 +39,7 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels
         public string Balance => this.parser.GetAttributeValue(this.xElement, LocalNamesAndPrefixes.BalanceAttribute, LocalNamesAndPrefixes.XbrliPrefix, this.namespaces);
 
         public string PeriodType => this.parser.GetAttributeValue(this.xElement, LocalNamesAndPrefixes.PeriodTypeAttribute, LocalNamesAndPrefixes.XbrliPrefix, this.namespaces);
+
+        public ElementId ElementId => new ElementId(this.Id);
     }
 }

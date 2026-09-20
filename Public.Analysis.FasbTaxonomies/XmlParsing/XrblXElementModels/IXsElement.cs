@@ -1,7 +1,10 @@
-﻿namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels
+﻿using Public.Analysis.FasbTaxonomies.StatementTree;
+
+namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels
 {
     public interface IXsElement
     {
+        public ElementId ElementId { get; }
         bool Abstract { get; }
         string Balance { get; }
         string Id { get; }

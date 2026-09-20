@@ -36,7 +36,7 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels
         public void ElementIdRecord(string hRefValue, string id)
         {
             LocationAndAnchor hRef = new LocationAndAnchor(hRefValue);
-            ElementIdRecord expectedIdRecord = new ElementIdRecord(id);
+            ElementId expectedIdRecord = new ElementId(id);
             Assert.AreEqual(expectedIdRecord, hRef.ElementIdRecord);
         }
     }

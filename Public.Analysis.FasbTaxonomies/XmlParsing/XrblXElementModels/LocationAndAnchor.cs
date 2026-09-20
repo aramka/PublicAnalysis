@@ -23,6 +23,6 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels
 
         public string? Location => parts[0];
 
-        public ElementIdRecord ElementIdRecord => new ElementIdRecord(this.Anchor);
+        public ElementId ElementIdRecord => new ElementId(this.Anchor);
     }
 }

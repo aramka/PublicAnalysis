@@ -5,8 +5,8 @@ using System.Text;
 
 namespace Public.Analysis.FasbTaxonomies.StatementTree
 {
-    public record ElementIdRecord(string elementId)
+    public record ElementId(string elementId)
     {
-        public ElementIdRecord(IXsElement element) : this(element.Id) { }
+        public ElementId(IXsElement element) : this(element.Id) { }
     }
 }

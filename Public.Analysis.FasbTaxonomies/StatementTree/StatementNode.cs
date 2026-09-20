@@ -5,24 +5,32 @@ using System.Text;
 
 namespace Public.Analysis.FasbTaxonomies.StatementTree
 {
-    public interface IStatementNode
+    public class StatementNode : IStatementNode
     {
-        IXsElement USGaapElement { get; }
+        private readonly List<IStatementNode> children;
 
-        /// <summary>
-        /// Sets the parent if not already set. If the parent has already been set <see cref="InvalidOperationException"/> is throw.
-        /// </summary>
-        /// <param name="parent"></param>
-        /// <returns></returns>
-        IStatementNode?  Parent { get; set; }
+        public StatementNode(IXsElement xsElement, string label, decimal order)
+        {
+            this.XsElement = xsElement;
+            this.Label = label;
+            this.Order = order;
+            this.children = new List<IStatementNode>();
+        }
+        public IXsElement XsElement { get; }
 
-        /// <summary>
-        /// Adds the child does not exist it is added. If the child exists <see cref="InvalidOperationException"/> is throw. 
-        /// </summary>
-        /// <param name="child"></param>
-        void AddChild(IStatementNode child);
+        public IStatementNode? Parent { get; set; }
 
         public string Label { get; }
 
+        public void AddChild(IStatementNode child)
+        {
+            this.children.Add(child);
+        }
+
+        public IEnumerable<IStatementNode> Children => this.children.Select(c => c).ToList();
+
+        public decimal Order { get; set; }
+
+        public ElementId ElementId => this.XsElement.ElementId;
     }
 }

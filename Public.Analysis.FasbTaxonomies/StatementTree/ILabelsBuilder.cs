@@ -7,6 +7,6 @@ namespace Public.Analysis.FasbTaxonomies.StatementTree
 {
     public interface ILabelsBuilder
     {
-        IReadOnlyDictionary<ElementIdRecord, string> BuildLabels(LabelLink labelLink);
+        IReadOnlyDictionary<ElementId, string> BuildLabels(LabelLink labelLink);
     }
 }
