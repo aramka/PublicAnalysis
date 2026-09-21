@@ -67,7 +67,7 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
 
             var parents = BuildElementTestData(parentCount, "parent").Select(p => new { p.elementMoq, p.label, p.loc });
 
-            var parentChildren = parents.Select((p,i) => new { Parent = p, Children = BuildElementTestData(childCount, $"Parent{i}_child").Select(c => new { c.elementMoq, c.label, c.loc }) });
+            var parentChildren = parents.Select((p,i) => new { Parent = p, Children = BuildElementTestData(childCount, $"{p.label}_child").Select(c => new { c.elementMoq, c.label, c.loc }) });
 
             var parentChildArcs = parentChildren.Select((pc, i) => new { pc.Parent, pc.Children, Arcs = pc.Children.Select((c, j) => new { Parent=pc.Parent, Child = c, From = pc.Parent.loc.XLinkLabel, To = c.loc.XLinkLabel, Order = j }) });
 
@@ -93,7 +93,7 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
                 foreach(var arc in pca.Arcs)
                 {
                     StatementNode childNode = new StatementNode(arc.Child.elementMoq.Object, arc.Child.label, arc.Order);
-                    childNode.Parent = parentNode;
+                    childNode.ParentElementId = parentNode.ElementId;
                     parentNode.AddChild(childNode);
                     nodes.Add(childNode);
                 }

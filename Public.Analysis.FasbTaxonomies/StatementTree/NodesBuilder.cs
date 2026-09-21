@@ -60,7 +60,7 @@ namespace Public.Analysis.FasbTaxonomies.StatementTree
                 existingNodes.Add(childNode.ElementId, childNode);
             }
             parentNode.AddChild(childNode);
-            childNode.Parent = parentNode;
+            childNode.ParentElementId = parentNode.ElementId;
             childNode.Order = order;
         }
     }

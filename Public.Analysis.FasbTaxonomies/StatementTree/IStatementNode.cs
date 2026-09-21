@@ -14,7 +14,7 @@ namespace Public.Analysis.FasbTaxonomies.StatementTree
         /// </summary>
         /// <param name="parent"></param>
         /// <returns></returns>
-        IStatementNode?  Parent { get; set; }
+        ElementId?  ParentElementId { get; set; }
 
         /// <summary>
         /// If the child does not exist it is added. If the child exists <see cref="InvalidOperationException"/> is thrown. 

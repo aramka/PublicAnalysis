@@ -18,7 +18,7 @@ namespace Public.Analysis.FasbTaxonomies.StatementTree
         }
         public IXsElement XsElement { get; }
 
-        public IStatementNode? Parent { get; set; }
+        public ElementId? ParentElementId { get; set; }
 
         public string Label { get; }
 
