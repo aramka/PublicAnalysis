@@ -1,4 +1,6 @@
 ﻿using AwesomeAssertions;
+using Microsoft.VisualBasic;
+using Microsoft.VisualStudio.CodeCoverage;
 using Moq;
 using OpenTelemetry.Context;
 using OpenTelemetry.Trace;
@@ -119,10 +121,11 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
             return (presentationLink, elementsByElementId, labelsByElementId, expectedNodes);
         }
 
-        [TestMethod(DisplayName ="Build: Parent->Child->Child")]
-        public void Build_Depth3()
+        [TestMethod()]
+        [DynamicData(nameof(GetNodesAtDepth))]
+        public void Build_Nodes(int[] nodesByDepth)
         {
-            int[] nodesByDepth = [ 2,  1,  3 ];
+            // int[] nodesByDepth = [ 2,  1,  3 ];
             (PresentationLink presentationLink, IReadOnlyDictionary<ElementId, IXsElement> elementsByElementId, IReadOnlyDictionary<ElementId, string> labelsByElementId, Dictionary<ElementId, IStatementNode> expectedNodes) = 
                 BuildNestedNodesTestData(nodesByDepth);
 
@@ -130,6 +133,20 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
             Dictionary<ElementId, IStatementNode> actualNodes = nodesBuilder.BuildNodes(presentationLink, elementsByElementId, labelsByElementId);
 
             actualNodes.Should().BeEquivalentTo(expectedNodes);
+        }
+
+        private static IEnumerable<int[]> GetNodesAtDepth()
+        {
+            yield return [1];
+            yield return [2];
+            yield return [2, 1];
+            yield return [2, 2];
+            yield return [2, 1, 1];
+            yield return [2, 1, 2];
+            yield return [2, 1, 3];
+            yield return [2, 2, 1];
+            yield return [2, 2, 2];
+            yield return [2, 2, 3];
         }
     }
 }
