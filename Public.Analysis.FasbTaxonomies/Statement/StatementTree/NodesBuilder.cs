@@ -1,10 +1,11 @@
-﻿using Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels;
+﻿using Public.Analysis.FasbTaxonomies.Statement.StatementTree;
+using Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels;
 using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Public.Analysis.FasbTaxonomies.StatementTree
+namespace Public.Analysis.FasbTaxonomies.Statement.StatementTree
 {
     public class NodesBuilder
     {

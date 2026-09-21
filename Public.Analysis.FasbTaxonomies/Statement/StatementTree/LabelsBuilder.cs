@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace Public.Analysis.FasbTaxonomies.StatementTree
+namespace Public.Analysis.FasbTaxonomies.Statement.StatementTree
 {
     public class LabelsBuilder : ILabelsBuilder
     {

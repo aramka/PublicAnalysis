@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.CodeCoverage;
 using Moq;
 using OpenTelemetry.Context;
 using OpenTelemetry.Trace;
-using Public.Analysis.FasbTaxonomies.StatementTree;
+using Public.Analysis.FasbTaxonomies.Statement.StatementTree;
 using Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels;
 using Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels.PresentationElementModels;
 using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels;
@@ -12,23 +12,23 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
+namespace Public.Analysis.FasbTaxonomies.Tests.Statement.StatementTree
 {
     [TestClass]
     public class NodesBuilderTest
     {
         /*
          * record ElementId(IXsElement element) - done
-         * LabelsBuilder:ILabelsBuilder
-         *  IReadOnlyDictionary<ElementId,string> BuildLabels(labels)
-         *  
-         * NodeBuilder:INodeBuilder
+         * LabelsBuilder:ILabelsBuilder - done
+         *  IReadOnlyDictionary<ElementId,string> BuildLabels(labels) 
+         * NodeBuilder:INodeBuilder - done
          *  NodeBuilder(ILabelsBuilder)
          *  IEnumerable<IStatementNode> BuildNodes(IEnumerable<IUSGaapElements> elements, IEnumerable<Loc> locators, LabelLinkBase labels);
          *  
          * DeprecateConcepts:IDeprecateConcepts
          *  DeprecateConcepts(IBuildDeprecatedConcepts deprecatedConceptsBuilder)
          *  IEnumerable<IDeprecatedConcept> DeprecateConcepts(List<IStatementNode> nodes);
+         *  
          * StatementTreeBuilder:IStatementTreeBuilder
          *  IReadOnlyDictionary<ElementId,IStatementNode> BuildStatementTree(IEnumerable<IStatementNode> nodes);
          */

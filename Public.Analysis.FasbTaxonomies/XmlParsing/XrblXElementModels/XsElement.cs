@@ -1,4 +1,4 @@
-﻿using Public.Analysis.FasbTaxonomies.StatementTree;
+﻿using Public.Analysis.FasbTaxonomies.Statement.StatementTree;
 using Public.Analysis.FasbTaxonomies.XmlParsing;
 using Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq;
 using System.Runtime.CompilerServices;

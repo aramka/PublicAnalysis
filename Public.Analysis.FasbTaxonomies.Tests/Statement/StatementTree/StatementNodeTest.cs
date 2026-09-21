@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Public.Analysis.FasbTaxonomies.Tests.StatementTree
+namespace Public.Analysis.FasbTaxonomies.Tests.Statement.StatementTree
 {
     [TestClass]
     public class StatementNodeTest

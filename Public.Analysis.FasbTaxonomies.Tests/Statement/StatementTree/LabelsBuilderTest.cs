@@ -1,11 +1,11 @@
 ﻿using AwesomeAssertions;
-using Public.Analysis.FasbTaxonomies.StatementTree;
+using Public.Analysis.FasbTaxonomies.Statement.StatementTree;
 using Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
+namespace Public.Analysis.FasbTaxonomies.Tests.Statement.StatementTree
 {
     [TestClass]
     public class LabelsBuilderTest

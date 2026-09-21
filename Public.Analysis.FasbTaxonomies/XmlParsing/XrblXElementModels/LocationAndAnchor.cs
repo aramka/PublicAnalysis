@@ -1,4 +1,4 @@
-﻿using Public.Analysis.FasbTaxonomies.StatementTree;
+﻿using Public.Analysis.FasbTaxonomies.Statement.StatementTree;
 using System;
 using System.Collections.Generic;
 using System.Text;

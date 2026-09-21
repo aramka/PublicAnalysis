@@ -1,4 +1,4 @@
-﻿using Public.Analysis.FasbTaxonomies.StatementTree;
+﻿using Public.Analysis.FasbTaxonomies.Statement.StatementTree;
 
 namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels
 {
