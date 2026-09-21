@@ -1,5 +1,6 @@
 ﻿using AwesomeAssertions;
 using Moq;
+using OpenTelemetry.Context;
 using Public.Analysis.FasbTaxonomies.StatementTree;
 using Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels;
 using Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels.PresentationElementModels;
@@ -106,54 +107,100 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
 
         public (PresentationLink presentationLink, IReadOnlyDictionary<ElementId, IXsElement> elementsByElementId, IReadOnlyDictionary<ElementId,string> labelsByElementId, Dictionary<ElementId, IStatementNode> expectedNodes) BuildNestedNodesTestData(int depth)
         {
+            List<Arc> arcs = new List<Arc>();
+            List<Loc> locs = new List<Loc>();
+            Dictionary<ElementId, IXsElement> elementsByElementId = new Dictionary<ElementId, IXsElement>();
+            Dictionary<ElementId, string> labelsByElementId = new Dictionary<ElementId, string>();
+            Dictionary<ElementId, IStatementNode> expectedNodes = new Dictionary<ElementId, IStatementNode>();
+
             (Loc parentLoc, Mock<IXsElement> parentElementMoq, string parentLabel) = BuildElementTestData(1, "parent").Single();
-            (Loc child1Loc, Mock<IXsElement> child1ElementMoq, string child1Label) = BuildElementTestData(1, "child_1").Single();
-            (Loc child2Loc, Mock<IXsElement> child2ElementMoq, string child2Label) = BuildElementTestData(1, "child_2").Single();
 
-            var arc1 = new Arc();
-            arc1.From = parentLoc.XLinkLabel;
-            arc1.To = child1Loc.XLinkLabel;
-            arc1.Order = 1;
-
-            var arc2 = new Arc();
-            arc2.From = child1Loc.XLinkLabel;
-            arc2.To = child2Loc.XLinkLabel;
-            arc2.Order = 1;
-
-            PresentationLink presentationLink = new PresentationLink();
-            presentationLink.Arcs = [arc1, arc2];
-            presentationLink.Locs = [parentLoc, child1Loc, child2Loc];
-
-            IReadOnlyDictionary<ElementId, IXsElement> elementsByElementId = new Dictionary<ElementId, IXsElement>
-            {
-                [parentElementMoq.Object.ElementId] = parentElementMoq.Object,
-                [child1ElementMoq.Object.ElementId] = child1ElementMoq.Object,
-                [child2ElementMoq.Object.ElementId] = child2ElementMoq.Object
-            };
-            IReadOnlyDictionary<ElementId, string> labelsByElementId = new Dictionary<ElementId, string>
-            {
-                [parentElementMoq.Object.ElementId] = parentLabel,
-                [child1ElementMoq.Object.ElementId] = child1Label,
-                [child2ElementMoq.Object.ElementId] = child2Label
-            };
-
+            locs.Add(parentLoc);
+            elementsByElementId[parentElementMoq.Object.ElementId] = parentElementMoq.Object;
+            labelsByElementId[parentElementMoq.Object.ElementId] = parentLabel;
             StatementNode parentNode = new StatementNode(parentElementMoq.Object, parentLabel, 0);
+            expectedNodes[parentElementMoq.Object.ElementId] = parentNode;
 
-            StatementNode child1Node = new StatementNode(child1ElementMoq.Object, child1Label, 1);
-            parentNode.AddChild(child1Node);
-            child1Node.ParentElementId = parentNode.ElementId;
+            var parent = new { loc=parentLoc, parentElementMoq, parentLabel, parentNode }; // BuildElementTestData(1, "parent").Single();
 
-            StatementNode child2Node = new StatementNode(child2ElementMoq.Object, child2Label, 1);
-            child1Node.AddChild(child2Node);
-            child2Node.ParentElementId = child1Node.ElementId;
-
-
-            var expectedNodes = new Dictionary<ElementId, IStatementNode>
+            for(int i = 1; i <= depth; i++)
             {
-                [parentNode.ElementId] = parentNode,
-                [child1Node.ElementId] = child1Node,
-                [child2Node.ElementId] = child2Node
+                (Loc childLoc, Mock<IXsElement> childElementMoq, string childLabel) = BuildElementTestData(1, $"child_{i}").Single();
+                
+                var parentChildArc = new Arc();
+                parentChildArc.From = parent.loc.XLinkLabel;
+                parentChildArc.To = childLoc.XLinkLabel;
+                parentChildArc.Order = 1;
+
+                StatementNode childNode = new StatementNode(childElementMoq.Object, childLabel, 1);
+                childNode.ParentElementId = parent.parentNode.ElementId;
+                parent.parentNode.AddChild(childNode);
+
+                arcs.Add(parentChildArc);
+                locs.Add(childLoc);
+                
+                elementsByElementId[childElementMoq.Object.ElementId] = childElementMoq.Object;
+                labelsByElementId[childElementMoq.Object.ElementId] = childLabel;
+                expectedNodes[childElementMoq.Object.ElementId] = childNode;
+
+                parent = new { loc = childLoc, parentElementMoq = childElementMoq, parentLabel = childLabel, parentNode = childNode };
+
+            }
+
+            PresentationLink presentationLink = new PresentationLink
+            {
+                Arcs = arcs.ToArray(),
+                Locs = locs.ToArray()
+
             };
+
+            //(Loc child1Loc, Mock<IXsElement> child1ElementMoq, string child1Label) = BuildElementTestData(1, "child_1").Single();
+            //(Loc child2Loc, Mock<IXsElement> child2ElementMoq, string child2Label) = BuildElementTestData(1, "child_2").Single();
+
+            //var arc1 = new Arc();
+            //arc1.From = parentLoc.XLinkLabel;
+            //arc1.To = child1Loc.XLinkLabel;
+            //arc1.Order = 1;
+
+            //var arc2 = new Arc();
+            //arc2.From = child1Loc.XLinkLabel;
+            //arc2.To = child2Loc.XLinkLabel;
+            //arc2.Order = 1;
+
+            //PresentationLink presentationLink = new PresentationLink();
+            //presentationLink.Arcs = [arc1, arc2];
+            //presentationLink.Locs = [parentLoc, child1Loc, child2Loc];
+
+            //IReadOnlyDictionary<ElementId, IXsElement> elementsByElementId = new Dictionary<ElementId, IXsElement>
+            //{
+            //    [parentElementMoq.Object.ElementId] = parentElementMoq.Object,
+            //    [child1ElementMoq.Object.ElementId] = child1ElementMoq.Object,
+            //    [child2ElementMoq.Object.ElementId] = child2ElementMoq.Object
+            //};
+            //IReadOnlyDictionary<ElementId, string> labelsByElementId = new Dictionary<ElementId, string>
+            //{
+            //    [parentElementMoq.Object.ElementId] = parentLabel,
+            //    [child1ElementMoq.Object.ElementId] = child1Label,
+            //    [child2ElementMoq.Object.ElementId] = child2Label
+            //};
+
+            //StatementNode parentNode = new StatementNode(parentElementMoq.Object, parentLabel, 0);
+
+            //StatementNode child1Node = new StatementNode(child1ElementMoq.Object, child1Label, 1);
+            //parentNode.AddChild(child1Node);
+            //child1Node.ParentElementId = parentNode.ElementId;
+
+            //StatementNode child2Node = new StatementNode(child2ElementMoq.Object, child2Label, 1);
+            //child1Node.AddChild(child2Node);
+            //child2Node.ParentElementId = child1Node.ElementId;
+
+
+            //var expectedNodes = new Dictionary<ElementId, IStatementNode>
+            //{
+            //    [parentNode.ElementId] = parentNode,
+            //    [child1Node.ElementId] = child1Node,
+            //    [child2Node.ElementId] = child2Node
+            //};
 
             return (presentationLink, elementsByElementId, labelsByElementId, expectedNodes);
         }
