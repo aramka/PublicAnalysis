@@ -104,8 +104,7 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
             nodes.Should().BeEquivalentTo(expectation);
         }
 
-        [TestMethod(DisplayName ="Build: Parent->Child->Child")]
-        public void Build_Depth3()
+        public (PresentationLink presentationLink, IReadOnlyDictionary<ElementId, IXsElement> elementsByElementId, IReadOnlyDictionary<ElementId,string> labelsByElementId, Dictionary<ElementId, IStatementNode> expectedNodes) BuildNestedNodesTestData(int depth)
         {
             (Loc parentLoc, Mock<IXsElement> parentElementMoq, string parentLabel) = BuildElementTestData(1, "parent").Single();
             (Loc child1Loc, Mock<IXsElement> child1ElementMoq, string child1Label) = BuildElementTestData(1, "child_1").Single();
@@ -137,12 +136,9 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
                 [child1ElementMoq.Object.ElementId] = child1Label,
                 [child2ElementMoq.Object.ElementId] = child2Label
             };
-            NodesBuilder nodesBuilder = new NodesBuilder();
-            Dictionary<ElementId, IStatementNode> actualNodes = nodesBuilder.BuildNodes(presentationLink, elementsByElementId, labelsByElementId);
-
 
             StatementNode parentNode = new StatementNode(parentElementMoq.Object, parentLabel, 0);
-            
+
             StatementNode child1Node = new StatementNode(child1ElementMoq.Object, child1Label, 1);
             parentNode.AddChild(child1Node);
             child1Node.ParentElementId = parentNode.ElementId;
@@ -151,12 +147,24 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
             child1Node.AddChild(child2Node);
             child2Node.ParentElementId = child1Node.ElementId;
 
+
             var expectedNodes = new Dictionary<ElementId, IStatementNode>
             {
                 [parentNode.ElementId] = parentNode,
                 [child1Node.ElementId] = child1Node,
                 [child2Node.ElementId] = child2Node
             };
+
+            return (presentationLink, elementsByElementId, labelsByElementId, expectedNodes);
+        }
+
+        [TestMethod(DisplayName ="Build: Parent->Child->Child")]
+        public void Build_Depth3()
+        {
+            (PresentationLink presentationLink, IReadOnlyDictionary<ElementId, IXsElement> elementsByElementId, IReadOnlyDictionary<ElementId, string> labelsByElementId, Dictionary<ElementId, IStatementNode> expectedNodes) = BuildNestedNodesTestData(3);
+
+            NodesBuilder nodesBuilder = new NodesBuilder();
+            Dictionary<ElementId, IStatementNode> actualNodes = nodesBuilder.BuildNodes(presentationLink, elementsByElementId, labelsByElementId);
 
             actualNodes.Should().BeEquivalentTo(expectedNodes);
         }
