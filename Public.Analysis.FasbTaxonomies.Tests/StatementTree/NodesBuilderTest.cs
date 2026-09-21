@@ -33,10 +33,12 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
             List<(Loc loc, Mock<IXsElement> elementMoq, string label)> l = new List<(Loc loc, Mock<IXsElement> elementMoq, string label)>();
             for (int i = 1; i <= parentCount; i++)
             {
+                string label = $"{prefix}_{i}";
+
                 Loc loc = new Loc
                 {
-                    Href = $"elements#{prefix}{i}",
-                    XLinkLabel = $"loc_{prefix}{i}"
+                    Href = $"elements#{label}",
+                    XLinkLabel = $"loc_{label}"
                 };
                 var elementMoq = new Mock<IXsElement>();
                 elementMoq.Setup(e => e.Id).Returns(loc.LocationAndAnchor.Anchor);
@@ -46,7 +48,6 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
                 elementMoq.Setup(e => e.Nillable).Returns(i % 2 == 1);
                 elementMoq.Setup(e => e.PeriodType).Returns($"{loc.LocationAndAnchor.Anchor}_periodType");
                 elementMoq.Setup(e => e.ElementId).Returns(loc.ElementId);
-                string label = $"{prefix}_{i}";
 
                 l.Add((loc, elementMoq, label));
             }
@@ -101,6 +102,63 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
             }).ToDictionary(n=>n.XsElement.ElementId);
 
             nodes.Should().BeEquivalentTo(expectation);
+        }
+
+        [TestMethod(DisplayName ="Build: Parent->Child->Child")]
+        public void Build_Depth3()
+        {
+            (Loc parentLoc, Mock<IXsElement> parentElementMoq, string parentLabel) = BuildElementTestData(1, "parent").Single();
+            (Loc child1Loc, Mock<IXsElement> child1ElementMoq, string child1Label) = BuildElementTestData(1, "child_1").Single();
+            (Loc child2Loc, Mock<IXsElement> child2ElementMoq, string child2Label) = BuildElementTestData(1, "child_2").Single();
+
+            var arc1 = new Arc();
+            arc1.From = parentLoc.XLinkLabel;
+            arc1.To = child1Loc.XLinkLabel;
+            arc1.Order = 1;
+
+            var arc2 = new Arc();
+            arc2.From = child1Loc.XLinkLabel;
+            arc2.To = child2Loc.XLinkLabel;
+            arc2.Order = 1;
+
+            PresentationLink presentationLink = new PresentationLink();
+            presentationLink.Arcs = [arc1, arc2];
+            presentationLink.Locs = [parentLoc, child1Loc, child2Loc];
+
+            IReadOnlyDictionary<ElementId, IXsElement> elementsByElementId = new Dictionary<ElementId, IXsElement>
+            {
+                [parentElementMoq.Object.ElementId] = parentElementMoq.Object,
+                [child1ElementMoq.Object.ElementId] = child1ElementMoq.Object,
+                [child2ElementMoq.Object.ElementId] = child2ElementMoq.Object
+            };
+            IReadOnlyDictionary<ElementId, string> labelsByElementId = new Dictionary<ElementId, string>
+            {
+                [parentElementMoq.Object.ElementId] = parentLabel,
+                [child1ElementMoq.Object.ElementId] = child1Label,
+                [child2ElementMoq.Object.ElementId] = child2Label
+            };
+            NodesBuilder nodesBuilder = new NodesBuilder();
+            Dictionary<ElementId, IStatementNode> actualNodes = nodesBuilder.BuildNodes(presentationLink, elementsByElementId, labelsByElementId);
+
+
+            StatementNode parentNode = new StatementNode(parentElementMoq.Object, parentLabel, 0);
+            
+            StatementNode child1Node = new StatementNode(child1ElementMoq.Object, child1Label, 1);
+            parentNode.AddChild(child1Node);
+            child1Node.ParentElementId = parentNode.ElementId;
+
+            StatementNode child2Node = new StatementNode(child2ElementMoq.Object, child2Label, 1);
+            child1Node.AddChild(child2Node);
+            child2Node.ParentElementId = child1Node.ElementId;
+
+            var expectedNodes = new Dictionary<ElementId, IStatementNode>
+            {
+                [parentNode.ElementId] = parentNode,
+                [child1Node.ElementId] = child1Node,
+                [child2Node.ElementId] = child2Node
+            };
+
+            actualNodes.Should().BeEquivalentTo(expectedNodes);
         }
     }
 }
