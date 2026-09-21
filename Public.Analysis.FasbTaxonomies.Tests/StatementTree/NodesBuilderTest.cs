@@ -50,7 +50,7 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
         }
 
         public (PresentationLink presentationLink, IReadOnlyDictionary<ElementId, IXsElement> elementsByElementId, IReadOnlyDictionary<ElementId,string> labelsByElementId, Dictionary<ElementId, IStatementNode> expectedNodes) 
-            BuildNestedNodesTestData(int depth, Dictionary<int,int> nodesByDepth)
+            BuildNestedNodesTestData(int[] nodesAtDepth)
         {
             List<Arc> arcs = new List<Arc>();
             List<Loc> locs = new List<Loc>();
@@ -58,9 +58,7 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
             Dictionary<ElementId, string> labelsByElementId = new Dictionary<ElementId, string>();
             Dictionary<ElementId, IStatementNode> expectedNodes = new Dictionary<ElementId, IStatementNode>();
 
-            int nodesAtDepth = nodesByDepth[0];
-
-            var parents = Enumerable.Range(0, nodesAtDepth)
+            var parents = Enumerable.Range(0, nodesAtDepth[0])
                 .Select((i) => {
 
                     (Loc parentLoc, Mock<IXsElement> parentElementMoq, string parentLabel) = BuildElementTestData(1, $"node_0_{i+1}");
@@ -76,13 +74,12 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
                 }).ToList();
          
 
-            for(int i = 1; i < depth; i++)
+            for(int i = 1; i < nodesAtDepth.Length; i++)
             {
-                nodesAtDepth = nodesByDepth[i];
                 var nextParents = parents.Take(0).ToList();
                 foreach (var parent in parents)
                 {
-                    for (int j = 0; j < nodesAtDepth; j++) {
+                    for (int j = 0; j < nodesAtDepth[i]; j++) {
                         (Loc childLoc, Mock<IXsElement> childElementMoq, string childLabel) = BuildElementTestData(1, $"{parent.parentLabel}_node1_{i}_{j}");
 
                         var parentChildArc = new Arc
@@ -125,9 +122,9 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
         [TestMethod(DisplayName ="Build: Parent->Child->Child")]
         public void Build_Depth3()
         {
-            Dictionary<int, int> nodesByDepth = new Dictionary<int, int> { [0] = 2, [1] = 1, [2] = 3 };
+            int[] nodesByDepth = [ 2,  1,  3 ];
             (PresentationLink presentationLink, IReadOnlyDictionary<ElementId, IXsElement> elementsByElementId, IReadOnlyDictionary<ElementId, string> labelsByElementId, Dictionary<ElementId, IStatementNode> expectedNodes) = 
-                BuildNestedNodesTestData(3, nodesByDepth);
+                BuildNestedNodesTestData(nodesByDepth);
 
             NodesBuilder nodesBuilder = new NodesBuilder();
             Dictionary<ElementId, IStatementNode> actualNodes = nodesBuilder.BuildNodes(presentationLink, elementsByElementId, labelsByElementId);
