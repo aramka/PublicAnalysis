@@ -30,83 +30,27 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
          * StatementTreeBuilder:IStatementTreeBuilder
          *  IReadOnlyDictionary<ElementId,IStatementNode> BuildStatementTree(IEnumerable<IStatementNode> nodes);
          */
-        public List<(Loc loc, Mock<IXsElement> elementMoq, string label)> BuildElementTestData(int parentCount, string prefix)
+        public (Loc loc, Mock<IXsElement> elementMoq, string label) BuildElementTestData(int parentCount, string label)
         {
-            List<(Loc loc, Mock<IXsElement> elementMoq, string label)> l = new List<(Loc loc, Mock<IXsElement> elementMoq, string label)>();
-            for (int i = 1; i <= parentCount; i++)
+            Loc loc = new Loc
             {
-                string label = $"{prefix}_{i}";
+                Href = $"elements#{label}",
+                XLinkLabel = $"loc_{label}"
+            };
+            var elementMoq = new Mock<IXsElement>();
+            elementMoq.Setup(e => e.Id).Returns(loc.LocationAndAnchor.Anchor);
+            elementMoq.Setup(e => e.Name).Returns(loc.LocationAndAnchor.Anchor);
+            elementMoq.Setup(e => e.Abstract).Returns(DateTime.Now.Millisecond % 2 == 0);
+            elementMoq.Setup(e => e.Balance).Returns($"{loc.LocationAndAnchor.Anchor}_balance");
+            elementMoq.Setup(e => e.Nillable).Returns(DateTime.Now.Millisecond % 2 == 1);
+            elementMoq.Setup(e => e.PeriodType).Returns($"{loc.LocationAndAnchor.Anchor}_periodType");
+            elementMoq.Setup(e => e.ElementId).Returns(loc.ElementId);
 
-                Loc loc = new Loc
-                {
-                    Href = $"elements#{label}",
-                    XLinkLabel = $"loc_{label}"
-                };
-                var elementMoq = new Mock<IXsElement>();
-                elementMoq.Setup(e => e.Id).Returns(loc.LocationAndAnchor.Anchor);
-                elementMoq.Setup(e => e.Name).Returns(loc.LocationAndAnchor.Anchor);
-                elementMoq.Setup(e => e.Abstract).Returns(i % 2 == 0);
-                elementMoq.Setup(e => e.Balance).Returns($"{loc.LocationAndAnchor.Anchor}_balance");
-                elementMoq.Setup(e => e.Nillable).Returns(i % 2 == 1);
-                elementMoq.Setup(e => e.PeriodType).Returns($"{loc.LocationAndAnchor.Anchor}_periodType");
-                elementMoq.Setup(e => e.ElementId).Returns(loc.ElementId);
-
-                l.Add((loc, elementMoq, label));
-            }
-            return l;
+            return (loc, elementMoq, label);
         }
 
-        [TestMethod]
-        public void Build()
-        {
-            // Dictionary<ElementId, IXsElement> elementsByElementId = new Dictionary<ElementId, IXsElement>();
-
-            // Dictionary<ElementId, string> labelsByElementId = new Dictionary<ElementId, string>();
-
-            List<Loc> locs = new List<Loc>();
-
-            int parentCount = 3;
-            int childCount = 1;
-
-            var parents = BuildElementTestData(parentCount, "parent").Select(p => new { p.elementMoq, p.label, p.loc });
-
-            var parentChildren = parents.Select((p,i) => new { Parent = p, Children = BuildElementTestData(childCount, $"{p.label}_child").Select(c => new { c.elementMoq, c.label, c.loc }) });
-
-            var parentChildArcs = parentChildren.Select((pc, i) => new { pc.Parent, pc.Children, Arcs = pc.Children.Select((c, j) => new { Parent=pc.Parent, Child = c, From = pc.Parent.loc.XLinkLabel, To = c.loc.XLinkLabel, Order = j }) });
-
-           
-
-            PresentationLink presentationLink = new PresentationLink();
-            presentationLink.Arcs = parentChildArcs.SelectMany(pca=>pca.Arcs.Select(a=>new Arc { From = a.From, To = a.To, Order = a.Order })).ToArray();
-            presentationLink.Locs = parentChildArcs.SelectMany(pca => pca.Children.Select(c => c.loc).Concat([pca.Parent.loc])).ToArray();
-
-            var elementAndLabels = parentChildArcs.SelectMany(pca => pca.Children.Select(c => new { Element = c.elementMoq.Object, Label = c.label })
-            .Concat([new { Element = pca.Parent.elementMoq.Object, Label = pca.Parent.label }])
-            );
-            var elementsByElementId = elementAndLabels.ToDictionary(e => e.Element.ElementId, e => e.Element);
-            var labelsByElementId = elementAndLabels.ToDictionary(e => e.Element.ElementId, e => e.Label);
-
-            NodesBuilder nodeBuilder = new NodesBuilder();
-            Dictionary<ElementId, IStatementNode> nodes = nodeBuilder.BuildNodes(presentationLink, elementsByElementId, labelsByElementId);
-
-            var expectation = parentChildArcs.SelectMany((pca, i) => {
-                List<StatementNode> nodes = new List<StatementNode>();
-                StatementNode parentNode = new StatementNode(pca.Parent.elementMoq.Object, pca.Parent.label, 0);
-                nodes.Add(parentNode);
-                foreach(var arc in pca.Arcs)
-                {
-                    StatementNode childNode = new StatementNode(arc.Child.elementMoq.Object, arc.Child.label, arc.Order);
-                    childNode.ParentElementId = parentNode.ElementId;
-                    parentNode.AddChild(childNode);
-                    nodes.Add(childNode);
-                }
-                return nodes;
-            }).ToDictionary(n=>n.XsElement.ElementId);
-
-            nodes.Should().BeEquivalentTo(expectation);
-        }
-
-        public (PresentationLink presentationLink, IReadOnlyDictionary<ElementId, IXsElement> elementsByElementId, IReadOnlyDictionary<ElementId,string> labelsByElementId, Dictionary<ElementId, IStatementNode> expectedNodes) BuildNestedNodesTestData(int depth)
+        public (PresentationLink presentationLink, IReadOnlyDictionary<ElementId, IXsElement> elementsByElementId, IReadOnlyDictionary<ElementId,string> labelsByElementId, Dictionary<ElementId, IStatementNode> expectedNodes) 
+            BuildNestedNodesTestData(int depth, Dictionary<int,int> nodesByDepth)
         {
             List<Arc> arcs = new List<Arc>();
             List<Loc> locs = new List<Loc>();
@@ -114,14 +58,12 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
             Dictionary<ElementId, string> labelsByElementId = new Dictionary<ElementId, string>();
             Dictionary<ElementId, IStatementNode> expectedNodes = new Dictionary<ElementId, IStatementNode>();
 
-            Dictionary<int, int> nodesByDepth = Enumerable.Range(0, depth).ToDictionary(d => d, d=>1);
-
             int nodesAtDepth = nodesByDepth[0];
 
             var parents = Enumerable.Range(0, nodesAtDepth)
                 .Select((i) => {
 
-                    (Loc parentLoc, Mock<IXsElement> parentElementMoq, string parentLabel) = BuildElementTestData(1, "parent").Single();
+                    (Loc parentLoc, Mock<IXsElement> parentElementMoq, string parentLabel) = BuildElementTestData(1, $"node_0_{i+1}");
 
                     locs.Add(parentLoc);
                     elementsByElementId[parentElementMoq.Object.ElementId] = parentElementMoq.Object;
@@ -129,7 +71,7 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
                     StatementNode parentNode = new StatementNode(parentElementMoq.Object, parentLabel, 0);
                     expectedNodes[parentElementMoq.Object.ElementId] = parentNode;
 
-                    return new { loc = parentLoc, parentElementMoq, parentLabel, parentNode }; // BuildElementTestData(1, "parent").Single();
+                    return new { loc = parentLoc, parentElementMoq, parentLabel, parentNode };
 
                 }).ToList();
          
@@ -140,29 +82,31 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
                 var nextParents = parents.Take(0).ToList();
                 foreach (var parent in parents)
                 {
-                    (Loc childLoc, Mock<IXsElement> childElementMoq, string childLabel) = BuildElementTestData(1, $"child_{i}").Single();
+                    for (int j = 0; j < nodesAtDepth; j++) {
+                        (Loc childLoc, Mock<IXsElement> childElementMoq, string childLabel) = BuildElementTestData(1, $"{parent.parentLabel}_node1_{i}_{j}");
 
-                    var parentChildArc = new Arc
-                    {
-                        From = parent.loc.XLinkLabel,
-                        To = childLoc.XLinkLabel,
-                        Order = 1
-                    };
+                        var parentChildArc = new Arc
+                        {
+                            From = parent.loc.XLinkLabel,
+                            To = childLoc.XLinkLabel,
+                            Order = 1
+                        };
 
-                    StatementNode childNode = new StatementNode(childElementMoq.Object, childLabel, 1)
-                    {
-                        ParentElementId = parent.parentNode.ElementId
-                    };
-                    parent.parentNode.AddChild(childNode);
+                        StatementNode childNode = new StatementNode(childElementMoq.Object, childLabel, 1)
+                        {
+                            ParentElementId = parent.parentNode.ElementId
+                        };
+                        parent.parentNode.AddChild(childNode);
 
-                    arcs.Add(parentChildArc);
-                    locs.Add(childLoc);
+                        arcs.Add(parentChildArc);
+                        locs.Add(childLoc);
 
-                    elementsByElementId[childElementMoq.Object.ElementId] = childElementMoq.Object;
-                    labelsByElementId[childElementMoq.Object.ElementId] = childLabel;
-                    expectedNodes[childElementMoq.Object.ElementId] = childNode;
+                        elementsByElementId[childElementMoq.Object.ElementId] = childElementMoq.Object;
+                        labelsByElementId[childElementMoq.Object.ElementId] = childLabel;
+                        expectedNodes[childElementMoq.Object.ElementId] = childNode;
 
-                    nextParents.Add( new { loc = childLoc, parentElementMoq = childElementMoq, parentLabel = childLabel, parentNode = childNode });
+                        nextParents.Add(new { loc = childLoc, parentElementMoq = childElementMoq, parentLabel = childLabel, parentNode = childNode });
+                    }
                 }
 
                 parents = nextParents;
@@ -181,7 +125,9 @@ namespace Public.Analysis.FasbTaxonomies.Tests.StatementNodesBuilder
         [TestMethod(DisplayName ="Build: Parent->Child->Child")]
         public void Build_Depth3()
         {
-            (PresentationLink presentationLink, IReadOnlyDictionary<ElementId, IXsElement> elementsByElementId, IReadOnlyDictionary<ElementId, string> labelsByElementId, Dictionary<ElementId, IStatementNode> expectedNodes) = BuildNestedNodesTestData(3);
+            Dictionary<int, int> nodesByDepth = new Dictionary<int, int> { [0] = 2, [1] = 1, [2] = 3 };
+            (PresentationLink presentationLink, IReadOnlyDictionary<ElementId, IXsElement> elementsByElementId, IReadOnlyDictionary<ElementId, string> labelsByElementId, Dictionary<ElementId, IStatementNode> expectedNodes) = 
+                BuildNestedNodesTestData(3, nodesByDepth);
 
             NodesBuilder nodesBuilder = new NodesBuilder();
             Dictionary<ElementId, IStatementNode> actualNodes = nodesBuilder.BuildNodes(presentationLink, elementsByElementId, labelsByElementId);
