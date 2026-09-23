@@ -1,5 +1,6 @@
 ﻿using AwesomeAssertions;
 using Public.Analysis.FasbTaxonomies.Statement.StatementTree;
+using Public.Analysis.FasbTaxonomies.XmlParsing;
 using Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels;
 using System;
 using System.Collections.Generic;
@@ -120,21 +121,25 @@ namespace Public.Analysis.FasbTaxonomies.Tests.Statement.StatementTree
             actualLabelsDict[elementId].Should().Be(totalLabel.Value);
         }
         [TestMethod]
-        public void MoreThanOneTotalLabel()
+        [DataRow(data: LocalNamesAndPrefixes.XLinkRoleStandardLabelSuffix)]
+        [DataRow(data: LocalNamesAndPrefixes.XLinkRoleTotalLabelSuffix)]
+        public void MoreThanOneStandardOrTotalLabel(string suffix)
         {
             var standardLabel = this.labelLink.Labels[0];
-            standardLabel.Role = @"http://www.xbrl.org/2003/role/totalLabel";
+            standardLabel.Role = $@"http://www.xbrl.org/2003/role/{suffix}";
 
-            Label totalLabel = new Label();
-            totalLabel.XLinkLabel = standardLabel.XLinkLabel;
-            totalLabel.Role = @"http://www.xbrl.org/2003/role/totalLabel";
-            totalLabel.Value = $"{standardLabel.Value} total";
+            Label dupe = new Label();
+            dupe.XLinkLabel = standardLabel.XLinkLabel;
+            dupe.Role = standardLabel.Role;
+            dupe.Value = standardLabel.Value;
 
-            labelLink.Labels = [totalLabel, .. labelLink.Labels];
+            labelLink.Labels = [dupe, .. labelLink.Labels];
 
             LabelsBuilder labelsBuilder = new LabelsBuilder();
-            Assert.Throws<InvalidOperationException>(()=>labelsBuilder.BuildLabels(labelLink));
+            Assert.Throws<InvalidOperationException>(() => labelsBuilder.BuildLabels(labelLink));
+
 
         }
+
     }
 }

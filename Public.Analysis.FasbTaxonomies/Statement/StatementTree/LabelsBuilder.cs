@@ -23,12 +23,15 @@ namespace Public.Analysis.FasbTaxonomies.Statement.StatementTree
                 }
                 else 
                 {
-                    var totalLabels = g.Where(l => l.Role.EndsWith(LocalNamesAndPrefixes.XLinkRoleTotalLabelSuffix));
-                    if (totalLabels.Count() != 1)
+                    var byXLinkRole = g.GroupBy(label => new Uri(label.Role).Segments.Last());
+                    HashSet<string> suitableLabelRoles = new HashSet<string> { LocalNamesAndPrefixes.XLinkRoleTotalLabelSuffix, LocalNamesAndPrefixes.XLinkRoleStandardLabelSuffix };
+
+                    var suitableLabel = byXLinkRole.FirstOrDefault(xLinkRoleGroup => suitableLabelRoles.Contains(xLinkRoleGroup.Key) && xLinkRoleGroup.Count() == 1)?.Single();
+                    if(suitableLabel is null)
                     {
-                        throw new InvalidOperationException($"More than one total label found for {nameof(Label.XLinkLabel)} {g.Key}");
+                        throw new InvalidOperationException($"No suitable label role found for {nameof(l.XLinkLabel)}");
                     }
-                    l = totalLabels.Single();
+                    l = suitableLabel;
                 }
 
                 labelLocsByXLinkLabel.Add(l.XLinkLabel, l);
