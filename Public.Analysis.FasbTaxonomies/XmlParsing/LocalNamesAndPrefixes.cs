@@ -29,6 +29,8 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing
         public const string XsPrefix = "xs";
         public const string IdAttribute = "id";
 
+        public const string XsElementNameAttribute = "name";
+
         public const string Nillable = "nillable";
 
         public const string XsElement = "element";
@@ -40,5 +42,7 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing
         public static string XbrliPrefix = "xbrli";
 
         public const string XLinkRoleTotalLabelSuffix = "totalLabel";
+
+        public const string XLinkRoleStandardLabelSuffix = "label";
     }
 }

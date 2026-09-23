@@ -13,27 +13,32 @@ namespace Public.Analysis.FasbTaxonomies.Tests.XmlParsing.XmlElementModels
     public class ElementsXDocParserFilesTest
     {
         [TestMethod]
-        public void ReadAllElementsFromFile()
+        [DataRow(data: @"..\..\..\..\..\fasb_taxonomies\us-gaap-2026\elts\us-gaap-2026.xsd")]
+        [DataRow(data: @"..\..\..\..\..\fasb_taxonomies\us-gaap-2026\elts\srt-2026.xsd")]
+        public void ReadAllElementsFromFile(string filePath)
         {
-            var eltsFiles = new string[]
+            using (StreamReader reader = new StreamReader(filePath))
             {
-                @"..\..\..\..\..\fasb_taxonomies\us-gaap-2026\elts\us-gaap-2026.xsd",
-                @"..\..\..\..\..\fasb_taxonomies\us-gaap-2026\elts\srt-2026.xsd"
-            };
-            int i = 0;
-            foreach (string filePath in eltsFiles)
-            {
-                using (StreamReader reader = new StreamReader(filePath))
+                XDocument xDoc = XDocument.Load(reader);
+
+                var elts = new ElementsXDocParser(xDoc, new XElementParsingUtility());
+
+                var allElements = elts.GetElements().ToList();
+
+
+                Assert.IsTrue(allElements.Any());
+
+                foreach (XsElement e in allElements)
                 {
-                    XDocument xDoc = XDocument.Load(reader);
-
-                    var elts = new ElementsXDocParser(xDoc, new XElementParsingUtility());
-
-                    var allElements = elts.GetElements().ToList();
-
-                    Assert.IsTrue(allElements.Any());
+                    bool a = e.Abstract;
+                    string balance = e.Balance;
+                    e.Id.Should().NotBeNullOrWhiteSpace();
+                    e.ElementId.Should().NotBeNull();
+                    e.Name.Should().NotBeNullOrWhiteSpace();
+                    bool nillable = e.Nillable;
+                    string pType = e.PeriodType;
+                    e.Type.Should().NotBeNull();
                 }
-                ++i;
             }
         }
     }

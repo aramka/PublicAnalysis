@@ -30,15 +30,15 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementParsing
                 catch (InvalidOperationException) { return false; }
             }
         }
-        public string Id => this.parser.GetAttributeValue(this.xElement, LocalNamesAndPrefixes.IdAttribute, LocalNamesAndPrefixes.XsPrefix, this.namespaces);
-        public string Name => this.parser.GetAttributeValue(this.xElement, LocalNamesAndPrefixes.IdAttribute, LocalNamesAndPrefixes.XsPrefix, this.namespaces);
-        public bool Nillable => this.parser.GetAttributeValue<bool>(this.xElement, LocalNamesAndPrefixes.Nillable, LocalNamesAndPrefixes.XsPrefix, this.namespaces);
+        public string Id => this.parser.GetAttributeValue(this.xElement, LocalNamesAndPrefixes.IdAttribute);
+        public string Name => this.parser.GetAttributeValue(this.xElement, LocalNamesAndPrefixes.XsElementNameAttribute);
+        public bool Nillable => this.parser.GetAttributeValue<bool>(this.xElement, LocalNamesAndPrefixes.Nillable);
 
         public string @Type => this.parser.GetAttributeValue(this.xElement, LocalNamesAndPrefixes.TypeAttribute);
 
-        public string Balance => this.parser.GetAttributeValue(this.xElement, LocalNamesAndPrefixes.BalanceAttribute, LocalNamesAndPrefixes.XbrliPrefix, this.namespaces);
+        public string Balance => this.parser.GetAttributeValue(this.xElement, LocalNamesAndPrefixes.BalanceAttribute, throwIfNotFound: false);
 
-        public string PeriodType => this.parser.GetAttributeValue(this.xElement, LocalNamesAndPrefixes.PeriodTypeAttribute, LocalNamesAndPrefixes.XbrliPrefix, this.namespaces);
+        public string PeriodType => this.parser.GetAttributeValue(this.xElement, LocalNamesAndPrefixes.PeriodTypeAttribute, LocalNamesAndPrefixes.XbrliPrefix, namespaces, throwIfNotFound:false);
 
         public ElementId ElementId => new ElementId(this.Id);
     }

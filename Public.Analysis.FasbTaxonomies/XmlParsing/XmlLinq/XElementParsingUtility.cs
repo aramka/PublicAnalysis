@@ -9,16 +9,17 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq
 {
     public class XElementParsingUtility : IXElementParsingUtility
     {
-        public string GetAttributeValue(XElement  element, string localName, string namespacePrefix = "", IReadOnlyDictionary<string, XNamespace>? nameSpaces = null)
+        public string GetAttributeValue(XElement  element, string localName, string namespacePrefix = "", IReadOnlyDictionary<string, XNamespace>? nameSpaces = null, bool throwIfNotFound=true)
         {
             XNamespace ns = this.GetExpandedNameSpaceForPrefix(element, namespacePrefix, nameSpaces);
 
             var attribute = element.Attribute(ns + localName);
-            if (attribute == null)
+
+            if (attribute == null && throwIfNotFound)
             {
-                throw new InvalidOperationException($"Attribute {ns + localName} is missing.");
+                throw new InvalidOperationException($"Attribute {ns + localName} is missing. Available attributes are {string.Join(",",element.Attributes().Select(a=>$"{a.Name}={a.Value}"))}");
             }
-            return attribute.Value;
+            return attribute?.Value ?? string.Empty;
         }
         public T GetAttributeValue<T>(XElement  element, string localName, string namespacePrefix = "", IReadOnlyDictionary<string, XNamespace>? nameSpaces = null)
         {
