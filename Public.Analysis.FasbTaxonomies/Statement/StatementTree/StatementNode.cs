@@ -18,7 +18,8 @@ namespace Public.Analysis.FasbTaxonomies.Statement.StatementTree
         }
         public IXsElement XsElement { get; }
 
-        public ElementId? ParentElementId { get; set; }
+        private ElementId? elementId = null;
+        public ElementId? ParentElementId { get { return this.elementId; } set { if (this.elementId is not null) throw new InvalidOperationException($"{nameof(ParentElementId)} is already set. {nameof(ParentElementId)} must only be set once."); this.elementId = value; } }
 
         public string Label { get; }
 
