@@ -1,13 +1,13 @@
 ﻿using Public.Analysis.FasbTaxonomies.Statement.StatementTree;
 using Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels;
-using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels;
+using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementParsing;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Public.Analysis.FasbTaxonomies.Statement.StatementTree
 {
-    public class NodesBuilder
+    public class NodesBuilder : INodesBuilder
     {
         public Dictionary<ElementId, IStatementNode> BuildNodes(PresentationLink presentationLink, IReadOnlyDictionary<ElementId, IXsElement> elementsByElementId, IReadOnlyDictionary<ElementId, string> labelsByElementId)
         {

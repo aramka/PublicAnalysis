@@ -1,7 +1,7 @@
 ﻿using AwesomeAssertions;
 using Public.Analysis.FasbTaxonomies.Tests.Parsing;
 using Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels;
-using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels;
+using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementParsing;
 using Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq;
 using System.Text;
 using System.Xml.Linq;
@@ -27,7 +27,7 @@ namespace Public.Analysis.FasbTaxonomies.Tests.XmlParsing.XmlElementModels
                 {
                     XDocument xDoc = XDocument.Load(reader);
 
-                    var elts = new USGaapElements(xDoc, new XElementParsingUtility());
+                    var elts = new ElementsXDocParser(xDoc, new XElementParsingUtility());
 
                     var allElements = elts.GetElements().ToList();
 

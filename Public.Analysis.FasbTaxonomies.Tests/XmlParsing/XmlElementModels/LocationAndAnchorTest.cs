@@ -1,7 +1,7 @@
 ﻿using Public.Analysis.FasbTaxonomies.Statement.StatementTree;
-using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels;
+using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementParsing;
 
-namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels
+namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementParsing
 {
     [TestClass]
     public class LocationAndAnchorTest

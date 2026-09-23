@@ -1,4 +1,4 @@
-﻿using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels;
+﻿using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementParsing;
 using System;
 using System.Collections.Generic;
 using System.Text;

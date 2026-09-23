@@ -1,6 +1,6 @@
 ﻿using Public.Analysis.FasbTaxonomies.Statement.StatementTree;
 
-namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels
+namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementParsing
 {
     public interface IXsElement
     {

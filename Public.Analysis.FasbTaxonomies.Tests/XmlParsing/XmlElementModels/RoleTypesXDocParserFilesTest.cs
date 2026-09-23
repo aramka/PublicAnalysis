@@ -1,6 +1,6 @@
 ﻿using AwesomeAssertions;
 using Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq;
-using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels;
+using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementParsing;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,7 +20,7 @@ namespace Public.Analysis.FasbTaxonomies.Tests.XmlParsing.XmlElementModels
             {
                 XDocument xDoc = XDocument.Load(reader);
 
-                var roles = new USRoleTypes(xDoc, new XElementParsingUtility());
+                var roles = new RoleTypesXDocParser(xDoc, new XElementParsingUtility());
 
                 var allRoles = roles.GetUSRoleTypes().ToList();
 
@@ -33,7 +33,7 @@ namespace Public.Analysis.FasbTaxonomies.Tests.XmlParsing.XmlElementModels
                 ids.Should().NotBeEmpty();
 
                 var definitions = allRoles
-                    .Select(r => r.LinkRoleTypeLinkDefinition)
+                    .Select(r => r.LinkRoleTypeLinkDefinitionValue)
                     .Where(d => !string.IsNullOrWhiteSpace(d))
                     .ToList();
                 definitions.Should().NotBeEmpty();

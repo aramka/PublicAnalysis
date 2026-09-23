@@ -4,7 +4,7 @@ using Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq;
 using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 
-namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels
+namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementParsing
 {
     public class XsElement : IXsElement
     {

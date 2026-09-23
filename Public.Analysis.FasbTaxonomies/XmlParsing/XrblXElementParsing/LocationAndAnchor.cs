@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels
+namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementParsing
 {
     public class LocationAndAnchor
     {

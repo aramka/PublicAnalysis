@@ -1,7 +1,7 @@
 ﻿using Moq;
 using Public.Analysis.FasbTaxonomies.XmlParsing;
 using Public.Analysis.FasbTaxonomies.Tests.Parsing;
-using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementModels;
+using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementParsing;
 using Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq;
 using System;
 using System.Collections.Generic;
