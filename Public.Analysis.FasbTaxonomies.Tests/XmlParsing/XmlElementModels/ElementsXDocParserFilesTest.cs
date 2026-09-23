@@ -10,7 +10,7 @@ using System.Xml.Serialization;
 namespace Public.Analysis.FasbTaxonomies.Tests.XmlParsing.XmlElementModels
 {
     [TestClass]
-    public class USGaapElementsFilesTest
+    public class ElementsXDocParserFilesTest
     {
         [TestMethod]
         public void ReadAllElementsFromFile()

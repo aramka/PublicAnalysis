@@ -1,4 +1,5 @@
-﻿using Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels;
+﻿using Public.Analysis.FasbTaxonomies.XmlParsing;
+using Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -11,7 +12,28 @@ namespace Public.Analysis.FasbTaxonomies.Statement.StatementTree
         public IReadOnlyDictionary<ElementId, string> BuildLabels(LabelLink labelLink)
         {
             var elementLocsByXLinkLabel = labelLink.Locs.ToDictionary(l => l.XLinkLabel);
-            var labelLocsByXLinkLabel = labelLink.Labels.ToDictionary(l => l.XLinkLabel);
+            var labelLocsByXLinkLabel = new Dictionary<string, Label>();
+            
+            foreach(var g in labelLink.Labels.GroupBy(l => l.XLinkLabel))
+            {
+                Label? l = null;
+                if (g.Count() == 1)
+                {
+                    l = g.Single();
+                }
+                else 
+                {
+                    var totalLabels = g.Where(l => l.Role.EndsWith(LocalNamesAndPrefixes.XLinkRoleTotalLabelSuffix));
+                    if (totalLabels.Count() != 1)
+                    {
+                        throw new InvalidOperationException($"More than one total label found for {nameof(Label.XLinkLabel)} {g.Key}");
+                    }
+                    l = totalLabels.Single();
+                }
+
+                labelLocsByXLinkLabel.Add(l.XLinkLabel, l);
+            }
+
             Dictionary<ElementId, string> labelsDict = new Dictionary<ElementId, string>();
 
             foreach(Arc link in labelLink.Arcs)

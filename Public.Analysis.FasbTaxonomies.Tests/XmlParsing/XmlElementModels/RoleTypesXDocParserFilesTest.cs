@@ -9,7 +9,7 @@ using System.Xml.Linq;
 namespace Public.Analysis.FasbTaxonomies.Tests.XmlParsing.XmlElementModels
 {
     [TestClass]
-    public class USGaapRolesFilesTest
+    public class RoleTypesXDocParserFilesTest
     {
 
         [TestMethod]

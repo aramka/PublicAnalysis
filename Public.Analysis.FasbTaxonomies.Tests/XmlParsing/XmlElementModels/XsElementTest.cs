@@ -10,7 +10,7 @@ using System.Text;
 namespace Public.Analysis.FasbTaxonomies.Tests.XmlParsing.XmlElementModels
 {
     [TestClass]
-    public class USGaapElementsTest
+    public class XsElementTest
     {
         string eltsString = @"<?xml version='1.0' encoding='UTF-8'?>
 

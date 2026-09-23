@@ -97,5 +97,44 @@ namespace Public.Analysis.FasbTaxonomies.Tests.Statement.StatementTree
             actual.Should().NotBeNull();
             actual.Message.Should().Be($"Label from {missing.XLinkLabel} was not found in {nameof(LabelLink.Labels)}.");
         }
+        [TestMethod]
+        public void StandardAndTotalLabelUseTotalLabel()
+        {
+            var standardLabel= this.labelLink.Labels[0];
+            standardLabel.Role = @"http://www.xbrl.org/2003/role/label";
+            
+            Label totalLabel = new Label();
+            totalLabel.XLinkLabel = standardLabel.XLinkLabel;
+            totalLabel.Role = @"http://www.xbrl.org/2003/role/totalLabel";
+            totalLabel.Value = $"{standardLabel.Value} total";
+
+            labelLink.Labels = [totalLabel, .. labelLink.Labels];
+
+            LabelsBuilder labelsBuilder = new LabelsBuilder();
+            var actualLabelsDict = labelsBuilder.BuildLabels(labelLink);
+
+            var elementXLinkLabel = this.labelLink.Arcs.Single(a => a.To == standardLabel.XLinkLabel).From;
+            var elementLoc = this.labelLink.Locs.Single(a => a.XLinkLabel == elementXLinkLabel);
+            var elementId = elementLoc.ElementId;
+
+            actualLabelsDict[elementId].Should().Be(totalLabel.Value);
+        }
+        [TestMethod]
+        public void MoreThanOneTotalLabel()
+        {
+            var standardLabel = this.labelLink.Labels[0];
+            standardLabel.Role = @"http://www.xbrl.org/2003/role/totalLabel";
+
+            Label totalLabel = new Label();
+            totalLabel.XLinkLabel = standardLabel.XLinkLabel;
+            totalLabel.Role = @"http://www.xbrl.org/2003/role/totalLabel";
+            totalLabel.Value = $"{standardLabel.Value} total";
+
+            labelLink.Labels = [totalLabel, .. labelLink.Labels];
+
+            LabelsBuilder labelsBuilder = new LabelsBuilder();
+            Assert.Throws<InvalidOperationException>(()=>labelsBuilder.BuildLabels(labelLink));
+
+        }
     }
 }
