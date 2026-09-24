@@ -364,3 +364,4 @@ FodyWeavers.xsd
 /TickersToCIK.json
 /Public.Analysis.Edgar.Tests/EdgarFactsJSONData/2026-AAPL-CIK0000320193.json
 /Public.Analysis.Edgar.Tests/EdgarFactsJSONData/2026-AAPL-CIK0000320193-Facts-AccountsPayable.json
+/Public.Analysis.FasbTaxonomies/statement_json/
