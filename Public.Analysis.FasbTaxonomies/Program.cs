@@ -1,8 +1,11 @@
-﻿using System.Xml;
+﻿using System;
+using System.IO;
+using System.Xml;
 using System.Xml.Schema;
 using System.Linq;
 using System.Xml.Linq;
 using System.Reflection.Metadata.Ecma335;
+using Microsoft.Extensions.Configuration;
 using Public.Analysis.FasbTaxonomies.Statement;
 using Public.Analysis.FasbTaxonomies.Statement.StatementTree;
 using Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq;
@@ -20,14 +23,22 @@ namespace Public.Analysis.FasbTaxonomies
             StatementBuilder statementBuilder = new StatementBuilder(labelsBuilder, nodesBuilder, xElementParsing);
 
 
-            string usRolesXsdFilePath = @"..\..\..\..\..\fasb_taxonomies\us-gaap-2026\elts\us-roles-2026.xsd";
-            string usGaapEltsXsdFilePath = @"..\..\..\..\..\fasb_taxonomies\us-gaap-2026\elts\us-gaap-2026.xsd";
-            string srtEltsXsdFilePath = @"..\..\..\..\..\fasb_taxonomies\us-gaap-2026\elts\srt-2026.xsd";
-            string usGaapLabelsXmlFilePath = @"..\..\..\..\..\fasb_taxonomies\us-gaap-2026\elts\us-gaap-lab-2026.xml";
-            string srtLabelsXmlFilePath = @"..\..\..\..\..\fasb_taxonomies\us-gaap-2026\elts\srt-lab-2026.xml";
+            // Load configuration from appsettings.json
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
 
-            string statementDirectory = @"..\..\..\..\..\fasb_taxonomies\us-gaap-2026\stm\";
-            string[] statementSearchPatterns = ["*us-gaap-stm-soi*pre*", "*us-gaap-stm-sfp*pre", "*us-gaap-stm-scf*pre"];
+            
+            var statementTreeBuilderOptions = config.GetSection("StatementTreeBuilder");
+            string usRolesXsdFilePath = statementTreeBuilderOptions["UsRolesXsdFilePath"]!;
+            string usGaapEltsXsdFilePath = statementTreeBuilderOptions["UsGaapEltsXsdFilePath"]!;
+            string srtEltsXsdFilePath = statementTreeBuilderOptions["SrtEltsXsdFilePath"]!;
+            string usGaapLabelsXmlFilePath = statementTreeBuilderOptions["UsGaapLabelsXmlFilePath"]!;
+            string srtLabelsXmlFilePath = statementTreeBuilderOptions["SrtLabelsXmlFilePath"]!;
+            string statementDirectory = statementTreeBuilderOptions["StatementFilesDirectoryPath"]!;
+
+            string[] statementSearchPatterns = statementTreeBuilderOptions.GetSection("SearchPatterns").Get<string[]>() ?? Array.Empty<string>();
 
             var statementsFilePaths = statementSearchPatterns.SelectMany(sp => Directory.GetFiles(statementDirectory, sp));
 
