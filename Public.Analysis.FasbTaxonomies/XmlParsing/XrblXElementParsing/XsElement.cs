@@ -24,7 +24,7 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementParsing
             {
                 try
                 {
-                    bool value = this.parser.GetAttributeValue<bool>(this.xElement, LocalNamesAndPrefixes.AbstractAttribute, LocalNamesAndPrefixes.XsPrefix, this.namespaces);
+                    bool value = this.parser.GetAttributeValue<bool>(this.xElement, LocalNamesAndPrefixes.AbstractAttribute);
                     return value;
                 }
                 catch (InvalidOperationException) { return false; }

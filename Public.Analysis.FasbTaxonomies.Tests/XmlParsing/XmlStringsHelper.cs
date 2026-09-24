@@ -28,5 +28,7 @@ namespace Public.Analysis.FasbTaxonomies.Tests.XmlParsing
         public IReadOnlyDictionary<string, XNamespace> RootNameSpacesByPrefix => this.helper.RootNameSpacesByPrefix(this.xDoc);
 
         internal XElement GetDescendant(string elementName, string prefix, IReadOnlyDictionary<string, XNamespace> namespaces) => helper.GetDescendant(this.XDoc.Root!, elementName, prefix, namespaces);
+
+        internal IEnumerable<XElement> GetDescendants(string elementName, string prefix, IReadOnlyDictionary<string, XNamespace> namespaces) => helper.GetDescendants(this.XDoc.Root!, elementName, prefix, namespaces);
     }
 }

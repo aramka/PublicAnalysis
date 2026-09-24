@@ -6,12 +6,17 @@ using Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml.Linq;
 
 namespace Public.Analysis.FasbTaxonomies.Tests.XmlParsing.XmlElementModels
 {
     [TestClass]
     public class XsElementTest
     {
+        public XsElementTest()
+        {
+            helper = new XmlStringsHelper(eltsString);
+        }
         string eltsString = @"<?xml version='1.0' encoding='UTF-8'?>
 
 <!--
@@ -28,16 +33,31 @@ Notice: Authorized Uses are Set Forth at https://xbrl.fasb.org/terms/TaxonomiesT
   <xs:import namespace='http://www.xbrl.org/2006/ref' schemaLocation='http://www.xbrl.org/2006/ref-2006-02-27.xsd' />
   <xs:import namespace='http://fasb.org/srt/2026' schemaLocation='https://xbrl.fasb.org/srt/2026/elts/srt-2026.xsd' />
   <xs:import namespace='http://xbrl.sec.gov/country/2026' schemaLocation='https://xbrl.sec.gov/country/2026/country-2026.xsd' />
-  <xs:element id='us-gaap_OtherAccountsPayableAndAccruedLiabilities' name='OtherAccountsPayableAndAccruedLiabilities' nillable='true' substitutionGroup='xbrli:item' type='xbrli:monetaryItemType' xbrli:balance='credit' xbrli:periodType='instant' />
+  <xs:element id='abstractMissing' name='OtherAccountsPayableAndAccruedLiabilities' nillable='true' substitutionGroup='xbrli:item' type='xbrli:monetaryItemType' xbrli:balance='credit' xbrli:periodType='instant' />
+  <xs:element abstract='true' id='abstractTrue' name='CashAndCashEquivalentsAtCarryingValueIncludingDiscontinuedOperationsAbstract' nillable='true' substitutionGroup='xbrli:item' type='xbrli:stringItemType' xbrli:periodType='duration' />
+<xs:element abstract='false' id='abstractFalse' name='CashAndCashEquivalentsAtCarryingValueIncludingDiscontinuedOperationsAbstract' nillable='true' substitutionGroup='xbrli:item' type='xbrli:stringItemType' xbrli:periodType='duration' />
 </xs:schema>";
+
+        public IEnumerable<XElement> Elements => helper.GetDescendants(LocalNamesAndPrefixes.XsElement, LocalNamesAndPrefixes.XsPrefix, helper.RootNameSpacesByPrefix);
+        private readonly XmlStringsHelper helper;
 
         [TestMethod]
         public void AbstractMissingReturnsFalse()
         {
             var helper = new XmlStringsHelper(eltsString);
-            var missingAbstract = helper.GetDescendant(LocalNamesAndPrefixes.XsElement, LocalNamesAndPrefixes.XsPrefix, helper.RootNameSpacesByPrefix);
+            var missingAbstract = Elements.Single(e=>e.Attribute(XName.Get("abstract")) is null);
             var element = new XsElement(missingAbstract, helper.RootNameSpacesByPrefix, new XElementParsingUtility());
             Assert.IsFalse(element.Abstract);
+        }
+        [TestMethod]
+        [DataRow("true")]
+        [DataRow("false")]
+        public void Abstract(string expectedValue)
+        {
+            var helper = new XmlStringsHelper(eltsString);
+            var missingAbstract = Elements.Single(e => e.Attribute(XName.Get("abstract")) is not null && e.Attribute(XName.Get("abstract"))!.Value == expectedValue);
+            var element = new XsElement(missingAbstract, helper.RootNameSpacesByPrefix, new XElementParsingUtility());
+            Assert.AreEqual(Convert.ToBoolean(expectedValue), element.Abstract);
         }
     }
 }
