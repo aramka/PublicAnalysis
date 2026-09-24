@@ -14,16 +14,17 @@ namespace Public.Analysis.FasbTaxonomies.Tests.Statement.StatementTree
         public void ChildAddedTwice()
         {
             Mock<IXsElement> xsElementMoq = new Mock<IXsElement>();
-            StatementNode node = new StatementNode(xsElementMoq.Object, "childAddedTwice", 0);
+            StatementNode parentNode = new StatementNode(xsElementMoq.Object, "childAddedTwice", 0);
+
             Mock<IStatementNode> childNode = new Mock<IStatementNode>();
             childNode.Setup(a => a.ElementId).Returns(new ElementId("child"));
 
-            node.AddChild(childNode.Object);
+            parentNode.AddChild(childNode.Object.ElementId);
 
             childNode = new Mock<IStatementNode>();
             childNode.Setup(a => a.ElementId).Returns(new ElementId("child"));
 
-            Assert.Throws<InvalidOperationException>(() => { node.AddChild(childNode.Object); });
+            Assert.Throws<InvalidOperationException>(() => { parentNode.AddChild(childNode.Object.ElementId); });
             
         }
     }
