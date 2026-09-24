@@ -9,12 +9,7 @@ namespace Public.Analysis.FasbTaxonomies.Statement.StatementTree
     {
         IXsElement XsElement { get; }
 
-        /// <summary>
-        /// Sets the parent if not already set. If the parent has already been set <see cref="InvalidOperationException"/> is thrown.
-        /// </summary>
-        /// <param name="parent"></param>
-        /// <returns></returns>
-        ElementId?  ParentElementId { get; set; }
+        public void AddParent(ElementId parentElementId);
 
         /// <summary>
         /// If the child does not exist it is added. If the child exists <see cref="InvalidOperationException"/> is thrown. 

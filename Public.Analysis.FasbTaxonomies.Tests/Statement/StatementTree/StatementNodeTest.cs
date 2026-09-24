@@ -11,12 +11,19 @@ namespace Public.Analysis.FasbTaxonomies.Tests.Statement.StatementTree
     public class StatementNodeTest
     {
         [TestMethod]
-        public void StatementNodeParentSetOnce()
+        public void ChildAddedTwice()
         {
             Mock<IXsElement> xsElementMoq = new Mock<IXsElement>();
-            StatementNode node = new StatementNode(xsElementMoq.Object, "parentSetOnlyOnce", 0);
-            node.ParentElementId = new ElementId("firstElementId");
-            Assert.Throws<InvalidOperationException>(() => { node.ParentElementId = new ElementId("secondElementId"); });
+            StatementNode node = new StatementNode(xsElementMoq.Object, "childAddedTwice", 0);
+            Mock<IStatementNode> childNode = new Mock<IStatementNode>();
+            childNode.Setup(a => a.ElementId).Returns(new ElementId("child"));
+
+            node.AddChild(childNode.Object);
+
+            childNode = new Mock<IStatementNode>();
+            childNode.Setup(a => a.ElementId).Returns(new ElementId("child"));
+
+            Assert.Throws<InvalidOperationException>(() => { node.AddChild(childNode.Object); });
             
         }
     }

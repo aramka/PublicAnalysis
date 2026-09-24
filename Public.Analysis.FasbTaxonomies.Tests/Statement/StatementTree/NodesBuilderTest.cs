@@ -91,10 +91,8 @@ namespace Public.Analysis.FasbTaxonomies.Tests.Statement.StatementTree
                             Order = 1
                         };
 
-                        StatementNode childNode = new StatementNode(childElementMoq.Object, childLabel, 1)
-                        {
-                            ParentElementId = parent.parentNode.ElementId
-                        };
+                        StatementNode childNode = new StatementNode(childElementMoq.Object, childLabel, 1);
+                        childNode.AddParent(parent.parentNode.ElementId);
                         parent.parentNode.AddChild(childNode);
 
                         arcs.Add(parentChildArc);

@@ -64,7 +64,7 @@ namespace Public.Analysis.FasbTaxonomies.Statement.StatementTree
                             nodes.Add(childNode.ElementId, childNode);
                         }
                         node.AddChild(childNode);
-                        childNode.ParentElementId = node.ElementId;
+                        childNode.AddParent(node.ElementId);
                         childNode.Order = arc.Order;
                     }
                 }

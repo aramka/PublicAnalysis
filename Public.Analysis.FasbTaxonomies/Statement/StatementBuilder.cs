@@ -22,7 +22,7 @@ namespace Public.Analysis.FasbTaxonomies.Statement
             this.nodesBuilder = nodesBuilder;
             this.xElementParsing = xElementParsing;
         }
-        public StatementModel BuildStatement(string usRolesXsdFilePath, string usGaapEltsXsdFilePath, string srtEltsXsdFilePath, string statementXmlFilePath, string labelsXmlFilePath)
+        public StatementModel BuildStatement(string usRolesXsdFilePath, string usGaapEltsXsdFilePath, string srtEltsXsdFilePath, string statementXmlFilePath, string usGaapLabelsXmlFilePath,string srtLabelsXmlFilePath)
         {
             using var usRolesXsdFileStream = new StreamReader(usRolesXsdFilePath);
             var roleTypesParser = new RoleTypesXDocParser(usRolesXsdFileStream, this.xElementParsing);
@@ -34,9 +34,10 @@ namespace Public.Analysis.FasbTaxonomies.Statement
             var srtEltsParser = new ElementsXDocParser(srtEltsXsdFileStream, this.xElementParsing);
 
             var statementLinkBase = DeserializeXmlFile<StatementLinkBase>(statementXmlFilePath);
-            var labelsLinkBase = DeserializeXmlFile<LabelLinkBase>(labelsXmlFilePath);
+            var usGaapLabelsLinkBase = DeserializeXmlFile<LabelLinkBase>(usGaapLabelsXmlFilePath);
+            var srtLabelsLinkBase = DeserializeXmlFile<LabelLinkBase>(srtLabelsXmlFilePath);
 
-            return this.BuildStatement(roleTypesParser, usGaapEltsParser, srtEltsParser, statementLinkBase, labelsLinkBase.LabelLink!);
+            return this.BuildStatement(roleTypesParser, usGaapEltsParser, srtEltsParser, statementLinkBase, usGaapLabelsLinkBase.LabelLink!, srtLabelsLinkBase.LabelLink!);
         }
 
         private T DeserializeXmlFile<T>(string fileName) where T : class
@@ -48,9 +49,11 @@ namespace Public.Analysis.FasbTaxonomies.Statement
             }
         }
 
-        public StatementModel BuildStatement(IRoleTypesParser roleTypesParser, IElementsParser usGaapElementsParser, IElementsParser srtElementsParser, StatementLinkBase statementLinkBase, LabelLink labelLink)
+        public StatementModel BuildStatement(IRoleTypesParser roleTypesParser, IElementsParser usGaapElementsParser, IElementsParser srtElementsParser, StatementLinkBase statementLinkBase, LabelLink usGaapLabelLink, LabelLink srtLabelLink)
         {
-            var labels = labelsBuilder.BuildLabels(labelLink);
+            var labels = labelsBuilder.BuildLabels(usGaapLabelLink);
+            var srtLabels = labelsBuilder.BuildLabels(srtLabelLink);
+            labels = labels.Concat(srtLabels).ToDictionary();
             
             var fasbElements = usGaapElementsParser.GetElements().Cast<IXsElement>();
             var srtElements = srtElementsParser.GetElements().Cast<IXsElement>();
