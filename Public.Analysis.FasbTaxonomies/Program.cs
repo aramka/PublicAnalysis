@@ -51,7 +51,7 @@ namespace Public.Analysis.FasbTaxonomies
 
             string[] statementSearchPatterns = statementOptions.StatementFileSearchPatterns ?? Array.Empty<string>();
 
-            var statementsFilePaths = statementSearchPatterns.SelectMany(sp => Directory.GetFiles(statementDirectory, sp)).Take(1);
+            var statementsFilePaths = statementSearchPatterns.SelectMany(sp => Directory.GetFiles(statementDirectory, sp));
 
             foreach (string statementXmlFilePath in statementsFilePaths)
             {
