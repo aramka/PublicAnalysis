@@ -25,7 +25,7 @@ namespace Public.Analysis.FasbTaxonomies.Tests.Statement.StatementTree
             childNode = new Mock<IStatementNode>();
             childNode.Setup(a => a.ElementId).Returns(new ElementId("child"));
 
-            Assert.Throws<InvalidOperationException>(() => parentNode.AddChild(childNode.Object.ElementId));
+            parentNode.ChildElementIds.Should().BeEquivalentTo([childNode.Object.ElementId]);
             
         }
         [TestMethod]
@@ -42,10 +42,9 @@ namespace Public.Analysis.FasbTaxonomies.Tests.Statement.StatementTree
             parentNodeMoq = new Mock<IStatementNode>();
             parentNodeMoq.Setup(a => a.ElementId).Returns(new ElementId("parent"));
 
-            Assert.Throws<InvalidOperationException>(() => childNode.AddParent(parentNodeMoq.Object.ElementId));
-
             childNode.ParentsElementIds.Should().BeEquivalentTo([parentNodeMoq.Object.ElementId]);
 
         }
+
     }
 }

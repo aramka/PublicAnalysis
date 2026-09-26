@@ -23,6 +23,7 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
         private string toField = string.Empty;
 
         private string typeField = string.Empty;
+        private string preferredLabelField = string.Empty;
 
         /// <remarks/>
         [XmlAttribute("order")]
@@ -36,6 +37,13 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
             {
                 this.orderField = value;
             }
+        }
+
+        [XmlAttribute("preferredLabel")]
+        public string PreferredLabel
+        {
+            get { return this.preferredLabelField; }
+            set { this.preferredLabelField = value; }
         }
 
         /// <remarks/>

@@ -20,10 +20,6 @@ namespace Public.Analysis.FasbTaxonomies.Statement.StatementTree
 
         public void AddParent(ElementId elementId)
         {
-            if (this.parentsElementIds.Contains(elementId))
-            {
-                throw new InvalidOperationException($"ElementId {elementId} is already in list of parents for child node {this.ElementId}");
-            }
             this.parentsElementIds.Add(elementId);
         }
 
@@ -34,10 +30,6 @@ namespace Public.Analysis.FasbTaxonomies.Statement.StatementTree
 
         public void AddChild(ElementId elementId)
         {
-            if (this.childElementIds.Contains(elementId))
-            {
-                throw new InvalidOperationException($"ElementId {elementId} is already in list of children for parent node {this.ElementId}");
-            }
             this.childElementIds.Add(elementId);
         }
 
