@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using AwesomeAssertions;
+using Moq;
 using Public.Analysis.FasbTaxonomies.Statement.StatementTree;
 using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementParsing;
 using System;
@@ -24,8 +25,27 @@ namespace Public.Analysis.FasbTaxonomies.Tests.Statement.StatementTree
             childNode = new Mock<IStatementNode>();
             childNode.Setup(a => a.ElementId).Returns(new ElementId("child"));
 
-            Assert.Throws<InvalidOperationException>(() => { parentNode.AddChild(childNode.Object.ElementId); });
+            Assert.Throws<InvalidOperationException>(() => parentNode.AddChild(childNode.Object.ElementId));
             
+        }
+        [TestMethod]
+        public void ParentAddedTwice()
+        {
+            Mock<IXsElement> xsElementMoq = new Mock<IXsElement>();
+            StatementNode childNode = new StatementNode(xsElementMoq.Object, "parentAddedTwice", 0);
+
+            Mock<IStatementNode> parentNodeMoq = new Mock<IStatementNode>();
+            parentNodeMoq.Setup(a => a.ElementId).Returns(new ElementId("parent"));
+
+            childNode.AddParent(parentNodeMoq.Object.ElementId);
+
+            parentNodeMoq = new Mock<IStatementNode>();
+            parentNodeMoq.Setup(a => a.ElementId).Returns(new ElementId("parent"));
+
+            Assert.Throws<InvalidOperationException>(() => childNode.AddParent(parentNodeMoq.Object.ElementId));
+
+            childNode.ParentsElementIds.Should().BeEquivalentTo([parentNodeMoq.Object.ElementId]);
+
         }
     }
 }

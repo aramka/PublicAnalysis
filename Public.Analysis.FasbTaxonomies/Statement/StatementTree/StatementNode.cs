@@ -15,12 +15,16 @@ namespace Public.Analysis.FasbTaxonomies.Statement.StatementTree
         }
         public IXsElement XsElement { get; }
 
-        private List<ElementId> parentsElementIds = new List<ElementId>();
+        private HashSet<ElementId> parentsElementIds = new HashSet<ElementId>();
         public IEnumerable<ElementId> ParentsElementIds => this.parentsElementIds.Select(p => p);
 
-        public void AddParent(ElementId parentElementId)
+        public void AddParent(ElementId elementId)
         {
-            this.parentsElementIds.Add(parentElementId);
+            if (this.parentsElementIds.Contains(elementId))
+            {
+                throw new InvalidOperationException($"ElementId {elementId} is already in list of parents for child node {this.ElementId}");
+            }
+            this.parentsElementIds.Add(elementId);
         }
 
         public string Label { get; }
@@ -30,11 +34,10 @@ namespace Public.Analysis.FasbTaxonomies.Statement.StatementTree
 
         public void AddChild(ElementId elementId)
         {
-            if(this.childElementIds.Contains(elementId))
+            if (this.childElementIds.Contains(elementId))
             {
-                throw new InvalidOperationException($"ElementId {elementId} has already been added to node {this.ElementId}");
+                throw new InvalidOperationException($"ElementId {elementId} is already in list of children for parent node {this.ElementId}");
             }
-
             this.childElementIds.Add(elementId);
         }
 
