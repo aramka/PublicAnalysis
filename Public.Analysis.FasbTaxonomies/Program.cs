@@ -1,16 +1,18 @@
-﻿using System;
-using System.IO;
-using System.Xml;
-using System.Xml.Schema;
-using System.Linq;
-using System.Xml.Linq;
-using System.Reflection.Metadata.Ecma335;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using Public.Analysis.FasbTaxonomies.Configuration;
 using Public.Analysis.FasbTaxonomies.Statement;
 using Public.Analysis.FasbTaxonomies.Statement.StatementTree;
+using Public.Analysis.FasbTaxonomies.XmlParsing;
 using Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq;
+using System;
+using System.IO;
+using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
+using System.Xml;
+using System.Xml.Linq;
+using System.Xml.Schema;
 
 namespace Public.Analysis.FasbTaxonomies
 {
@@ -18,23 +20,46 @@ namespace Public.Analysis.FasbTaxonomies
     {
         static void Main(string[] args)
         {
-            LabelsBuilder labelsBuilder = new LabelsBuilder();
-            NodesBuilder nodesBuilder = new NodesBuilder();
-            XElementParsingUtility xElementParsing = new XElementParsingUtility();
-
-            StatementBuilder statementBuilder = new StatementBuilder(labelsBuilder, nodesBuilder, xElementParsing);
-
-
             // Load configuration from appsettings.json
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
 
-            
             // Bind configuration section to a strongly-typed options model
             var statementOptions = config.GetSection("StatementTreeBuilder").Get<Configuration.StatementTreeBuilderOptions>()
                 ?? throw new InvalidOperationException("Missing StatementTreeBuilder configuration section.");
+            GetLabelRoles(statementOptions);
+
+        }
+
+        private static void GetLabelRoles(StatementTreeBuilderOptions statementOptions)
+        {
+            string[] labelsFilePaths = [statementOptions.UsGaapLabelsXmlFilePath, statementOptions.SrtLabelsXmlFilePath];
+            string linkBaseNs = "http://www.xbrl.org/2003/linkbase";
+            string xlinkNs = "http://www.w3.org/1999/xlink";
+
+            var labelRoles =
+                labelsFilePaths.Select(p => XDocument.Load(p))
+                .SelectMany(doc =>
+                    doc.Root!.Element(XName.Get("labelLink", linkBaseNs))!
+                    .Elements(XName.Get("label", linkBaseNs))
+                )
+                .Select(e => e.Attribute(XName.Get("role", xlinkNs))!.Value)
+                .Select(role => (new Uri(role).Segments.Last()))
+                .ToHashSet();
+
+            Console.WriteLine($"[{string.Join(",", labelRoles.Select(lr => $"\"{lr}\""))}]");
+        }
+
+        private static void StatementsToJsonFiles(StatementTreeBuilderOptions statementOptions)
+        {
+            LabelsBuilder labelsBuilder = new LabelsBuilder();
+            NodesBuilder nodesBuilder = new NodesBuilder();
+            XElementParsingUtility xElementParsing = new XElementParsingUtility();
+
+            StatementBuilder statementBuilder = new StatementBuilder(labelsBuilder, nodesBuilder, xElementParsing);
+
 
             string usRolesXsdFilePath = statementOptions.UsRolesXsdFilePath;
             string usGaapEltsXsdFilePath = statementOptions.UsGaapEltsXsdFilePath;

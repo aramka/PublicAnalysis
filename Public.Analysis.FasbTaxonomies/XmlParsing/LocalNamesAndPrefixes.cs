@@ -6,6 +6,7 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing
 {
     public static class LocalNamesAndPrefixes
     {
+        public static string[] LabelRoles = ["label", "totalLabel", "axisDefault", "periodStartLabel", "periodEndLabel", "terseLabel"];
         public const string LinkPrefix = "link";
 
         public const string XLinkPrefix = "xlink";
