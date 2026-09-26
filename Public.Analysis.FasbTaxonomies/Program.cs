@@ -2,6 +2,7 @@
 using Public.Analysis.FasbTaxonomies.Configuration;
 using Public.Analysis.FasbTaxonomies.Statement;
 using Public.Analysis.FasbTaxonomies.Statement.StatementTree;
+using Public.Analysis.FasbTaxonomies.Statement.StatementTree.Labels;
 using Public.Analysis.FasbTaxonomies.XmlParsing;
 using Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq;
 using System;

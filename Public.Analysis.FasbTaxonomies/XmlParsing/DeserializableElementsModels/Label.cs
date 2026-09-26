@@ -65,6 +65,9 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
             }
         }
 
+        [XmlIgnore]
+        public string LabelRole => (new Uri(this.Role)).Segments.Last();
+
 
         [XmlAttribute("type", Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
         public string Type

@@ -6,7 +6,6 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing
 {
     public static class LocalNamesAndPrefixes
     {
-        public static string[] LabelRoles = ["label", "totalLabel", "axisDefault", "periodStartLabel", "periodEndLabel", "terseLabel"];
         public const string LinkPrefix = "link";
 
         public const string XLinkPrefix = "xlink";
@@ -41,11 +40,5 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing
         public static string BalanceAttribute = "balance";
         public static string PeriodTypeAttribute="periodType";
         public static string XbrliPrefix = "xbrli";
-
-        public const string XLinkRoleTotalLabelSuffix = "totalLabel";
-
-        public const string XLinkRoleStandardLabelSuffix = "label";
-
-        public const string PreferredLabelPeriodEndLabel = "periodEndLabel";
     }
 }

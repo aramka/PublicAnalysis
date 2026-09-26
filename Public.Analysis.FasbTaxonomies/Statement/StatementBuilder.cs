@@ -1,4 +1,5 @@
 ﻿using Public.Analysis.FasbTaxonomies.Statement.StatementTree;
+using Public.Analysis.FasbTaxonomies.Statement.StatementTree.Labels;
 using Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels;
 using Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels.PresentationElementModels;
 using Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq;
@@ -64,7 +65,7 @@ namespace Public.Analysis.FasbTaxonomies.Statement
             var srtElements = srtElementsParser.GetElements().Cast<IXsElement>();
             var elementsByElementId = fasbElements.Concat(srtElements).ToDictionary(a => a.ElementId);
 
-            var nodes = this.nodesBuilder.BuildNodes(statementLinkBase.presentationLink, elementsByElementId, labels);
+            var nodes = this.nodesBuilder.BuildNodes(statementLinkBase.presentationLink, elementsByElementId, new Dictionary<ElementId,string>());
             if(statementLinkBase.RoleRef is null)
             {
                 throw new InvalidOperationException($"{nameof(statementLinkBase.RoleRef)} is null");

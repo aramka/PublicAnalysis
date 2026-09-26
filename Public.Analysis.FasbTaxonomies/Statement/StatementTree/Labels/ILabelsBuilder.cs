@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Public.Analysis.FasbTaxonomies.Statement.StatementTree
+namespace Public.Analysis.FasbTaxonomies.Statement.StatementTree.Labels
 {
     public interface ILabelsBuilder
     {
-        IReadOnlyDictionary<ElementId, string> BuildLabels(LabelLink labelLink);
+        IReadOnlyDictionary<ElementId, IReadOnlyDictionary<LabelRole,string>> BuildLabels(LabelLink labelLink);
     }
 }
