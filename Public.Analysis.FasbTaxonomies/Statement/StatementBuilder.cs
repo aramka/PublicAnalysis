@@ -49,6 +49,11 @@ namespace Public.Analysis.FasbTaxonomies.Statement
             }
         }
 
+        public StatementModel BuildStatement(string statementFilePath, IRoleTypesParser roleTypesParser, IReadOnlyDictionary<ElementId, IXsElement> elementsByElementId, IReadOnlyDictionary<ElementId,string> labels)
+        {
+            throw new NotImplementedException("Implemetned a method that will allow passing in of parameters that are same across statements.");
+        }
+
         public StatementModel BuildStatement(IRoleTypesParser roleTypesParser, IElementsParser usGaapElementsParser, IElementsParser srtElementsParser, StatementLinkBase statementLinkBase, LabelLink usGaapLabelLink, LabelLink srtLabelLink)
         {
             var labels = labelsBuilder.BuildLabels(usGaapLabelLink);
