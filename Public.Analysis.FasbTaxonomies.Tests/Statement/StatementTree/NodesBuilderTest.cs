@@ -32,7 +32,7 @@ namespace Public.Analysis.FasbTaxonomies.Tests.Statement.StatementTree
          * StatementTreeBuilder:IStatementTreeBuilder
          *  IReadOnlyDictionary<ElementId,IStatementNode> BuildStatementTree(IEnumerable<IStatementNode> nodes);
          */
-        public (Loc loc, Mock<IXsElement> elementMoq, string label) BuildElementTestData(int parentCount, string label)
+        public (Loc loc, Mock<IXsElement> elementMoq, string label) BuildElementTestData(string label)
         {
             Loc loc = new Loc
             {
@@ -63,7 +63,7 @@ namespace Public.Analysis.FasbTaxonomies.Tests.Statement.StatementTree
             var parents = Enumerable.Range(0, nodesAtDepth[0])
                 .Select((i) => {
 
-                    (Loc parentLoc, Mock<IXsElement> parentElementMoq, string parentLabel) = BuildElementTestData(1, $"node_0_{i+1}");
+                    (Loc parentLoc, Mock<IXsElement> parentElementMoq, string parentLabel) = BuildElementTestData($"node_depth_0_{i+1}");
 
                     locs.Add(parentLoc);
                     elementsByElementId[parentElementMoq.Object.ElementId] = parentElementMoq.Object;
@@ -82,7 +82,7 @@ namespace Public.Analysis.FasbTaxonomies.Tests.Statement.StatementTree
                 foreach (var parent in parents)
                 {
                     for (int j = 0; j < nodesAtDepth[i]; j++) {
-                        (Loc childLoc, Mock<IXsElement> childElementMoq, string childLabel) = BuildElementTestData(1, $"{parent.parentLabel}_node1_{i}_{j}");
+                        (Loc childLoc, Mock<IXsElement> childElementMoq, string childLabel) = BuildElementTestData($"{parent.parentLabel}_node_depth_{i}_{j+1}");
 
                         var parentChildArc = new Arc
                         {

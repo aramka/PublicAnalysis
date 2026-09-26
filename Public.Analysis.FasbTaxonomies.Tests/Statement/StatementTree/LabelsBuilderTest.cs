@@ -59,6 +59,12 @@ namespace Public.Analysis.FasbTaxonomies.Tests.Statement.StatementTree
         }
 
         [TestMethod]
+        public void GetsPreferredLabels()
+        {
+            Assert.Fail("must get the correct label in cases where there is an arc that has a preferred label.");
+        }
+
+        [TestMethod]
         public void ElementNotFound()
         {
             var missing = this.labelLink.Locs[1];

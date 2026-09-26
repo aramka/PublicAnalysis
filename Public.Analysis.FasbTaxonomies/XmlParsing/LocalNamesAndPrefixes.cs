@@ -44,5 +44,7 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing
         public const string XLinkRoleTotalLabelSuffix = "totalLabel";
 
         public const string XLinkRoleStandardLabelSuffix = "label";
+
+        public const string PreferredLabelPeriodEndLabel = "periodEndLabel";
     }
 }

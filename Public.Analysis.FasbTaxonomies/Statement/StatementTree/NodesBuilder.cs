@@ -17,14 +17,8 @@ namespace Public.Analysis.FasbTaxonomies.Statement.StatementTree
 
             Dictionary<ElementId, IStatementNode> nodes = new Dictionary<ElementId, IStatementNode>();
 
-            foreach (Loc loc in presentationLink.Locs) //foreach(var arc in presentationLink.Arcs)
+            foreach (Loc loc in presentationLink.Locs)
             {
-                //if(!locsByXLinkLabel.TryGetValue(arc.From, out Loc? parentLoc))
-                //{
-                //    throw new InvalidOperationException($"Locator From->{arc.From} not found for arc relation From->{arc.From}, To->{arc.To}");
-                //}
-
-
                 if (!elementsByElementId.TryGetValue(loc.ElementId, out IXsElement? element))
                 {
                     throw new InvalidOperationException($"Element {loc.ElementId} not found.");
@@ -41,36 +35,33 @@ namespace Public.Analysis.FasbTaxonomies.Statement.StatementTree
                     nodes.Add(node.ElementId, node);
                 }
 
-                if (arcsByFrom.TryGetValue(loc.XLinkLabel, out IEnumerable<Arc>? parentChildArcs))
+                if (!arcsByFrom.TryGetValue(loc.XLinkLabel, out IEnumerable<Arc>? parentChildArcs)) continue;
+
+                foreach (Arc arc in parentChildArcs)
                 {
-                    foreach (Arc arc in parentChildArcs)
+                    if (!locsByXLinkLabel.TryGetValue(arc.To, out Loc? childLoc))
                     {
-                        if (!locsByXLinkLabel.TryGetValue(arc.To, out Loc? childLoc))
-                        {
-                            throw new InvalidOperationException($"Loc for {nameof(Arc)}.To->{arc.To} not found for arc relation {nameof(Arc)}.From->{arc.From}, {nameof(Arc)}.To->{arc.To}");
-                        }
-                        if (!elementsByElementId.TryGetValue(childLoc.ElementId, out IXsElement? childElement))
-                        {
-                            throw new InvalidOperationException($"Element {childLoc.ElementId} not found.");
-                        }
-                        if (!labelsByElementId.TryGetValue(childLoc.ElementId, out string? childLabel))
-                        {
-                            throw new InvalidOperationException($"Label {childLoc.ElementId} not found.");
-                        }
-
-                        if (!nodes.TryGetValue(childElement.ElementId, out IStatementNode? childNode))
-                        {
-                            childNode = new StatementNode(childElement, childLabel, 0);
-                            nodes.Add(childNode.ElementId, childNode);
-                        }
-                        node.AddChild(childNode.ElementId);
-                        childNode.AddParent(node.ElementId);
-                        childNode.Order = arc.Order;
+                        throw new InvalidOperationException($"Loc for {nameof(Arc)}.To->{arc.To} not found for arc relation {nameof(Arc)}.From->{arc.From}, {nameof(Arc)}.To->{arc.To}");
                     }
+                    if (!elementsByElementId.TryGetValue(childLoc.ElementId, out IXsElement? childElement))
+                    {
+                        throw new InvalidOperationException($"Element {childLoc.ElementId} not found.");
+                    }
+                    if (!labelsByElementId.TryGetValue(childLoc.ElementId, out string? childLabel))
+                    {
+                        throw new InvalidOperationException($"Label {childLoc.ElementId} not found.");
+                    }
+
+                    if (!nodes.TryGetValue(childElement.ElementId, out IStatementNode? childNode))
+                    {
+                        childNode = new StatementNode(childElement, childLabel, 0);
+                        nodes.Add(childNode.ElementId, childNode);
+                    }
+                    node.AddChild(childNode.ElementId);
+                    childNode.AddParent(node.ElementId);
+                    childNode.Order = arc.Order;
                 }
-
             }
-
             return nodes;
         }
     }
