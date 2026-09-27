@@ -4,8 +4,11 @@ using Public.Analysis.FasbTaxonomies.Statement;
 using Public.Analysis.FasbTaxonomies.Statement.StatementTree;
 using Public.Analysis.FasbTaxonomies.Statement.StatementTree.Labels;
 using Public.Analysis.FasbTaxonomies.XmlParsing;
+using Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels;
 using Public.Analysis.FasbTaxonomies.XmlParsing.XmlLinq;
+using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementParsing;
 using System;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
@@ -14,6 +17,7 @@ using System.Text.Json.Serialization.Metadata;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
+using System.Xml.Serialization;
 
 namespace Public.Analysis.FasbTaxonomies
 {
@@ -30,7 +34,7 @@ namespace Public.Analysis.FasbTaxonomies
             // Bind configuration section to a strongly-typed options model
             var statementOptions = config.GetSection("StatementTreeBuilder").Get<Configuration.StatementTreeBuilderOptions>()
                 ?? throw new InvalidOperationException("Missing StatementTreeBuilder configuration section.");
-            GetLabelRoles(statementOptions);
+            StatementsToJsonFiles(statementOptions);
 
         }
 
@@ -53,6 +57,15 @@ namespace Public.Analysis.FasbTaxonomies
             Console.WriteLine($"[{string.Join(",", labelRoles.Select(lr => $"\"{lr}\""))}]");
         }
 
+        private static T DeserializeXmlFile<T>(string fileName) where T : class
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(T));
+            using (var reader = new StreamReader(fileName))
+            {
+                return (T)serializer.Deserialize(reader)!;
+            }
+        }
+
         private static void StatementsToJsonFiles(StatementTreeBuilderOptions statementOptions)
         {
             LabelsBuilder labelsBuilder = new LabelsBuilder();
@@ -63,10 +76,37 @@ namespace Public.Analysis.FasbTaxonomies
 
 
             string usRolesXsdFilePath = statementOptions.UsRolesXsdFilePath;
-            string usGaapEltsXsdFilePath = statementOptions.UsGaapEltsXsdFilePath;
-            string srtEltsXsdFilePath = statementOptions.SrtEltsXsdFilePath;
+
+            string[] eltsFiles = [statementOptions.UsGaapEltsXsdFilePath, statementOptions.SrtEltsXsdFilePath];
+            Dictionary<ElementId, IXsElement> elementsByElementId =
+                eltsFiles.Select(filePath =>
+                {
+                    using var stream = new StreamReader(filePath);
+
+                    var parser = new ElementsXDocParser(stream, xElementParsing);
+                    return parser.GetElements().Cast<IXsElement>();
+                })
+                .SelectMany(xsElements => xsElements)
+                .ToDictionary(xsElement => xsElement.ElementId);
+
             string usGaapLabelsXmlFilePath = statementOptions.UsGaapLabelsXmlFilePath;
             string srtLabelsXmlFilePath = statementOptions.SrtLabelsXmlFilePath;
+
+            string[] labelsFiles = [usGaapLabelsXmlFilePath, srtLabelsXmlFilePath];
+
+            var labelsByElementId =
+                labelsFiles.Select(filePath => {
+
+                    var labelLink = DeserializeXmlFile<LabelLinkBase>(filePath);
+                    var labels = labelsBuilder.BuildLabels(labelLink.LabelLink!);
+                    return labels;
+                
+                }).SelectMany(kvp=>kvp)
+                .ToDictionary();
+
+            using var usRolesXsdFileStream = new StreamReader(usRolesXsdFilePath);
+            var roleTypesParser = new RoleTypesXDocParser(usRolesXsdFileStream, xElementParsing);
+
             string statementDirectory = statementOptions.StatementFilesDirectoryPath;
             string statementJsonOutputDirectory = statementOptions.StatementJsonOutputDirectory;
 
@@ -81,7 +121,7 @@ namespace Public.Analysis.FasbTaxonomies
 
             foreach (string statementXmlFilePath in statementsFilePaths)
             {
-                StatementModel statementModel = statementBuilder.BuildStatement(usRolesXsdFilePath, usGaapEltsXsdFilePath, srtEltsXsdFilePath, statementXmlFilePath, usGaapLabelsXmlFilePath, srtLabelsXmlFilePath);
+                StatementModel statementModel = statementBuilder.BuildStatement(statementXmlFilePath, elementsByElementId, labelsByElementId, roleTypesParser);
 
                 string jsonFilePath = Path.Combine(statementJsonOutputDirectory, $"{Path.GetFileNameWithoutExtension(statementXmlFilePath)}.json");
                 if (File.Exists(jsonFilePath))

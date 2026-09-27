@@ -23,23 +23,6 @@ namespace Public.Analysis.FasbTaxonomies.Statement
             this.nodesBuilder = nodesBuilder;
             this.xElementParsing = xElementParsing;
         }
-        public StatementModel BuildStatement(string usRolesXsdFilePath, string usGaapEltsXsdFilePath, string srtEltsXsdFilePath, string statementXmlFilePath, string usGaapLabelsXmlFilePath,string srtLabelsXmlFilePath)
-        {
-            using var usRolesXsdFileStream = new StreamReader(usRolesXsdFilePath);
-            var roleTypesParser = new RoleTypesXDocParser(usRolesXsdFileStream, this.xElementParsing);
-            
-            using var usGaapEltsXsdFileStream = new StreamReader(usGaapEltsXsdFilePath);
-            var usGaapEltsParser = new ElementsXDocParser(usGaapEltsXsdFileStream, this.xElementParsing);
-
-            using var srtEltsXsdFileStream = new StreamReader(srtEltsXsdFilePath);
-            var srtEltsParser = new ElementsXDocParser(srtEltsXsdFileStream, this.xElementParsing);
-
-            var statementLinkBase = DeserializeXmlFile<StatementLinkBase>(statementXmlFilePath);
-            var usGaapLabelsLinkBase = DeserializeXmlFile<LabelLinkBase>(usGaapLabelsXmlFilePath);
-            var srtLabelsLinkBase = DeserializeXmlFile<LabelLinkBase>(srtLabelsXmlFilePath);
-
-            return this.BuildStatement(roleTypesParser, usGaapEltsParser, srtEltsParser, statementLinkBase, usGaapLabelsLinkBase.LabelLink!, srtLabelsLinkBase.LabelLink!);
-        }
 
         private T DeserializeXmlFile<T>(string fileName) where T : class
         {
@@ -50,28 +33,16 @@ namespace Public.Analysis.FasbTaxonomies.Statement
             }
         }
 
-        public StatementModel BuildStatement(string statementFilePath, IRoleTypesParser roleTypesParser, IReadOnlyDictionary<ElementId, IXsElement> elementsByElementId, IReadOnlyDictionary<ElementId,string> labels)
+        public StatementModel BuildStatement(string statementFilePath, IReadOnlyDictionary<ElementId, IXsElement> elementsByElementId, IReadOnlyDictionary<ElementId, IReadOnlyDictionary<LabelRole, string>> labelsByElementId, IRoleTypesParser roleTypesParser)
         {
-            throw new NotImplementedException("Implemetned a method that will allow passing in of parameters that are same across statements.");
-        }
-
-        public StatementModel BuildStatement(IRoleTypesParser roleTypesParser, IElementsParser usGaapElementsParser, IElementsParser srtElementsParser, StatementLinkBase statementLinkBase, LabelLink usGaapLabelLink, LabelLink srtLabelLink)
-        {
-            var labels = labelsBuilder.BuildLabels(usGaapLabelLink);
-            var srtLabels = labelsBuilder.BuildLabels(srtLabelLink);
-            labels = labels.Concat(srtLabels).ToDictionary();
-            
-            var fasbElements = usGaapElementsParser.GetElements().Cast<IXsElement>();
-            var srtElements = srtElementsParser.GetElements().Cast<IXsElement>();
-            var elementsByElementId = fasbElements.Concat(srtElements).ToDictionary(a => a.ElementId);
-
-            var nodes = this.nodesBuilder.BuildNodes(statementLinkBase.presentationLink, elementsByElementId, labels);
-            if(statementLinkBase.RoleRef is null)
+            var statementLinkBase = DeserializeXmlFile<StatementLinkBase>(statementFilePath);
+            var nodes = this.nodesBuilder.BuildNodes(statementLinkBase.presentationLink, elementsByElementId, labelsByElementId);
+            if (statementLinkBase.RoleRef is null)
             {
                 throw new InvalidOperationException($"{nameof(statementLinkBase.RoleRef)} is null");
             }
             var statementInfo = roleTypesParser.GetUSRoleTypes().SingleOrDefault(r => r.LinkRoleTypeId == statementLinkBase.RoleRef.LocationAndAnchor.Anchor);
-            if(statementInfo is null)
+            if (statementInfo is null)
             {
                 throw new InvalidOperationException($"Statement roleType id {statementLinkBase.RoleRef.LocationAndAnchor.Anchor} not found in {nameof(roleTypesParser)}.");
             }
@@ -80,5 +51,6 @@ namespace Public.Analysis.FasbTaxonomies.Statement
 
             return new StatementModel(statementName, statementInfo.LinkRoleTypeLinkDefinitionValue, statementInfo.LinkRoleTypeId, nodes);
         }
+
     }
 }

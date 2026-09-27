@@ -47,7 +47,7 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
         }
 
         [XmlIgnore]
-        public string PreferredLabel => PreferredLabelUri switch { null or "" => string.Empty, _ => new Uri(PreferredLabel).Segments.Last() };
+        public string PreferredLabel => PreferredLabelUri switch { null or "" => string.Empty, _ => new Uri(PreferredLabelUri).Segments.Last() };
 
         /// <remarks/>
         [XmlAttribute("arcrole", Form = XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]
