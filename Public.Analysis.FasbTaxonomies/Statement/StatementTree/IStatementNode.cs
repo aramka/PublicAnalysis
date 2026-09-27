@@ -17,16 +17,12 @@ namespace Public.Analysis.FasbTaxonomies.Statement.StatementTree
         /// If the child does not exist it is added. If the child exists <see cref="InvalidOperationException"/> is thrown. 
         /// </summary>
         /// <param name="child"></param>
-        void AddChild(ElementId childElementId);
+        void AddChild(ElementId childElementId, string childLabel, decimal order);
 
-        IEnumerable<ElementId> ChildElementIds { get; }
+        IEnumerable<ChildStatementNode> Children{ get; }
 
         string Label { get; }
 
-        /// <summary>
-        /// Sets the order if not order is equal to zero. If the order is not equal zero then <see cref="InvalidOperationException"/> is thrown.
-        /// </summary>
-        decimal Order { get; set; }
         ElementId ElementId { get; }
     }
 }

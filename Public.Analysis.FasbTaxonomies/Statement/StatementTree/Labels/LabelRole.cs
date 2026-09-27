@@ -14,7 +14,7 @@ namespace Public.Analysis.FasbTaxonomies.Statement.StatementTree.Labels
         public static LabelRole PeriodEndLabel { get { return new LabelRole("periodEndLabel", true); } }
         public static LabelRole TerseLabel { get { return new LabelRole("terseLabel", true); } }
 
-        private static readonly HashSet<string> LabelRolesHash = new HashSet<string> { Label.Value, TotalLabel.Value, AxisDefault.Value, PeriodStartLabel.Value, PeriodStartLabel.Value, TerseLabel.Value };
+        public static readonly HashSet<string> LabelRolesHash = new HashSet<string> { Label.Value, TotalLabel.Value, AxisDefault.Value, PeriodStartLabel.Value, PeriodStartLabel.Value, TerseLabel.Value };
 
         public static readonly IEnumerable<string> LabelRoles = LabelRolesHash!.Select(r => r);
 

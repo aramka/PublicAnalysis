@@ -5,6 +5,7 @@ using Moq;
 using OpenTelemetry.Context;
 using OpenTelemetry.Trace;
 using Public.Analysis.FasbTaxonomies.Statement.StatementTree;
+using Public.Analysis.FasbTaxonomies.Statement.StatementTree.Labels;
 using Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels;
 using Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels.PresentationElementModels;
 using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementParsing;
@@ -51,24 +52,24 @@ namespace Public.Analysis.FasbTaxonomies.Tests.Statement.StatementTree
             return (loc, elementMoq, label);
         }
 
-        public (PresentationLink presentationLink, IReadOnlyDictionary<ElementId, IXsElement> elementsByElementId, IReadOnlyDictionary<ElementId,string> labelsByElementId, Dictionary<ElementId, IStatementNode> expectedNodes) 
+        public (PresentationLink presentationLink, IReadOnlyDictionary<ElementId, IXsElement> elementsByElementId, IReadOnlyDictionary<ElementId, IReadOnlyDictionary<LabelRole, string>> labelsByElementId, Dictionary<ElementId, IStatementNode> expectedNodes) 
             BuildNestedNodesTestData(int[] nodesAtDepth)
         {
             List<Arc> arcs = new List<Arc>();
             List<Loc> locs = new List<Loc>();
             Dictionary<ElementId, IXsElement> elementsByElementId = new Dictionary<ElementId, IXsElement>();
-            Dictionary<ElementId, string> labelsByElementId = new Dictionary<ElementId, string>();
+            Dictionary<ElementId, IReadOnlyDictionary<LabelRole, string>> labelsByElementId = new Dictionary<ElementId, IReadOnlyDictionary<LabelRole, string>>();
             Dictionary<ElementId, IStatementNode> expectedNodes = new Dictionary<ElementId, IStatementNode>();
 
             var parents = Enumerable.Range(0, nodesAtDepth[0])
                 .Select((i) => {
 
-                    (Loc parentLoc, Mock<IXsElement> parentElementMoq, string parentLabel) = BuildElementTestData($"node_depth_0_{i+1}");
+                    (Loc parentLoc, Mock<IXsElement> parentElementMoq, string parentLabel) = BuildElementTestData($"root_{i+1}");
 
                     locs.Add(parentLoc);
                     elementsByElementId[parentElementMoq.Object.ElementId] = parentElementMoq.Object;
-                    labelsByElementId[parentElementMoq.Object.ElementId] = parentLabel;
-                    StatementNode parentNode = new StatementNode(parentElementMoq.Object, parentLabel, 0);
+                    labelsByElementId[parentElementMoq.Object.ElementId] = new Dictionary<LabelRole, string> { [LabelRole.Label] = parentLabel };
+                    StatementNode parentNode = new StatementNode(parentElementMoq.Object, parentLabel);
                     expectedNodes[parentElementMoq.Object.ElementId] = parentNode;
 
                     return new { loc = parentLoc, parentElementMoq, parentLabel, parentNode };
@@ -82,24 +83,24 @@ namespace Public.Analysis.FasbTaxonomies.Tests.Statement.StatementTree
                 foreach (var parent in parents)
                 {
                     for (int j = 0; j < nodesAtDepth[i]; j++) {
-                        (Loc childLoc, Mock<IXsElement> childElementMoq, string childLabel) = BuildElementTestData($"{parent.parentLabel}_node_depth_{i}_{j+1}");
+                        (Loc childLoc, Mock<IXsElement> childElementMoq, string childLabel) = BuildElementTestData($"{parent.parentLabel}_child_depth_{i}_{j+1}");
 
                         var parentChildArc = new Arc
                         {
                             From = parent.loc.XLinkLabel,
                             To = childLoc.XLinkLabel,
-                            Order = 1
+                            Order = j+1
                         };
 
-                        StatementNode childNode = new StatementNode(childElementMoq.Object, childLabel, 1);
+                        StatementNode childNode = new StatementNode(childElementMoq.Object, childLabel);
                         childNode.AddParent(parent.parentNode.ElementId);
-                        parent.parentNode.AddChild(childNode.ElementId);
+                        parent.parentNode.AddChild(childNode.ElementId, childLabel, parentChildArc.Order);
 
                         arcs.Add(parentChildArc);
                         locs.Add(childLoc);
 
                         elementsByElementId[childElementMoq.Object.ElementId] = childElementMoq.Object;
-                        labelsByElementId[childElementMoq.Object.ElementId] = childLabel;
+                        labelsByElementId[childElementMoq.Object.ElementId] = new Dictionary<LabelRole, string> { [LabelRole.Label] = childLabel }; ;
                         expectedNodes[childElementMoq.Object.ElementId] = childNode;
 
                         nextParents.Add(new { loc = childLoc, parentElementMoq = childElementMoq, parentLabel = childLabel, parentNode = childNode });
@@ -124,7 +125,7 @@ namespace Public.Analysis.FasbTaxonomies.Tests.Statement.StatementTree
         public void Build_Nodes(int[] nodesByDepth)
         {
             // int[] nodesByDepth = [ 2,  1,  3 ];
-            (PresentationLink presentationLink, IReadOnlyDictionary<ElementId, IXsElement> elementsByElementId, IReadOnlyDictionary<ElementId, string> labelsByElementId, Dictionary<ElementId, IStatementNode> expectedNodes) = 
+            (PresentationLink presentationLink, IReadOnlyDictionary<ElementId, IXsElement> elementsByElementId, IReadOnlyDictionary<ElementId, IReadOnlyDictionary<LabelRole, string>> labelsByElementId, Dictionary<ElementId, IStatementNode> expectedNodes) = 
                 BuildNestedNodesTestData(nodesByDepth);
 
             NodesBuilder nodesBuilder = new NodesBuilder();

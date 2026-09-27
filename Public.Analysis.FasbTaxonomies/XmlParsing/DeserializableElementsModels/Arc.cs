@@ -40,11 +40,14 @@ namespace Public.Analysis.FasbTaxonomies.XmlParsing.DeserializableElementsModels
         }
 
         [XmlAttribute("preferredLabel")]
-        public string PreferredLabel
+        public string PreferredLabelUri
         {
             get { return this.preferredLabelField; }
             set { this.preferredLabelField = value; }
         }
+
+        [XmlIgnore]
+        public string PreferredLabel => PreferredLabelUri switch { null or "" => string.Empty, _ => new Uri(PreferredLabel).Segments.Last() };
 
         /// <remarks/>
         [XmlAttribute("arcrole", Form = XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/1999/xlink")]

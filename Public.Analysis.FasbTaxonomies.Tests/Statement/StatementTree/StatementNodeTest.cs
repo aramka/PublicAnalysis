@@ -15,34 +15,23 @@ namespace Public.Analysis.FasbTaxonomies.Tests.Statement.StatementTree
         public void ChildAddedTwice()
         {
             Mock<IXsElement> xsElementMoq = new Mock<IXsElement>();
-            StatementNode parentNode = new StatementNode(xsElementMoq.Object, "childAddedTwice", 0);
+            StatementNode parentNode = new StatementNode(xsElementMoq.Object, "childAddedTwice");
 
-            Mock<IStatementNode> childNode = new Mock<IStatementNode>();
-            childNode.Setup(a => a.ElementId).Returns(new ElementId("child"));
+            parentNode.AddChild(new ElementId("child"), "child",1);
 
-            parentNode.AddChild(childNode.Object.ElementId);
 
-            childNode = new Mock<IStatementNode>();
-            childNode.Setup(a => a.ElementId).Returns(new ElementId("child"));
-
-            parentNode.ChildElementIds.Should().BeEquivalentTo([childNode.Object.ElementId]);
+            Assert.Throws<InvalidOperationException>(() => parentNode.AddChild(new ElementId("child"), "child", 1));
             
         }
         [TestMethod]
         public void ParentAddedTwice()
         {
             Mock<IXsElement> xsElementMoq = new Mock<IXsElement>();
-            StatementNode childNode = new StatementNode(xsElementMoq.Object, "parentAddedTwice", 0);
+            StatementNode childNode = new StatementNode(xsElementMoq.Object, "parentAddedTwice");
 
-            Mock<IStatementNode> parentNodeMoq = new Mock<IStatementNode>();
-            parentNodeMoq.Setup(a => a.ElementId).Returns(new ElementId("parent"));
+            childNode.AddParent(new ElementId("parent"));
 
-            childNode.AddParent(parentNodeMoq.Object.ElementId);
-
-            parentNodeMoq = new Mock<IStatementNode>();
-            parentNodeMoq.Setup(a => a.ElementId).Returns(new ElementId("parent"));
-
-            childNode.ParentsElementIds.Should().BeEquivalentTo([parentNodeMoq.Object.ElementId]);
+            childNode.ParentsElementIds.Should().BeEquivalentTo([new ElementId("parent")]);
 
         }
 

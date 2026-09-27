@@ -7,11 +7,10 @@ namespace Public.Analysis.FasbTaxonomies.Statement.StatementTree
 {
     public class StatementNode : IStatementNode
     {
-        public StatementNode(IXsElement xsElement, string label, decimal order)
+        public StatementNode(IXsElement xsElement, string label)
         {
             this.XsElement = xsElement;
             this.Label = label;
-            this.Order = order;
         }
         public IXsElement XsElement { get; }
 
@@ -22,20 +21,22 @@ namespace Public.Analysis.FasbTaxonomies.Statement.StatementTree
         {
             this.parentsElementIds.Add(elementId);
         }
-
         public string Label { get; }
 
+        private readonly HashSet<ChildStatementNode> children = new HashSet<ChildStatementNode>();
 
-        private readonly HashSet<ElementId> childElementIds = new HashSet<ElementId>();
-
-        public void AddChild(ElementId elementId)
+        public void AddChild(ElementId elementId, string childLabel, decimal order)
         {
-            this.childElementIds.Add(elementId);
+            var childNode = new ChildStatementNode(elementId, childLabel, order);
+            if (children.Contains(childNode))
+            {
+                throw new InvalidOperationException($"Child {childNode} already in children from parent with ElementId {this.ElementId}");
+            }
+
+            this.children.Add(childNode);
         }
 
-        public IEnumerable<ElementId> ChildElementIds => this.childElementIds.Select(e=>e).ToList();
-
-        public decimal Order { get; set; }
+        public IEnumerable<ChildStatementNode> Children => this.children.Select(e=>e).ToList();
 
         public ElementId ElementId => this.XsElement.ElementId;
     }
