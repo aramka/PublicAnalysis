@@ -13,7 +13,7 @@ using Public.Frameworks.JsonQuery;
 
 namespace Public.Analysis.Edgar.RawFacts
 {
-    public class RawFactsData : IEdgarData
+    public class RawFactsData : IRawFactsData
     {
         private readonly ITickerToCIKData tickerToCIKData;
         private readonly IDataQueryValidation dataQueryValidation;
@@ -46,7 +46,14 @@ namespace Public.Analysis.Edgar.RawFacts
             {
                 throw new ArgumentException($"Ticker {dataSetQuery.Path[0]} not found");
             }
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{this.factsDataOptions.DataSecGovApiXbrlCompanyBaseUrl}/CIK{tickerData.Single().ToCIKString(this.edgarOptions.CIKMaxLen)}.json");
+            TickerToCIKModel ticker = tickerData.Single();
+
+            return await GetRawFacts(ticker, dataSetQuery.Path.Skip(1).Select(p => new JsonQueryPath(p) as IJsonQueryExpression));
+        }
+
+        public async Task<IEnumerable<JsonNode>> GetRawFacts(TickerToCIKModel ticker, IEnumerable<IJsonQueryExpression> jsonQuery)
+        {
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{this.factsDataOptions.DataSecGovApiXbrlCompanyBaseUrl}/CIK{ticker.ToCIKString(this.edgarOptions.CIKMaxLen)}.json");
             request.Headers.TryAddWithoutValidation("User-Agent", this.edgarOptions.UserAgent);
 
             using CancellationTokenSource ct = new CancellationTokenSource(TimeSpan.FromSeconds(this.edgarOptions.TimeOutSeconds));
@@ -58,7 +65,7 @@ namespace Public.Analysis.Edgar.RawFacts
 
             JsonNode? jsonNode = await JsonNode.ParseAsync(contentStream);
 
-            return this.queryJson.Query(jsonNode, dataSetQuery.Path.Skip(1).Select(p => new JsonQueryPath(p) as IJsonQueryExpression));
-		}
+            return this.queryJson.Query(jsonNode, jsonQuery);
+        }
     }
 }

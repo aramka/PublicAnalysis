@@ -26,6 +26,10 @@ namespace Public.Analysis.Edgar
             
             services.AddSingleton<RawFactsData>();
             services.AddSingleton<IEdgarData>((sp) => sp.GetRequiredService<RawFactsData>());
+            services.AddSingleton<IRawFactsData>((sp) => 
+            { 
+                return sp.GetRequiredService<RawFactsData>(); 
+            });
 
             services.AddSingleton<TickerToCIKData>();
             services.AddSingleton<ITickerToCIKData>((sp) => sp.GetRequiredService<TickerToCIKData>());

@@ -6,7 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http.Json;
-using System.Text;
+using System.Linq;
 
 namespace Public.Analysis.Edgar.TickerToCIK
 {
@@ -17,7 +17,7 @@ namespace Public.Analysis.Edgar.TickerToCIK
         private readonly ILogger<TickerToCIKData> logger;
         private readonly EdgarOptions edgarOptions;
         private readonly TickerToCIKDataOptions tickerToCIKDataOptions;
-        private Dictionary<string, TickerToCIKModel> cikByTicker = new Dictionary<string, TickerToCIKModel>();
+        private Dictionary<string, TickerToCIKModel>? cikByTicker = null;
         private bool loaded = false;
 
         public TickerToCIKData(IOptions<TickerToCIKDataOptions> options, IOptions<EdgarOptions> edgarOptions, HttpClient http, IDataQueryValidation dataQueryValidation, ILogger<TickerToCIKData> logger) {
@@ -58,7 +58,7 @@ namespace Public.Analysis.Edgar.TickerToCIK
 
                 var rawPayload = await response.Content.ReadFromJsonAsync<Dictionary<string, TickerToCIKModel>>(ct.Token);
 
-                var newDict = rawPayload!.ToDictionary(kvp => kvp.Value.Ticker!, kvp => kvp.Value);
+                var newDict = rawPayload!.ToDictionary(kvp => kvp.Value.Ticker!, kvp => kvp.Value, StringComparer.OrdinalIgnoreCase);
 
                 Interlocked.Exchange(ref this.cikByTicker, newDict);
                 this.loaded = true;
@@ -77,6 +77,13 @@ namespace Public.Analysis.Edgar.TickerToCIK
 
         }
 
+        public async Task<TickerToCIKModel?> LookupTicker(string ticker)
+        {
+            var tickerData = (await this.Query(new DataQuery(new string[] { ticker }))).Cast<TickerToCIKModel>();
+
+            return tickerData.SingleOrDefault();
+        }
+
         public async Task<IEnumerable> Query(DataQuery dataSetQuery)
         {
             this.dataQueryValidation.ThrowIfNotValid(dataSetQuery, this.Meta);
@@ -86,7 +93,7 @@ namespace Public.Analysis.Edgar.TickerToCIK
                 throw new InvalidOperationException($"Not loaded. Must call {nameof(Load)} before {nameof(Query)}");
             }
 
-            if (!this.cikByTicker.TryGetValue(dataSetQuery.Path[0], out var tickerToCIKModel))
+            if (!this.cikByTicker!.TryGetValue(dataSetQuery.Path[0], out var tickerToCIKModel))
             {
                 return Enumerable.Empty<TickerToCIKModel>();
             }

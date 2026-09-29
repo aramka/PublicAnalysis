@@ -13,18 +13,31 @@ namespace Public.Frameworks.JsonQuery
             cases.Add((null, typeof(IJsonQueryFilterExpression)), true);
             cases.Add((null, typeof(IJsonQueryLogicalExpression)), false);
             cases.Add((null, typeof(IJsonQueryPathExpression)), true);
+            cases.Add((null, typeof(IJsonQueryWildCardPathExpression)), true);
+
             cases.Add((typeof(IJsonQueryFilterExpression), null), false);
             cases.Add((typeof(IJsonQueryFilterExpression), typeof(IJsonQueryFilterExpression)), false);
             cases.Add((typeof(IJsonQueryFilterExpression), typeof(IJsonQueryLogicalExpression)), true);
             cases.Add((typeof(IJsonQueryFilterExpression), typeof(IJsonQueryPathExpression)), true);
+            cases.Add((typeof(IJsonQueryFilterExpression), typeof(IJsonQueryWildCardPathExpression)), true);
+
             cases.Add((typeof(IJsonQueryLogicalExpression), null), false);
             cases.Add((typeof(IJsonQueryLogicalExpression), typeof(IJsonQueryFilterExpression)), true);
             cases.Add((typeof(IJsonQueryLogicalExpression), typeof(IJsonQueryLogicalExpression)), false);
             cases.Add((typeof(IJsonQueryLogicalExpression), typeof(IJsonQueryPathExpression)), false);
+            cases.Add((typeof(IJsonQueryLogicalExpression), typeof(IJsonQueryWildCardPathExpression)), false);
+
             cases.Add((typeof(IJsonQueryPathExpression), null), false);
             cases.Add((typeof(IJsonQueryPathExpression), typeof(IJsonQueryFilterExpression)), true);
             cases.Add((typeof(IJsonQueryPathExpression), typeof(IJsonQueryLogicalExpression)), false);
             cases.Add((typeof(IJsonQueryPathExpression), typeof(IJsonQueryPathExpression)), true);
+            cases.Add((typeof(IJsonQueryPathExpression), typeof(IJsonQueryWildCardPathExpression)), true);
+            //TODO: Make addition of new expressions extensible
+            cases.Add((typeof(IJsonQueryWildCardPathExpression), null), false);
+            cases.Add((typeof(IJsonQueryWildCardPathExpression), typeof(IJsonQueryFilterExpression)), true);
+            cases.Add((typeof(IJsonQueryWildCardPathExpression), typeof(IJsonQueryLogicalExpression)), false);
+            cases.Add((typeof(IJsonQueryWildCardPathExpression), typeof(IJsonQueryPathExpression)), true);
+            cases.Add((typeof(IJsonQueryWildCardPathExpression), typeof(IJsonQueryWildCardPathExpression)), true);
 
         }
         public void ThrowIfNotValid(IJsonQueryExpression? current, IJsonQueryExpression? next)
@@ -40,12 +53,14 @@ namespace Public.Frameworks.JsonQuery
 
         private static Type? GetExpressionType(IJsonQueryExpression? current)
         {
+            //TODO: Make addition of new expressions extensible
             return current switch
             {
                 null => null,
                 IJsonQueryFilterExpression => typeof(IJsonQueryFilterExpression),
                 IJsonQueryLogicalExpression => typeof(IJsonQueryLogicalExpression),
                 IJsonQueryPathExpression => typeof(IJsonQueryPathExpression),
+                IJsonQueryWildCardPathExpression => typeof(IJsonQueryWildCardPathExpression),
                 _ => throw new ArgumentException($"Type {current.GetType()} is not supported.")
             };
         }

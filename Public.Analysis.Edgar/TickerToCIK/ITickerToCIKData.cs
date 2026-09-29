@@ -3,11 +3,12 @@ using Public.Analysis.Data;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Public.Analysis.Edgar.TickerToCIK;
 
 namespace Public.Analysis.Edgar
 {
     public interface ITickerToCIKData : IEdgarData, IMustBeLoaded
     {
-        
+        Task<TickerToCIKModel?> LookupTicker(string ticker);
     }
 }

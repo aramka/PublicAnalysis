@@ -35,6 +35,7 @@ namespace Public.Frameworks.JsonQuery
         {
             List<List<IJsonQueryExpression>> allGroups = new List<List<IJsonQueryExpression>>();
             List<IJsonQueryExpression> filterAndLogicalExpressionGroup = new List<IJsonQueryExpression>();
+            //TODO: Make addition of new expressions extensible
             foreach (var expression in this.expressions)
             {
                 switch (expression)
@@ -45,10 +46,10 @@ namespace Public.Frameworks.JsonQuery
                     case IJsonQueryLogicalExpression logical:
                         filterAndLogicalExpressionGroup.Add(logical);
                         break;
-                    case IJsonQueryPathExpression path:
+                    case IJsonQueryPathExpression or IJsonQueryWildCardPathExpression _:
                         RemoveLastIfIsLogicalThenAddToGroups(allGroups, filterAndLogicalExpressionGroup);
                         filterAndLogicalExpressionGroup = new List<IJsonQueryExpression>();
-                        allGroups.Add(new List<IJsonQueryExpression> { path });
+                        allGroups.Add(new List<IJsonQueryExpression> { expression });
                         break;
                     default:
                         throw new InvalidOperationException($"Expression type {expression.GetType().Name} is not supported.");

@@ -15,7 +15,7 @@ namespace Public.Frameworks.JsonQuery
             this.queryBuilderFactory = queryBuilderFactory;
         }
 
-        public IEnumerable<JsonNode> Query(JsonNode jsonNode, IEnumerable<IJsonQueryExpression> jsonQueryExpressions)
+        public IEnumerable<JsonNode> Query(JsonNode? jsonNode, IEnumerable<IJsonQueryExpression> jsonQueryExpressions)
         {
             if(jsonNode is null) throw new ArgumentNullException(nameof(jsonNode));
 
@@ -26,6 +26,18 @@ namespace Public.Frameworks.JsonQuery
 
             var pathResult = jsonPath.Evaluate(jsonNode);
             return pathResult?.Matches!.Select(m => m.Value!) ?? Enumerable.Empty<JsonNode>();
+        }
+        public async Task<IEnumerable<JsonNode>> Query(string jsonFilePath, IEnumerable<IJsonQueryExpression> jsonQueryExpressions)
+        {
+            if (!File.Exists(jsonFilePath))
+            {
+                throw new InvalidOperationException($"File {jsonFilePath} was not found.");
+            }
+            using var fileStream = File.OpenRead(jsonFilePath);
+
+            JsonNode? jsonNode = await JsonNode.ParseAsync(fileStream);
+
+            return this.Query(jsonNode, jsonQueryExpressions);
         }
     }
 }
