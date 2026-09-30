@@ -57,12 +57,30 @@ namespace Public.Analysis.Console.FasbTaxonomies
                     }).ToList();
                     string fileName = Path.GetFileName(statementTreeFileJson);
 
-                    var matchedMatchedFactsWithParents = matchedFacts
-                    .SelectMany(fact => fact.Value.ParentsElementIds)
-                    .Select(parentElementId => statementModel.Tree[parentElementId])
-                    .Concat(matchedFacts.Select(kvp=>kvp.Value));
+                    Dictionary<string,FactNodeModel> matchedFactsWithParents = matchedFacts.ToDictionary();
 
-                    return new { File = fileName, TotalTreeFactsCount = statementModel.Tree.Count, TotalTickerFactsCount = tickerFacts.Count(),  MatchingFactsCount = matchedFacts.Count, Coverage = (decimal)matchedFacts.Count / statementModel.Tree.Count * 100.0M, Tree = matchedMatchedFactsWithParents };
+                    var parents = matchedFacts
+                    .SelectMany(fact => fact.Value.ParentsElementIds)
+                    .Select(parentElementId => statementModel.Tree[parentElementId]);
+                    var queue = new Queue<FactNodeModel>(parents);
+
+                    while (queue.Any())
+                    {
+                        var parent = queue.Dequeue();
+                        if (matchedFactsWithParents.ContainsKey(parent.ElementId))
+                        {
+                            continue;
+                        }
+                        matchedFactsWithParents.Add(parent.ElementId, parent);
+                        
+                        foreach(var parentId in parent.ParentsElementIds)
+                        {
+                            var nextParent = statementModel.Tree[parentId];
+                            queue.Enqueue(nextParent);
+                        }
+                    }
+
+                    return new { File = fileName, TotalTreeFactsCount = statementModel.Tree.Count, TotalTickerFactsCount = tickerFacts.Count(),  MatchingFactsCount = matchedFacts.Count, Coverage = (decimal)matchedFacts.Count / statementModel.Tree.Count * 100.0M, Tree = matchedFactsWithParents };
 
                 });
 
