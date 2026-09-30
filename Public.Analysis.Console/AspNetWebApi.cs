@@ -30,6 +30,14 @@ namespace Public.Analysis.Console
             webBuilder.Configuration.AddConfiguration(configuration);
 
             webBuilder.Services.AddControllers();
+            // TODO: lock down CORS
+            webBuilder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", builder =>
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader());
+            });
             // optional: swagger for quick testing
             webBuilder.Services.AddEndpointsApiExplorer();
             webBuilder.Services.AddSwaggerGen();
@@ -44,6 +52,8 @@ namespace Public.Analysis.Console
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Public.Analysis API V1");
                 c.RoutePrefix = string.Empty; // serve UI at "/"
             });
+            // apply CORS policy before routing to controllers
+            app.UseCors("AllowAll");
             app.MapControllers();
 
             // --- existing startup work (now resolved from the app's service provider) ---
