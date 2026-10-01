@@ -9,6 +9,7 @@ using Public.Analysis.Edgar.RawFacts;
 using Public.Frameworks.JsonQuery;
 using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Text.Json.Nodes;
 
@@ -42,53 +43,123 @@ namespace Public.Analysis.Console.FasbTaxonomies
                 return NotFound(ticker);
             }
 
-            IEnumerable<JsonNode> facts = await this.factsData.GetRawFacts(tickerCik, [new JsonQueryPath("facts"), new JsonQueryPath("us-gaap"), new JsonQueryWildCardPathExpression()]);
-            var tickerFacts = facts.ToDictionary(f => f.GetPropertyName());
+            IEnumerable<JsonNode> rawFacts = await this.factsData.GetRawFacts(tickerCik, [new JsonQueryPath("facts"), new JsonQueryPath("us-gaap"), new JsonQueryWildCardPathExpression()]);
+            var factNames = rawFacts.ToDictionary(f => f.GetPropertyName());
+
             var coverageTasks =
                 statementTreeFiles
-                .Select(async statementTreeFileJson =>
+                .Select( async statementTreeFileJson =>
                 {
-                    var statementJsonNode = (await jsonQuery.Query(statementTreeFileJson, [])).Single();
-
-                    var statementModel = System.Text.Json.JsonSerializer.Deserialize<StatementTaxonomyModel>(statementJsonNode);
-
-                    var matchedFacts = statementModel!.Tree.Where(kvp => { 
-                        return tickerFacts.ContainsKey(kvp.Value.StatementTaxonomyFactInfo.Name); 
-                    }).ToList();
                     string fileName = Path.GetFileName(statementTreeFileJson);
 
-                    Dictionary<string,FactNodeModel> matchedFactsWithParents = matchedFacts.ToDictionary();
+                    var statementJsonNode = (await jsonQuery.Query(statementTreeFileJson, [])).Single();
+                    var statementModel = System.Text.Json.JsonSerializer.Deserialize<StatementTaxonomyModel>(statementJsonNode);
 
-                    var parents = matchedFacts
-                    .SelectMany(fact => fact.Value.ParentsElementIds)
-                    .Select(parentElementId => statementModel.Tree[parentElementId]);
-                    var queue = new Queue<FactNodeModel>(parents);
-
-                    while (queue.Any())
+                    var treeNodesForTicker = statementModel!.Tree.Where(kvp =>
                     {
-                        var parent = queue.Dequeue();
-                        if (matchedFactsWithParents.ContainsKey(parent.ElementId))
-                        {
-                            continue;
-                        }
-                        matchedFactsWithParents.Add(parent.ElementId, parent);
-                        
-                        foreach(var parentId in parent.ParentsElementIds)
-                        {
-                            var nextParent = statementModel.Tree[parentId];
-                            queue.Enqueue(nextParent);
-                        }
-                    }
+                        return factNames.ContainsKey(kvp.Value.StatementTaxonomyFactInfo.Name);
+                    }).ToDictionary();
 
-                    return new { File = fileName, TotalTreeFactsCount = statementModel.Tree.Count, TotalTickerFactsCount = tickerFacts.Count(),  MatchingFactsCount = matchedFacts.Count, Coverage = (decimal)matchedFacts.Count / statementModel.Tree.Count * 100.0M, Tree = matchedFactsWithParents };
+                    return new 
+                    {
+                        StatementTreeFileName = fileName,
+                        TotalFactsCount = statementModel.Tree.Count,
+                        TreeNodesForTicker = treeNodesForTicker,
+                        StatementModel = statementModel
+                    };
 
                 });
 
             var coverage = await Task.WhenAll(coverageTasks);
 
-            var bestTree = coverage.MaxBy(a => a.MatchingFactsCount);
+            var bestTree = coverage.MaxBy(a => a.TreeNodesForTicker.Count);
 
-            return Ok(bestTree);
+            if(bestTree is null)
+            {
+                return NotFound($"No matching facts found for ticker {ticker} in statement {statementName}");
+            }
+
+            var finalTree = BuildFinalTree(bestTree.TreeNodesForTicker, bestTree.StatementModel, bestTree.StatementTreeFileName, bestTree.TreeNodesForTicker.Count);
+
+            return Ok(finalTree);
+        }
+
+        private StatementTreeResult BuildFinalTree(Dictionary<string, FactNodeModel> treeNodesForTicker, StatementTaxonomyModel statementModel, string statementFileName, int totalFactsCount)
+        {
+            var toProcess = treeNodesForTicker.Values.Select(n =>
+            {
+
+                n.Children = n.Children.Where(c => treeNodesForTicker.ContainsKey(c.ChildElementId)).ToList();
+                return n;
+            });
+
+            var queue = new Queue<FactNodeModel>(toProcess);
+            Dictionary<string, FactNodeModel> finalTree = new Dictionary<string, FactNodeModel>();
+            Dictionary<string, Dictionary<string, List<FactNodeChild>>> children = new Dictionary<string, Dictionary<string, List<FactNodeChild>>>();
+            var queued = new HashSet<string>(queue.Select(n => n.ElementId));
+
+            while (queue.Any())
+            {
+                var node = queue.Dequeue();
+
+                finalTree.Add(node.ElementId, node);
+
+                foreach (var parentId in node.ParentsElementIds)
+                {
+                    FactNodeModel parentNode = statementModel.Tree[parentId];
+
+                    if (!parentNode.ChildrenByElementId.ContainsKey(node.ElementId))
+                    {
+                        throw new InvalidOperationException($"Expected child node for element ID {node.ElementId} under parent {parentNode.ElementId}");
+                    }
+
+                    children.TryAdd(parentNode.ElementId, new Dictionary<string, List<FactNodeChild>>());
+
+                    var childsWithDiffLabelAndOrder = parentNode.ChildrenByElementId[node.ElementId]; //Its valid for a parent to have multiple children with the same elementId but different label and order.
+
+                    children[parentNode.ElementId].TryAdd(node.ElementId, childsWithDiffLabelAndOrder);
+
+                    if (queued.Contains(parentNode.ElementId))
+                    {
+                        continue;
+                    }
+                    queued.Add(parentNode.ElementId);
+                    queue.Enqueue(parentNode);
+                }
+            }
+
+            foreach (KeyValuePair<string, FactNodeModel> node in finalTree)
+            {
+                if(!children.TryGetValue(node.Key, out var childElements))
+                {
+                    continue;
+                }
+                node.Value.Children = childElements.SelectMany(c => c.Value).ToList();
+            }
+
+            return new StatementTreeResult
+            {
+                File = statementFileName,
+                TotalTreeFactsCount = statementModel.Tree.Count,
+                TotalTickerFactsCount = totalFactsCount,
+                MatchingFactsCount = treeNodesForTicker.Count,
+                Coverage = (decimal)treeNodesForTicker.Count / statementModel.Tree.Count * 100.0M,
+                Tree = finalTree,
+                Description = statementModel.Description
+            };
         }
     }
+
+    public class StatementTreeResult
+    {
+        public string File { get; set; } = string.Empty;
+        public int TotalTreeFactsCount { get; set; }
+        public int TotalTickerFactsCount { get; set; }
+        public int MatchingFactsCount { get; set; }
+        public decimal Coverage { get; set; }
+        public Dictionary<string, FactNodeModel> Tree { get; set; } = new Dictionary<string, FactNodeModel>();
+        public string Description { get; set; } = string.Empty;
+    }
+
+
 }
