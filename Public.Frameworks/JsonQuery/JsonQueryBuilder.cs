@@ -35,7 +35,7 @@ namespace Public.Frameworks.JsonQuery
         {
             List<List<IJsonQueryExpression>> allGroups = new List<List<IJsonQueryExpression>>();
             List<IJsonQueryExpression> filterAndLogicalExpressionGroup = new List<IJsonQueryExpression>();
-            //TODO: Make addition of new expressions extensible
+            // TODO: Make addition of new expressions extensible
             foreach (var expression in this.expressions)
             {
                 switch (expression)

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Public.Analysis.Console.Visuals.Models;
 using Public.Analysis.Console.FasbTaxonomies.Models.StatementTaxonomyModels;
 using Public.Analysis.Data;
 using Public.Analysis.Edgar;
@@ -12,11 +13,12 @@ using System.Collections.Generic;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Text.Json.Nodes;
+using Public.Analysis.Console.DataSets.Edgar;
 
 namespace Public.Analysis.Console.FasbTaxonomies
 {
     [ApiController]
-    [Route("fasb-taxonomies/statement-tree")]
+    [Route("statement-tree")]
     public class StatementTreeController: ControllerBase
     {
         private readonly IRawFactsData factsData;
@@ -31,16 +33,16 @@ namespace Public.Analysis.Console.FasbTaxonomies
             this.jsonQuery = jsonQuery;
             this.options = options.Value;
         }
-        [HttpGet("{ticker}/{statementName}")]
-        public async Task<IActionResult> GetStatementTree(string ticker, string statementName)
+        [HttpGet("{statementTreeType}/{statementName}/{entity}")]
+        public async Task<IActionResult> GetStatementTree(string statementTreeType, string statementName, string entity)
         {
             if (!options.StatementTreeFilePathsByStatementName.TryGetValue(statementName, out string[]? statementTreeFiles)) {
                 return NotFound(statementName);
             }
-            var tickerCik = await tickerData.LookupTicker(ticker);
+            var tickerCik = await tickerData.LookupTicker(entity);
             if (tickerCik is null)
             {
-                return NotFound(ticker);
+                return NotFound(entity);
             }
 
             IEnumerable<JsonNode> rawFacts = await this.factsData.GetRawFacts(tickerCik, [new JsonQueryPath("facts"), new JsonQueryPath("us-gaap"), new JsonQueryWildCardPathExpression()]);
@@ -76,10 +78,10 @@ namespace Public.Analysis.Console.FasbTaxonomies
 
             if(bestTree is null)
             {
-                return NotFound($"No matching facts found for ticker {ticker} in statement {statementName}");
+                return NotFound($"No matching facts found for ticker {entity} in statement {statementName}");
             }
 
-            var finalTree = BuildFinalTree(bestTree.TreeNodesForTicker, bestTree.StatementModel, bestTree.StatementTreeFileName, bestTree.TreeNodesForTicker.Count);
+            StatementTreeResult finalTree = BuildFinalTree(bestTree.TreeNodesForTicker, bestTree.StatementModel, bestTree.StatementTreeFileName, bestTree.TreeNodesForTicker.Count);
 
             return Ok(finalTree);
         }
@@ -94,7 +96,7 @@ namespace Public.Analysis.Console.FasbTaxonomies
             });
 
             var queue = new Queue<FactNodeModel>(toProcess);
-            Dictionary<string, FactNodeModel> finalTree = new Dictionary<string, FactNodeModel>();
+            Dictionary<string, FactNodeModel> tree = new Dictionary<string, FactNodeModel>();
             Dictionary<string, Dictionary<string, List<FactNodeChild>>> children = new Dictionary<string, Dictionary<string, List<FactNodeChild>>>();
             var queued = new HashSet<string>(queue.Select(n => n.ElementId));
 
@@ -102,7 +104,7 @@ namespace Public.Analysis.Console.FasbTaxonomies
             {
                 var node = queue.Dequeue();
 
-                finalTree.Add(node.ElementId, node);
+                tree.Add(node.ElementId, node);
 
                 foreach (var parentId in node.ParentsElementIds)
                 {
@@ -127,9 +129,17 @@ namespace Public.Analysis.Console.FasbTaxonomies
                     queue.Enqueue(parentNode);
                 }
             }
-
-            foreach (KeyValuePair<string, FactNodeModel> node in finalTree)
+            var finalTree = new Dictionary<string, FactNodeVisualsModel>();
+            foreach (KeyValuePair<string, FactNodeModel> node in tree)
             {
+
+                // TODO: retrieve visuals by ticker, datasetName, and datapointName. For now, we will use placeholder values.
+                Visual[] visuals = [];
+                if (treeNodesForTicker.ContainsKey(node.Key))
+                {
+                    visuals = [new Visual(VisualType.TimeSeries, CompanyFacts.DataSetName, node.Value.StatementTaxonomyFactInfo.Name)];
+                }
+                finalTree.Add(node.Key, new FactNodeVisualsModel { FactNode = node.Value, Visuals = visuals });
                 if(!children.TryGetValue(node.Key, out var childElements))
                 {
                     continue;
@@ -157,7 +167,7 @@ namespace Public.Analysis.Console.FasbTaxonomies
         public int TotalTickerFactsCount { get; set; }
         public int MatchingFactsCount { get; set; }
         public decimal Coverage { get; set; }
-        public Dictionary<string, FactNodeModel> Tree { get; set; } = new Dictionary<string, FactNodeModel>();
+        public Dictionary<string, FactNodeVisualsModel> Tree { get; set; } = new Dictionary<string, FactNodeVisualsModel>();
         public string Description { get; set; } = string.Empty;
     }
 

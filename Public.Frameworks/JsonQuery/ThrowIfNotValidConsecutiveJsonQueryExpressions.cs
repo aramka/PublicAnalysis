@@ -32,7 +32,7 @@ namespace Public.Frameworks.JsonQuery
             cases.Add((typeof(IJsonQueryPathExpression), typeof(IJsonQueryLogicalExpression)), false);
             cases.Add((typeof(IJsonQueryPathExpression), typeof(IJsonQueryPathExpression)), true);
             cases.Add((typeof(IJsonQueryPathExpression), typeof(IJsonQueryWildCardPathExpression)), true);
-            //TODO: Make addition of new expressions extensible
+            // TODO: Make addition of new expressions extensible
             cases.Add((typeof(IJsonQueryWildCardPathExpression), null), false);
             cases.Add((typeof(IJsonQueryWildCardPathExpression), typeof(IJsonQueryFilterExpression)), true);
             cases.Add((typeof(IJsonQueryWildCardPathExpression), typeof(IJsonQueryLogicalExpression)), false);
@@ -53,7 +53,7 @@ namespace Public.Frameworks.JsonQuery
 
         private static Type? GetExpressionType(IJsonQueryExpression? current)
         {
-            //TODO: Make addition of new expressions extensible
+            // TODO: Make addition of new expressions extensible
             return current switch
             {
                 null => null,
