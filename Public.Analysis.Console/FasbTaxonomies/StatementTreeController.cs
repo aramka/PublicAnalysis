@@ -134,10 +134,10 @@ namespace Public.Analysis.Console.FasbTaxonomies
             {
 
                 // TODO: retrieve visuals by ticker, datasetName, and datapointName. For now, we will use placeholder values.
-                Visual[] visuals = [];
+                VisualType[] visuals = [];
                 if (treeNodesForTicker.ContainsKey(node.Key))
                 {
-                    visuals = [new Visual(VisualType.TimeSeries, CompanyFacts.DataSetName, node.Value.StatementTaxonomyFactInfo.Name)];
+                    visuals = [VisualType.TimeSeries];
                 }
                 finalTree.Add(node.Key, new FactNodeVisualsModel { FactNode = node.Value, Visuals = visuals });
                 if(!children.TryGetValue(node.Key, out var childElements))
