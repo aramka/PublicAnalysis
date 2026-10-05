@@ -7,7 +7,7 @@ using Public.Analysis.Edgar.TickerToCIK;
 
 namespace Public.Analysis.Edgar
 {
-    public interface ITickerToCIKData : IEdgarData, IMustBeLoaded
+    public interface ITickerToCIKData : IEdgarData
     {
         Task<TickerToCIKModel?> LookupTicker(string ticker);
     }

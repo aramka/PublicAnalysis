@@ -11,6 +11,7 @@ namespace Public.Analysis.Console
     using Microsoft.OpenApi.Models;
     using Public.Analysis.Edgar.RawFacts;
     using Public.Analysis.Console.FasbTaxonomies;
+    using Public.Analysis.Console.CompanyFacts;
 
     internal class AspNetWebApi
     {
@@ -84,6 +85,7 @@ namespace Public.Analysis.Console
 
             services.AddSingleton<IConfiguration>(configuration);
             services.RegisterEdgarDataSet(configuration);
+            services.RegisterCompanyFacts();
             services.AddSingleton(provider =>
             {
                 var dataSets = provider.GetRequiredService<IEnumerable<IDataSet>>().ToDictionary(ds => ds.Name);

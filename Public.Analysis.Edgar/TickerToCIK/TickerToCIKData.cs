@@ -2,15 +2,16 @@
 using Microsoft.Extensions.Options;
 using Public.Analysis.Data;
 using Public.Analysis.Edgar.Models;
+using Public.Frameworks.Initialization;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Net.Http.Json;
 using System.Linq;
+using System.Net.Http.Json;
 
 namespace Public.Analysis.Edgar.TickerToCIK
 {
-    public class TickerToCIKData : ITickerToCIKData
+    public class TickerToCIKData : ITickerToCIKData, IMustBeLoaded
     {
         private readonly HttpClient http;
         private readonly IDataQueryValidation dataQueryValidation;
