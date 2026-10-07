@@ -53,6 +53,7 @@ namespace Public.Analysis.Edgar.RawFacts
 
         public async Task<IEnumerable<JsonNode>> GetRawFacts(TickerToCIKModel ticker, IEnumerable<IJsonQueryExpression> jsonQuery)
         {
+            // TODO: Implement caching
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{this.factsDataOptions.DataSecGovApiXbrlCompanyBaseUrl}/CIK{ticker.ToCIKString(this.edgarOptions.CIKMaxLen)}.json");
             request.Headers.TryAddWithoutValidation("User-Agent", this.edgarOptions.UserAgent);
 

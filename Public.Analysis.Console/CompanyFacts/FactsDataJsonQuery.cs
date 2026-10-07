@@ -37,7 +37,8 @@ namespace Public.Analysis.Console.CompanyFacts
                 lowerThresholdDays = 85;
                 upperThresholdDays = 95;
             }
-            IJsonQueryExpression[] jsonQuery =[new JsonQueryPath("facts"), new JsonQueryPath("us-gaap"), new JsonQueryPath(factName), new JsonQueryPath("units"), new JsonQueryPath("USD"), new JsonQueryFilter("form",JsonQueryFilterOperators.Eq,SecForm.TenQ.ToString()) ];
+            //TODO: is the filtering correct? it seems like 10-K data points are returned even though we are filtering for one or the other
+            IJsonQueryExpression[] jsonQuery =[new JsonQueryPath("facts"), new JsonQueryPath("us-gaap"), new JsonQueryPath(factName), new JsonQueryPath("units"), new JsonQueryPath("USD"), new JsonQueryFilter("form",JsonQueryFilterOperators.Eq,secForm== SecForm.TenK? "10-K":"10-Q") ];
             IEnumerable<JsonNode> factNodes = await this.rawFactsData.GetRawFacts(tickerToCikModel, jsonQuery);
             List<CompanyFactModel> companyFacts = factNodes
                 .Select(n => JsonSerializer.Deserialize<CompanyFactModel>(n))

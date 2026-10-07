@@ -33,7 +33,7 @@ namespace Public.Analysis.Console.CompanyFacts
             }
 
             IEnumerable<CompanyFactModel> facts = await this.factsData.GetCompanyFacts(tickerToCikModel, factName, secForm, dateRange);
-
+            /* TODO: For display in the UI, we need to include human readable label for the factName. Also, for troubleshooting we need to include the meta data about the datapoint so that any particular datapoint can be found with a single click, ideally, or at least */
             return new ServiceResponse<IEnumerable<TimeSeriesDataPoint>>(facts.Select(fact => new TimeSeriesDataPoint
             {
                 TimeStamp = fact.EndDateUnixSeconds,
