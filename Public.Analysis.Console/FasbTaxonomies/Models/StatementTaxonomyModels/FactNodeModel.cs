@@ -5,9 +5,12 @@ using System.Text.Json.Serialization;
 
 namespace Public.Analysis.Console.FasbTaxonomies.Models.StatementTaxonomyModels
 {
-    public class FactNodeModel
+    using System.Linq;
+    using Public.Analysis.Console.CompanyFacts.Tree.Models;
+
+    public class FactNodeModel : IFactNode
     {
-        [JsonPropertyName("XsElement")] public FactInfoModel StatementTaxonomyFactInfo { get; set; } = new FactInfoModel();
+        [JsonPropertyName("XsElement")] public FactInfoModel XsElement { get; set; } = new FactInfoModel();
         [JsonPropertyName("ParentsElementIds")]
         public List<string> ParentsElementIds { get; set; } = new List<string>();
 
@@ -36,5 +39,13 @@ namespace Public.Analysis.Console.FasbTaxonomies.Models.StatementTaxonomyModels
 
         [JsonPropertyName("ElementId")]
         public string ElementId { get; set; } = string.Empty;
+
+        // Explicit interface mappings to preserve existing property names
+        string IFactNode.Id { get => this.ElementId; }
+        string IFactNode.Label { get => this.Label; }
+        IList<string>? IFactNode.ParentsIds { get => this.ParentsElementIds; }
+        IList<IFactNodeChild>? IFactNode.Children { get => this.Children?.Cast<IFactNodeChild>().ToList(); }
+
+        string IFactNode.Name => this.XsElement.Name;
     }
 }

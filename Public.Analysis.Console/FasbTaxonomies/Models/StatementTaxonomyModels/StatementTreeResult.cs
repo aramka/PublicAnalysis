@@ -1,0 +1,19 @@
+﻿using Public.Analysis.Console.CompanyFacts.Tree.Models;
+
+namespace Public.Analysis.Console.FasbTaxonomies.Models.StatementTaxonomyModels
+{
+    public class StatementTreeResult : IStatementTreeResult
+    {
+        public string File { get; set; } = string.Empty;
+        public int TotalTreeFactsCount { get; set; }
+        public int TotalTickerFactsCount { get; set; }
+        public int MatchingFactsCount { get; set; }
+        public decimal Coverage { get; set; }
+        public Dictionary<string, FactNodeVisualsModel> Tree { get; set; } = new Dictionary<string, FactNodeVisualsModel>();
+        public string Description { get; set; } = string.Empty;
+
+        IDictionary<string, IFactNodeVisualsModel> IStatementTreeResult.Tree => this.Tree.ToDictionary(kvp => kvp.Key, kvp => (IFactNodeVisualsModel)kvp.Value);
+    }
+
+
+}

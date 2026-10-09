@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Public.Analysis.Console.CompanyFacts.Models;
+﻿using Public.Analysis.Console.CompanyFacts.Models;
+using Public.Analysis.Console.CompanyFacts.Tree.Models;
+using Public.Analysis.Console.FinancialStatements;
 using Public.Analysis.Console.Services.Models;
 using Public.Analysis.Console.Visuals.Models;
 using Public.Analysis.Edgar;
@@ -12,11 +13,13 @@ namespace Public.Analysis.Console.CompanyFacts
     {
         private readonly IFactsData factsData;
         private readonly ITickerToCIKData tickerToCIKData;
+        private readonly IStatementService statementService;
 
-        public CompanyFactsService(IFactsData factsData, ITickerToCIKData tickerToCIKData)
+        public CompanyFactsService(IFactsData factsData, ITickerToCIKData tickerToCIKData, IStatementService statementService)
         {
             this.factsData = factsData;
             this.tickerToCIKData = tickerToCIKData;
+            this.statementService = statementService;
         }
         public Task<ServiceResponse<IEnumerable<TimeSeriesDataPoint>>> GetCompanyFactTimeSeries(string ticker, string factName)
         {
@@ -25,6 +28,7 @@ namespace Public.Analysis.Console.CompanyFacts
 
         public async Task<ServiceResponse<IEnumerable<TimeSeriesDataPoint>>> GetCompanyFactTimeSeries(string ticker, string factName, SecForm secForm, Range<long> dateRange)
         {
+        // Next up is computed facts, facts of facts. facts derived from other facts. For example Tangible book value. Also think about existing facts, summary/total facts and have a way to get the consituents. For example, current assets total consists of AR and cash, and inventory.
             TickerToCIKModel? tickerToCikModel = await this.tickerToCIKData.LookupTicker(ticker);
 
             if(tickerToCikModel is null)
@@ -39,6 +43,12 @@ namespace Public.Analysis.Console.CompanyFacts
                 TimeStamp = fact.EndDateUnixSeconds,
                 Value = fact.Value.HasValue ? fact.Value.Value : 0
             }), []);
+        }
+        public async Task<ServiceResponse<IStatementTreeResult>> GetCompanyFactAsTree(string ticker, string statementName)
+        {
+            // Minimal implementation to satisfy interface. Return an empty StatementTaxonomyModel which implements the interface.
+            var response = await this.statementService.GetStatementTree(statementName, ticker);
+            return response;
         }
         
     }

@@ -1,48 +1,39 @@
-﻿using Json.More;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Public.Analysis.Console.Visuals.Models;
+﻿using Microsoft.Extensions.Options;
+using Public.Analysis.Console.CompanyFacts.Tree.Models;
 using Public.Analysis.Console.FasbTaxonomies.Models.StatementTaxonomyModels;
-using Public.Analysis.Data;
+using Public.Analysis.Console.FinancialStatements;
+using Public.Analysis.Console.Services.Models;
+using Public.Analysis.Console.Visuals.Models;
 using Public.Analysis.Edgar;
 using Public.Analysis.Edgar.RawFacts;
 using Public.Frameworks.JsonQuery;
-using System;
-using System.Collections.Generic;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
 using System.Text.Json.Nodes;
-using Public.Analysis.Console.DataSets.Edgar;
 
 namespace Public.Analysis.Console.FasbTaxonomies
 {
-    [ApiController]
-    [Route("statement-tree")]
-    public class StatementTreeController: ControllerBase
+    public class StatementService : IStatementService
     {
         private readonly IRawFactsData factsData;
         private readonly ITickerToCIKData tickerData;
         private readonly IJsonQuery jsonQuery;
-        private readonly StatementTreeControllerOptions options;
+        private readonly StatementServiceOptions options;
 
-        public StatementTreeController(IRawFactsData factsData, ITickerToCIKData tickerData, IJsonQuery jsonQuery, IOptions<StatementTreeControllerOptions> options)
+        public StatementService(IRawFactsData factsData, ITickerToCIKData tickerData, IJsonQuery jsonQuery, IOptions<StatementServiceOptions> options)
         {
             this.factsData = factsData;
             this.tickerData = tickerData;
             this.jsonQuery = jsonQuery;
             this.options = options.Value;
         }
-        [HttpGet("{statementTreeType}/{statementName}/{entity}")]
-        public async Task<IActionResult> GetStatementTree(string statementTreeType, string statementName, string entity)
+        public async Task<ServiceResponse<IStatementTreeResult>> GetStatementTree(string statementName, string entity)
         {
             if (!options.StatementTreeFilePathsByStatementName.TryGetValue(statementName, out string[]? statementTreeFiles)) {
-                return NotFound(statementName);
+                return ServiceResponse<IStatementTreeResult>.Failure($"No statement tree files found for statement: {statementName}");
             }
             var tickerCik = await tickerData.LookupTicker(entity);
             if (tickerCik is null)
             {
-                return NotFound(entity);
+                return ServiceResponse<IStatementTreeResult>.Failure($"Ticker not found: {entity}");
             }
 
             IEnumerable<JsonNode> rawFacts = await this.factsData.GetRawFacts(tickerCik, [new JsonQueryPath("facts"), new JsonQueryPath("us-gaap"), new JsonQueryWildCardPathExpression()]);
@@ -59,7 +50,7 @@ namespace Public.Analysis.Console.FasbTaxonomies
 
                     var treeNodesForTicker = statementModel!.Tree.Where(kvp =>
                     {
-                        return factNames.ContainsKey(kvp.Value.StatementTaxonomyFactInfo.Name);
+                        return factNames.ContainsKey(kvp.Value.XsElement.Name);
                     }).ToDictionary();
 
                     return new 
@@ -78,12 +69,12 @@ namespace Public.Analysis.Console.FasbTaxonomies
 
             if(bestTree is null)
             {
-                return NotFound($"No matching facts found for ticker {entity} in statement {statementName}");
+                return ServiceResponse<IStatementTreeResult>.Failure($"No matching facts found for ticker {entity} in statement {statementName}");
             }
 
             StatementTreeResult finalTree = BuildFinalTree(bestTree.TreeNodesForTicker, bestTree.StatementModel, bestTree.StatementTreeFileName, bestTree.TreeNodesForTicker.Count);
 
-            return Ok(finalTree);
+            return new ServiceResponse<IStatementTreeResult>(finalTree, new string[0]);
         }
 
         private StatementTreeResult BuildFinalTree(Dictionary<string, FactNodeModel> treeNodesForTicker, StatementTaxonomyModel statementModel, string statementFileName, int totalFactsCount)
@@ -158,17 +149,6 @@ namespace Public.Analysis.Console.FasbTaxonomies
                 Description = statementModel.Description
             };
         }
-    }
-
-    public class StatementTreeResult
-    {
-        public string File { get; set; } = string.Empty;
-        public int TotalTreeFactsCount { get; set; }
-        public int TotalTickerFactsCount { get; set; }
-        public int MatchingFactsCount { get; set; }
-        public decimal Coverage { get; set; }
-        public Dictionary<string, FactNodeVisualsModel> Tree { get; set; } = new Dictionary<string, FactNodeVisualsModel>();
-        public string Description { get; set; } = string.Empty;
     }
 
 

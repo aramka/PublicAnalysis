@@ -73,9 +73,9 @@ namespace Public.Analysis.Console
 
         static void Startup(IServiceCollection services, IConfiguration configuration)
         {
-            // bind StatementTreeControllerOptions from configuration so controllers can receive IOptions<>
-            services.Configure<StatementTreeControllerOptions>(
-                configuration.GetSection("Public.Analysis.Console.FasbTaxonomies.StatementTreeControllerOptions"));
+            // bind StatementTreeServiceOptions from configuration so controllers can receive IOptions<>
+            services.Configure<StatementServiceOptions>(
+                configuration.GetSection(typeof(StatementServiceOptions).FullName!));
 
             services.AddLogging(builder =>
             {
@@ -85,6 +85,7 @@ namespace Public.Analysis.Console
 
             services.AddSingleton<IConfiguration>(configuration);
             services.RegisterEdgarDataSet(configuration);
+            services.RegisterFasbTaxonmiesServices();
             services.RegisterCompanyFacts();
             services.AddSingleton(provider =>
             {

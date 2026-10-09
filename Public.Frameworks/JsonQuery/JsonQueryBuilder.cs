@@ -16,6 +16,7 @@ namespace Public.Frameworks.JsonQuery
         }
 
         public IEnumerable<IJsonQueryFilterExpression> Filters => this.expressions.Where(e => e is IJsonQueryFilterExpression).Cast<IJsonQueryFilterExpression>().ToArray();
+        // TODO: Make query builder fluent
         public JsonQueryBuilder AddExpressions(IEnumerable<IJsonQueryExpression> expressions)
         {
             foreach (var expression in expressions)
