@@ -1,4 +1,4 @@
-﻿using Public.Analysis.Console.CompanyFacts.Tree.Models;
+﻿using Public.Analysis.Console.CompanyFacts.Models.StatementFactsModels;
 using Public.Analysis.Console.Services.Models;
 using Public.Analysis.Console.Visuals.Models;
 

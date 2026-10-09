@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Public.Analysis.Console.FasbTaxonomies.Models.StatementTaxonomyModels
+﻿namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts.Models
 {
     using System.Collections.Generic;
     using System.Text.Json.Serialization;

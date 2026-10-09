@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
-using Public.Analysis.Console.CompanyFacts.Tree.Models;
-using Public.Analysis.Console.FasbTaxonomies.Models.StatementTaxonomyModels;
-using Public.Analysis.Console.FinancialStatements;
+using Public.Analysis.Console.CompanyFacts.FasbStatementFacts.Models;
+using Public.Analysis.Console.CompanyFacts.Models.StatementFactsModels;
 using Public.Analysis.Console.Services.Models;
 using Public.Analysis.Console.Visuals.Models;
 using Public.Analysis.Edgar;
@@ -9,16 +8,16 @@ using Public.Analysis.Edgar.RawFacts;
 using Public.Frameworks.JsonQuery;
 using System.Text.Json.Nodes;
 
-namespace Public.Analysis.Console.FasbTaxonomies
+namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts
 {
-    public class StatementService : IStatementService
+    public class FasbStatementFactsService : IStatementFactsService
     {
         private readonly IRawFactsData factsData;
         private readonly ITickerToCIKData tickerData;
         private readonly IJsonQuery jsonQuery;
         private readonly StatementServiceOptions options;
 
-        public StatementService(IRawFactsData factsData, ITickerToCIKData tickerData, IJsonQuery jsonQuery, IOptions<StatementServiceOptions> options)
+        public FasbStatementFactsService(IRawFactsData factsData, ITickerToCIKData tickerData, IJsonQuery jsonQuery, IOptions<StatementServiceOptions> options)
         {
             this.factsData = factsData;
             this.tickerData = tickerData;
@@ -35,7 +34,7 @@ namespace Public.Analysis.Console.FasbTaxonomies
             {
                 return ServiceResponse<IStatementTreeResult>.Failure($"Ticker not found: {entity}");
             }
-
+            // TODO: the below is a data query. move to a separate class that gets injected here rather than querying in business logic.
             IEnumerable<JsonNode> rawFacts = await this.factsData.GetRawFacts(tickerCik, [new JsonQueryPath("facts"), new JsonQueryPath("us-gaap"), new JsonQueryWildCardPathExpression()]);
             var factNames = rawFacts.ToDictionary(f => f.GetPropertyName());
 
@@ -88,8 +87,6 @@ namespace Public.Analysis.Console.FasbTaxonomies
             (Dictionary<string, FactNodeModel> tree, Dictionary<string, Dictionary<string, List<FactNodeChild>>> children) = BuildFinalTreeNodes(statementModel, toProcess);
 
             var finalTree = new Dictionary<string, FactNodeVisualsModel>();
-
-            IEnumerable<FactNodeVisualsModel> derivedFacts = this
 
             foreach (KeyValuePair<string, FactNodeModel> node in tree)
             {

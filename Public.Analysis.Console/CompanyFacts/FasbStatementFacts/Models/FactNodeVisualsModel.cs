@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Public.Analysis.Console.CompanyFacts.Models.StatementFactsModels;
 using Public.Analysis.Console.Visuals.Models;
-using Public.Analysis.Console.CompanyFacts.Tree.Models;
 
-namespace Public.Analysis.Console.FasbTaxonomies.Models.StatementTaxonomyModels
+namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts.Models
 {
     public class FactNodeVisualsModel : IFactNodeVisualsModel
     {

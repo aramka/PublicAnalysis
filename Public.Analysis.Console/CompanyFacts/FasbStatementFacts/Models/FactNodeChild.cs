@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace Public.Analysis.Console.FasbTaxonomies.Models.StatementTaxonomyModels
+namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts.Models
 {
-    using Public.Analysis.Console.CompanyFacts.Tree.Models;
+    using Public.Analysis.Console.CompanyFacts.Models.StatementFactsModels;
 
     public class FactNodeChild : IFactNodeChild
     {

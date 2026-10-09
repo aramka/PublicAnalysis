@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Public.Analysis.Console.CompanyFacts.Tree.Models
+namespace Public.Analysis.Console.CompanyFacts.Models.StatementFactsModels
 {
     public interface IFactNode
     {

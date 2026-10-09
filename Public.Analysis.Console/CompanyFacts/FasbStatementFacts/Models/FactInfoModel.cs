@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace Public.Analysis.Console.FasbTaxonomies.Models.StatementTaxonomyModels
+namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts.Models
 {
     public class FactInfoModel
     {

@@ -1,6 +1,5 @@
 ﻿using Public.Analysis.Console.CompanyFacts.Models;
-using Public.Analysis.Console.CompanyFacts.Tree.Models;
-using Public.Analysis.Console.FinancialStatements;
+using Public.Analysis.Console.CompanyFacts.Models.StatementFactsModels;
 using Public.Analysis.Console.Services.Models;
 using Public.Analysis.Console.Visuals.Models;
 using Public.Analysis.Edgar;
@@ -13,9 +12,9 @@ namespace Public.Analysis.Console.CompanyFacts
     {
         private readonly IFactsData factsData;
         private readonly ITickerToCIKData tickerToCIKData;
-        private readonly IStatementService statementService;
+        private readonly IStatementFactsService statementService;
 
-        public CompanyFactsService(IFactsData factsData, ITickerToCIKData tickerToCIKData, IStatementService statementService)
+        public CompanyFactsService(IFactsData factsData, ITickerToCIKData tickerToCIKData, IStatementFactsService statementService)
         {
             this.factsData = factsData;
             this.tickerToCIKData = tickerToCIKData;

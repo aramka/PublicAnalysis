@@ -1,6 +1,6 @@
-﻿using Public.Analysis.Console.CompanyFacts.Tree.Models;
+﻿using Public.Analysis.Console.CompanyFacts.Models.StatementFactsModels;
 
-namespace Public.Analysis.Console.FasbTaxonomies.Models.StatementTaxonomyModels
+namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts.Models
 {
     public class StatementTreeResult : IStatementTreeResult
     {

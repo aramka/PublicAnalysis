@@ -10,8 +10,8 @@ namespace Public.Analysis.Console
     using System.Collections.Generic;
     using Microsoft.OpenApi.Models;
     using Public.Analysis.Edgar.RawFacts;
-    using Public.Analysis.Console.FasbTaxonomies;
     using Public.Analysis.Console.CompanyFacts;
+    using Public.Analysis.Console.CompanyFacts.FasbStatementFacts;
 
     internal class AspNetWebApi
     {
@@ -75,7 +75,7 @@ namespace Public.Analysis.Console
         {
             // bind StatementTreeServiceOptions from configuration so controllers can receive IOptions<>
             services.Configure<StatementServiceOptions>(
-                configuration.GetSection(typeof(StatementServiceOptions).FullName!));
+                configuration.GetSection(StatementServiceOptions.ConfigSectionName));
 
             services.AddLogging(builder =>
             {

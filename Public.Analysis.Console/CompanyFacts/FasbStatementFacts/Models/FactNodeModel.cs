@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Public.Analysis.Console.CompanyFacts.Models.StatementFactsModels;
 using System.Text.Json.Serialization;
 
-namespace Public.Analysis.Console.FasbTaxonomies.Models.StatementTaxonomyModels
+
+namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts.Models
 {
-    using System.Linq;
-    using Public.Analysis.Console.CompanyFacts.Tree.Models;
 
     public class FactNodeModel : IFactNode
     {

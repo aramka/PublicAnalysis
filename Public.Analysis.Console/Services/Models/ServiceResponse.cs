@@ -1,9 +1,4 @@
-﻿using Public.Analysis.Console.CompanyFacts.Tree.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Public.Analysis.Console.Services.Models
+﻿namespace Public.Analysis.Console.Services.Models
 {
     public class ServiceResponse<T> where T:class
     {
