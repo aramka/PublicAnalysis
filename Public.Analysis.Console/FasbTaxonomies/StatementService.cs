@@ -85,10 +85,46 @@ namespace Public.Analysis.Console.FasbTaxonomies
                 n.Children = n.Children.Where(c => treeNodesForTicker.ContainsKey(c.ChildElementId)).ToList();
                 return n;
             });
+            (Dictionary<string, FactNodeModel> tree, Dictionary<string, Dictionary<string, List<FactNodeChild>>> children) = BuildFinalTreeNodes(statementModel, toProcess);
 
+            var finalTree = new Dictionary<string, FactNodeVisualsModel>();
+
+            IEnumerable<FactNodeVisualsModel> derivedFacts = this
+
+            foreach (KeyValuePair<string, FactNodeModel> node in tree)
+            {
+
+                // TODO: retrieve visuals by ticker, datasetName, and datapointName. For now, we will use placeholder values.
+                if (children.TryGetValue(node.Key, out var childElements))
+                {
+                    node.Value.Children = childElements.SelectMany(c => c.Value).ToList(); ;
+                }
+                VisualType[] visuals = [];
+                if (treeNodesForTicker.ContainsKey(node.Key))
+                {
+                    visuals = [VisualType.TimeSeries];
+                }
+
+                finalTree.Add(node.Key, new FactNodeVisualsModel { FactNode = node.Value, Visuals = visuals });
+            }
+
+            return new StatementTreeResult
+            {
+                File = statementFileName,
+                TotalTreeFactsCount = statementModel.Tree.Count,
+                TotalTickerFactsCount = totalFactsCount,
+                MatchingFactsCount = treeNodesForTicker.Count,
+                Coverage = (decimal)treeNodesForTicker.Count / statementModel.Tree.Count * 100.0M,
+                Tree = finalTree,
+                Description = statementModel.Description
+            };
+        }
+
+        private (Dictionary<string, FactNodeModel> tree, Dictionary<string, Dictionary<string, List<FactNodeChild>>> children) BuildFinalTreeNodes(StatementTaxonomyModel statementModel, IEnumerable<FactNodeModel> toProcess)
+        {
             var queue = new Queue<FactNodeModel>(toProcess);
-            Dictionary<string, FactNodeModel> tree = new Dictionary<string, FactNodeModel>();
-            Dictionary<string, Dictionary<string, List<FactNodeChild>>> children = new Dictionary<string, Dictionary<string, List<FactNodeChild>>>();
+            var tree = new Dictionary<string, FactNodeModel>();
+            var children = new Dictionary<string, Dictionary<string, List<FactNodeChild>>>();
             var queued = new HashSet<string>(queue.Select(n => n.ElementId));
 
             while (queue.Any())
@@ -120,34 +156,7 @@ namespace Public.Analysis.Console.FasbTaxonomies
                     queue.Enqueue(parentNode);
                 }
             }
-            var finalTree = new Dictionary<string, FactNodeVisualsModel>();
-            foreach (KeyValuePair<string, FactNodeModel> node in tree)
-            {
-
-                // TODO: retrieve visuals by ticker, datasetName, and datapointName. For now, we will use placeholder values.
-                VisualType[] visuals = [];
-                if (treeNodesForTicker.ContainsKey(node.Key))
-                {
-                    visuals = [VisualType.TimeSeries];
-                }
-                finalTree.Add(node.Key, new FactNodeVisualsModel { FactNode = node.Value, Visuals = visuals });
-                if(!children.TryGetValue(node.Key, out var childElements))
-                {
-                    continue;
-                }
-                node.Value.Children = childElements.SelectMany(c => c.Value).ToList();
-            }
-
-            return new StatementTreeResult
-            {
-                File = statementFileName,
-                TotalTreeFactsCount = statementModel.Tree.Count,
-                TotalTickerFactsCount = totalFactsCount,
-                MatchingFactsCount = treeNodesForTicker.Count,
-                Coverage = (decimal)treeNodesForTicker.Count / statementModel.Tree.Count * 100.0M,
-                Tree = finalTree,
-                Description = statementModel.Description
-            };
+            return (tree, children);
         }
     }
 
