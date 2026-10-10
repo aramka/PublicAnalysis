@@ -13,6 +13,11 @@
             this.ResponseData = responseData;
             this.validationErrors = validationErrors;
         }
+        public ServiceResponse(T? responseData)
+        {
+            this.ResponseData = responseData;
+            this.validationErrors = [];
+        }
 
         public static ServiceResponse<T> Failure(string reason)
         {

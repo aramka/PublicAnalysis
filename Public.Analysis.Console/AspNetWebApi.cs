@@ -74,8 +74,8 @@ namespace Public.Analysis.Console
         static void Startup(IServiceCollection services, IConfiguration configuration)
         {
             // bind StatementTreeServiceOptions from configuration so controllers can receive IOptions<>
-            services.Configure<StatementServiceOptions>(
-                configuration.GetSection(StatementServiceOptions.ConfigSectionName));
+            services.Configure<FasbStatementJsonFileDataOptions>(
+                configuration.GetSection(FasbStatementJsonFileDataOptions.ConfigSectionName));
 
             services.AddLogging(builder =>
             {

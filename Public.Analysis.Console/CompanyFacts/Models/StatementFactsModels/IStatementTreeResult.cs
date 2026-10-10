@@ -4,7 +4,6 @@ namespace Public.Analysis.Console.CompanyFacts.Models.StatementFactsModels
 {
     public interface IStatementTreeResult
     {
-        string File { get; }
 
         int TotalTreeFactsCount { get; }
 

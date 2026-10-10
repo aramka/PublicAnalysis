@@ -9,6 +9,7 @@ namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts
     {
         public static IServiceCollection RegisterFasbTaxonmiesServices(this IServiceCollection services)
         {
+            services.AddSingleton<IFasbStatementsData, FasbStatementJsonFileData>();
             services.AddSingleton<IStatementFactsService, FasbStatementFactsService>();
             return services;
         }

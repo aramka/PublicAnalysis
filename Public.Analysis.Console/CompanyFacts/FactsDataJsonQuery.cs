@@ -64,5 +64,11 @@ namespace Public.Analysis.Console.CompanyFacts
 
             return companyFacts;
         }
+
+        public async Task<HashSet<string>> GetFactNames(TickerToCIKModel tickerCik)
+        {
+            IEnumerable<JsonNode> rawFacts = await this.rawFactsData.GetRawFacts(tickerCik, [new JsonQueryPath("facts"), new JsonQueryPath("us-gaap"), new JsonQueryWildCardPathExpression()]);
+            return rawFacts.Select(f => f.GetPropertyName()).ToHashSet();
+        }
     }
 }

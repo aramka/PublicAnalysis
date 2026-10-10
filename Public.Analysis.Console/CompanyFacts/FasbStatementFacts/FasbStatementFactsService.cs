@@ -12,71 +12,68 @@ namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts
 {
     public class FasbStatementFactsService : IStatementFactsService
     {
-        private readonly IRawFactsData factsData;
+        private readonly IFactsData factsData;
         private readonly ITickerToCIKData tickerData;
-        private readonly IJsonQuery jsonQuery;
-        private readonly StatementServiceOptions options;
+        private readonly IFasbStatementsData fasbStatementsData;
 
-        public FasbStatementFactsService(IRawFactsData factsData, ITickerToCIKData tickerData, IJsonQuery jsonQuery, IOptions<StatementServiceOptions> options)
+        public FasbStatementFactsService(IFactsData factsData, ITickerToCIKData tickerData, IFasbStatementsData fasbStatementsData)
         {
             this.factsData = factsData;
             this.tickerData = tickerData;
-            this.jsonQuery = jsonQuery;
-            this.options = options.Value;
+            this.fasbStatementsData = fasbStatementsData;
         }
         public async Task<ServiceResponse<IStatementTreeResult>> GetStatementTree(string statementName, string entity)
         {
-            if (!options.StatementTreeFilePathsByStatementName.TryGetValue(statementName, out string[]? statementTreeFiles)) {
-                return ServiceResponse<IStatementTreeResult>.Failure($"No statement tree files found for statement: {statementName}");
-            }
             var tickerCik = await tickerData.LookupTicker(entity);
             if (tickerCik is null)
             {
                 return ServiceResponse<IStatementTreeResult>.Failure($"Ticker not found: {entity}");
             }
-            // TODO: the below is a data query. move to a separate class that gets injected here rather than querying in business logic.
-            IEnumerable<JsonNode> rawFacts = await this.factsData.GetRawFacts(tickerCik, [new JsonQueryPath("facts"), new JsonQueryPath("us-gaap"), new JsonQueryWildCardPathExpression()]);
-            var factNames = rawFacts.ToDictionary(f => f.GetPropertyName());
+            
+            Task<HashSet<string>> factNamesForTicker = this.factsData.GetFactNames(tickerCik);
 
-            var coverageTasks =
-                statementTreeFiles
-                .Select( async statementTreeFileJson =>
+            Task<IEnumerable<StatementTaxonomyModel>> statementTaxonomyModels = this.fasbStatementsData.GetStatementTrees(statementName);
+            
+            await Task.WhenAll(factNamesForTicker, statementTaxonomyModels);
+
+            HashSet<string> factNames = factNamesForTicker.Result;
+            IEnumerable<StatementTaxonomyModel> statementModels = statementTaxonomyModels.Result;
+
+            if(!statementModels.Any())
+            {
+                return ServiceResponse<IStatementTreeResult>.Failure($"No statement models found for statement: {statementName}");
+            }
+
+            var bestTree =
+                statementModels
+                .Select( statementModel =>
                 {
-                    string fileName = Path.GetFileName(statementTreeFileJson);
-
-                    var statementJsonNode = (await jsonQuery.Query(statementTreeFileJson, [])).Single();
-                    var statementModel = System.Text.Json.JsonSerializer.Deserialize<StatementTaxonomyModel>(statementJsonNode);
-
-                    var treeNodesForTicker = statementModel!.Tree.Where(kvp =>
+                    var treeNodesForTicker = statementModel.Tree.Where(kvp =>
                     {
-                        return factNames.ContainsKey(kvp.Value.XsElement.Name);
+                        return factNames.Contains(kvp.Value.XsElement.Name);
                     }).ToDictionary();
 
                     return new 
                     {
-                        StatementTreeFileName = fileName,
                         TotalFactsCount = statementModel.Tree.Count,
                         TreeNodesForTicker = treeNodesForTicker,
                         StatementModel = statementModel
                     };
 
-                });
-
-            var coverage = await Task.WhenAll(coverageTasks);
-
-            var bestTree = coverage.MaxBy(a => a.TreeNodesForTicker.Count);
+                })
+                .MaxBy(a=>a.TreeNodesForTicker.Count);
 
             if(bestTree is null)
             {
                 return ServiceResponse<IStatementTreeResult>.Failure($"No matching facts found for ticker {entity} in statement {statementName}");
             }
 
-            StatementTreeResult finalTree = BuildFinalTree(bestTree.TreeNodesForTicker, bestTree.StatementModel, bestTree.StatementTreeFileName, bestTree.TreeNodesForTicker.Count);
+            StatementTreeResult finalTree = BuildFinalTree(bestTree.TreeNodesForTicker, bestTree.StatementModel, bestTree.TreeNodesForTicker.Count);
 
-            return new ServiceResponse<IStatementTreeResult>(finalTree, new string[0]);
+            return new ServiceResponse<IStatementTreeResult>(finalTree);
         }
 
-        private StatementTreeResult BuildFinalTree(Dictionary<string, FactNodeModel> treeNodesForTicker, StatementTaxonomyModel statementModel, string statementFileName, int totalFactsCount)
+        private StatementTreeResult BuildFinalTree(Dictionary<string, FactNodeModel> treeNodesForTicker, StatementTaxonomyModel statementModel, int totalFactsCount)
         {
             var toProcess = treeNodesForTicker.Values.Select(n =>
             {
@@ -107,7 +104,6 @@ namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts
 
             return new StatementTreeResult
             {
-                File = statementFileName,
                 TotalTreeFactsCount = statementModel.Tree.Count,
                 TotalTickerFactsCount = totalFactsCount,
                 MatchingFactsCount = treeNodesForTicker.Count,

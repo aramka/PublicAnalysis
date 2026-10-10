@@ -7,5 +7,6 @@ namespace Public.Analysis.Console.CompanyFacts
     public interface IFactsData
     {
         Task<IEnumerable<CompanyFactModel>> GetCompanyFacts(TickerToCIKModel tickerToCikModel, string factName, SecForm secForm, Range<long> dateRange);
+        Task<HashSet<string>> GetFactNames(TickerToCIKModel tickerCik);
     }
 }

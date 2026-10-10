@@ -4,7 +4,6 @@ namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts.Models
 {
     public class StatementTreeResult : IStatementTreeResult
     {
-        public string File { get; set; } = string.Empty;
         public int TotalTreeFactsCount { get; set; }
         public int TotalTickerFactsCount { get; set; }
         public int MatchingFactsCount { get; set; }
