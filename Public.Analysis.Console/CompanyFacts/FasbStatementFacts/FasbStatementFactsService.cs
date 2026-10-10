@@ -83,7 +83,7 @@ namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts
             });
             (Dictionary<string, FactNodeModel> tree, Dictionary<string, Dictionary<string, List<FactNodeChild>>> children) = BuildFinalTreeNodes(statementModel, toProcess);
 
-            var finalTree = new Dictionary<string, FactNodeVisualsModel>();
+            var finalTree = new Dictionary<string, IFactNodeVisualsModel>();
 
             foreach (KeyValuePair<string, FactNodeModel> node in tree)
             {
