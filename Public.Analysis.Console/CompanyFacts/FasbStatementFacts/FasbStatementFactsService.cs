@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Options;
+using Public.Analysis.Console.CompanyFacts.DerivedFacts;
 using Public.Analysis.Console.CompanyFacts.FasbStatementFacts.Models;
 using Public.Analysis.Console.CompanyFacts.Models.StatementFactsModels;
 using Public.Analysis.Console.Services.Models;
@@ -16,12 +17,14 @@ namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts
         private readonly IFactsData factsData;
         private readonly ITickerToCIKData tickerData;
         private readonly IFasbStatementsData fasbStatementsData;
+        private readonly IDerivedFactsService derivedFactsService;
 
-        public FasbStatementFactsService(IFactsData factsData, ITickerToCIKData tickerData, IFasbStatementsData fasbStatementsData)
+        public FasbStatementFactsService(IFactsData factsData, ITickerToCIKData tickerData, IFasbStatementsData fasbStatementsData, IDerivedFactsService derivedFactsService)
         {
             this.factsData = factsData;
             this.tickerData = tickerData;
             this.fasbStatementsData = fasbStatementsData;
+            this.derivedFactsService = derivedFactsService;
         }
         public async Task<ServiceResponse<IStatementTreeResult>> GetStatementTree(string statementName, string entity)
         {
@@ -69,12 +72,12 @@ namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts
                 return ServiceResponse<IStatementTreeResult>.Failure($"No matching facts found for ticker {entity} in statement {statementName}");
             }
 
-            StatementTreeResult finalTree = BuildFinalTree(bestTree.TreeNodesForTicker, bestTree.StatementModel, bestTree.TreeNodesForTicker.Count);
+            StatementTreeResult finalTree = await BuildFinalTree(bestTree.TreeNodesForTicker, bestTree.StatementModel, bestTree.TreeNodesForTicker.Count);
 
             return new ServiceResponse<IStatementTreeResult>(finalTree);
         }
 
-        private StatementTreeResult BuildFinalTree(Dictionary<string, FactNodeModel> treeNodesForTicker, StatementTaxonomyModel statementModel, int totalFactsCount)
+        private async Task<StatementTreeResult> BuildFinalTree(Dictionary<string, FactNodeModel> treeNodesForTicker, StatementTaxonomyModel statementModel, int totalFactsCount)
         {
             var toProcess = treeNodesForTicker
                 .Values
@@ -85,17 +88,20 @@ namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts
             });
             (Dictionary<string, FactNodeModel> tree, Dictionary<string, Dictionary<string, List<FactNodeChild>>> children) = BuildFinalTreeNodes(statementModel, toProcess);
 
-            var finalTree = new Dictionary<string, FactNodeVisualsModel>();
+            var derivedFacts = await this.derivedFactsService.GetDerivedFacts(tree);
+
+            var finalTree = derivedFacts.ToDictionary(df => df.FactNode.Id);
 
             foreach (KeyValuePair<string, FactNodeModel> node in tree)
             {
                 var finalNode = node.Value;
-                // TODO: retrieve visuals by ticker, datasetName, and datapointName. For now, we will use placeholder values.
+
                 if (children.TryGetValue(node.Key, out var childElements))
                 {
                     finalNode = finalNode.New(children: childElements.SelectMany(c => c.Value).ToList());
                 }
                 VisualType[] visuals = [];
+                // TODO: retrieve visuals by ticker, datasetName, and datapointName. For now, we will use placeholder values.
                 if (treeNodesForTicker.ContainsKey(node.Key))
                 {
                     visuals = [VisualType.TimeSeries];

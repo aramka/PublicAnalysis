@@ -1,4 +1,5 @@
-﻿using Public.Analysis.Console.CompanyFacts.FasbStatementFacts.Models;
+﻿using Public.Analysis.Console.CompanyFacts.DerivedFacts;
+using Public.Analysis.Console.CompanyFacts.FasbStatementFacts.Models;
 using Public.Analysis.Console.CompanyFacts.Models;
 using Public.Analysis.Console.CompanyFacts.Models.StatementFactsModels;
 using Public.Analysis.Console.Services.Models;
@@ -14,12 +15,14 @@ namespace Public.Analysis.Console.CompanyFacts
         private readonly IFactsData factsData;
         private readonly ITickerToCIKData tickerToCIKData;
         private readonly IStatementFactsService statementService;
+        private readonly IDerivedFactsService derivedFacts;
 
-        public CompanyFactsService(IFactsData factsData, ITickerToCIKData tickerToCIKData, IStatementFactsService statementService)
+        public CompanyFactsService(IFactsData factsData, ITickerToCIKData tickerToCIKData, IStatementFactsService statementService, IDerivedFactsService derivedFacts)
         {
             this.factsData = factsData;
             this.tickerToCIKData = tickerToCIKData;
             this.statementService = statementService;
+            this.derivedFacts = derivedFacts;
         }
         public Task<ServiceResponse<IEnumerable<TimeSeriesDataPoint>>> GetCompanyFactTimeSeries(string ticker, string factName)
         {
@@ -35,8 +38,16 @@ namespace Public.Analysis.Console.CompanyFacts
             {
                 return new ServiceResponse<IEnumerable<TimeSeriesDataPoint>>(Enumerable.Empty<TimeSeriesDataPoint>(), [$"Ticker {ticker} was not found."]);
             }
+            IEnumerable<CompanyFactModel> facts = [];
 
-            IEnumerable<CompanyFactModel> facts = await this.factsData.GetCompanyFacts(tickerToCikModel, factName, secForm, dateRange);
+            if (this.derivedFacts.IsDerivedFact(factName))
+            {
+                facts = await this.derivedFacts.GetCompanyFacts(tickerToCikModel, factName, secForm, dateRange);
+            }
+            else
+            {
+                facts = await this.factsData.GetCompanyFacts(tickerToCikModel, factName, secForm, dateRange);
+            }
             /* TODO: For display in the UI, we need to include human readable label for the factName. Also, for troubleshooting we need to include the meta data about the datapoint so that any particular datapoint can be found with a single click, ideally, or at least */
             return new ServiceResponse<IEnumerable<TimeSeriesDataPoint>>(facts.Select(fact => new TimeSeriesDataPoint
             {

@@ -12,6 +12,8 @@ namespace Public.Analysis.Console
     using Public.Analysis.Edgar.RawFacts;
     using Public.Analysis.Console.CompanyFacts;
     using Public.Analysis.Console.CompanyFacts.FasbStatementFacts;
+    using Public.Analysis.Console.CompanyFacts.DerivedFacts;
+    using Public.Analysis.Console.CompanyFacts.DerivedFacts.TangibleBookValue;
 
     internal class AspNetWebApi
     {
@@ -87,6 +89,7 @@ namespace Public.Analysis.Console
             services.RegisterEdgarDataSet(configuration);
             services.RegisterFasbTaxonmiesServices();
             services.RegisterCompanyFacts();
+            services.RegisterDerivedFactsServices(configuration);
             services.AddSingleton(provider =>
             {
                 var dataSets = provider.GetRequiredService<IEnumerable<IDataSet>>().ToDictionary(ds => ds.Name);
