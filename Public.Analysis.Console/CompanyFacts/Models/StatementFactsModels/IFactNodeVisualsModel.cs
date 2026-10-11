@@ -7,6 +7,6 @@ namespace Public.Analysis.Console.CompanyFacts.Models.StatementFactsModels
     {
         IFactNode FactNode { get; }
 
-        IList<VisualType> Visuals { get; }
+        IReadOnlyList<VisualType> Visuals { get; }
     }
 }

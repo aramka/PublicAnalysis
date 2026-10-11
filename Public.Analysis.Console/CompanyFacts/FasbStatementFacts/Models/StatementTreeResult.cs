@@ -8,9 +8,10 @@ namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts.Models
         public int TotalTickerFactsCount { get; set; }
         public int MatchingFactsCount { get; set; }
         public decimal Coverage { get; set; }
-        public IDictionary<string, IFactNodeVisualsModel> Tree { get; set; } = new Dictionary<string, IFactNodeVisualsModel>();
+        public IReadOnlyDictionary<string, FactNodeVisualsModel> Tree { get; set; } = new Dictionary<string, FactNodeVisualsModel>();
         public string Description { get; set; } = string.Empty;
 
+        IReadOnlyDictionary<string, IFactNodeVisualsModel> IStatementTreeResult.Tree => this.Tree.ToDictionary(kvp=>kvp.Key, kvp=> (kvp.Value as IFactNodeVisualsModel)!);
     }
 
 

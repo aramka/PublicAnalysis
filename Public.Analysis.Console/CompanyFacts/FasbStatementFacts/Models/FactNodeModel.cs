@@ -5,16 +5,19 @@ using System.Text.Json.Serialization;
 namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts.Models
 {
 
-    public class FactNodeModel : IFactNode
+    public record FactNodeModel(
+        [property: JsonPropertyName("XsElement")] FactInfoModel XsElement,
+        [property: JsonPropertyName("ParentsElementIds")] IReadOnlyList<string> ParentsElementIds,
+        [property: JsonPropertyName("Children")] IReadOnlyList<FactNodeChild> Children,
+        [property: JsonPropertyName("Label")] string Label,
+        [property: JsonPropertyName("ElementId")] string ElementId
+    ) : IFactNode
     {
-        [JsonPropertyName("XsElement")] public FactInfoModel XsElement { get; set; } = new FactInfoModel();
-        [JsonPropertyName("ParentsElementIds")]
-        public List<string> ParentsElementIds { get; set; } = new List<string>();
+        public FactNodeModel() : this(new FactInfoModel(), Array.Empty<string>(), Array.Empty<FactNodeChild>(), string.Empty, string.Empty) { }
 
+        private IReadOnlyDictionary<string, List<FactNodeChild>> childrenByElementId = new Dictionary<string, List<FactNodeChild>>();
 
-        private Dictionary<string, List<FactNodeChild>> childrenByElementId = new Dictionary<string, List<FactNodeChild>>();
-
-        public Dictionary<string, List<FactNodeChild>> ChildrenByElementId
+        public IReadOnlyDictionary<string, List<FactNodeChild>> ChildrenByElementId
         {
             get
             {
@@ -27,22 +30,34 @@ namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts.Models
                 return this.childrenByElementId;
             }
         }
-        [JsonPropertyName("Children")]
-        public List<FactNodeChild> Children { get; set; } = new List<FactNodeChild>();
 
+        /// <summary>
+        /// Create a new FactNodeModel copying this instance's properties when a corresponding
+        /// optional parameter is not provided.
+        /// </summary>
+        public FactNodeModel New(
+            FactInfoModel? xsElement = null,
+            IReadOnlyList<string>? parentsElementIds = null,
+            IReadOnlyList<FactNodeChild>? children = null,
+            string? label = null,
+            string? elementId = null)
+        {
+            return new FactNodeModel(
+                xsElement ?? this.XsElement,
+                parentsElementIds ?? this.ParentsElementIds,
+                children ?? this.Children,
+                label ?? this.Label,
+                elementId ?? this.ElementId
+            );
+        }
 
-        [JsonPropertyName("Label")]
-        public string Label { get; set; } = string.Empty;
+        // Compatibility convenience property
+        public string Name => this.XsElement?.Name ?? string.Empty;
 
-        [JsonPropertyName("ElementId")]
-        public string ElementId { get; set; } = string.Empty;
+        string IFactNode.Id => this.ElementId;
 
-        // Explicit interface mappings to preserve existing property names
-        string IFactNode.Id { get => this.ElementId; }
-        string IFactNode.Label { get => this.Label; }
-        IList<string>? IFactNode.ParentsIds { get => this.ParentsElementIds; }
-        IList<IFactNodeChild>? IFactNode.Children { get => this.Children?.Cast<IFactNodeChild>().ToList(); }
+        IReadOnlyList<string>? IFactNode.ParentsIds => this.ParentsElementIds;
 
-        string IFactNode.Name => this.XsElement.Name;
+        IReadOnlyList<IFactNodeChild>? IFactNode.Children => this.Children?.Cast<IFactNodeChild>().ToArray();
     }
 }

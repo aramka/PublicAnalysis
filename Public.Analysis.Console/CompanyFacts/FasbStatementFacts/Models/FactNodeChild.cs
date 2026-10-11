@@ -1,24 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
+using Public.Analysis.Console.CompanyFacts.Models.StatementFactsModels;
 
 namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts.Models
 {
-    using Public.Analysis.Console.CompanyFacts.Models.StatementFactsModels;
 
-    public class FactNodeChild : IFactNodeChild
+    public record FactNodeChild(
+        [property: JsonPropertyName("ChildElementId")] string ChildElementId = "",
+        [property: JsonPropertyName("ChildLabel")] string ChildLabel = "",
+        [property: JsonPropertyName("Order")] int Order = 0
+    ) : IFactNodeChild
     {
-        [JsonPropertyName("ChildElementId")] public string ChildElementId { get; set; } = string.Empty;
-        [JsonPropertyName("ChildLabel")]
-        public string ChildLabel { get; set; } = string.Empty;
-
-        [JsonPropertyName("Order")]
-        public int Order { get; set; } = 0;
-
-        // Explicit interface mapping so we don't need to change existing property names
-        string IFactNodeChild.ChildId { get => this.ChildElementId; }
-        string IFactNodeChild.ChildLabel { get => this.ChildLabel; }
-        int IFactNodeChild.Order { get => this.Order; }
+        public string ChildId => this.ChildElementId;
     }
 }

@@ -2,16 +2,13 @@
 {
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
-    public class StatementTaxonomyModel
+    public record StatementTaxonomyModel(
+        [property: JsonPropertyName("Name")] string Name = "",
+        [property: JsonPropertyName("Description")] string Description = "",
+        [property: JsonPropertyName("Id")] string Id = ""
+    )
     {
-        [JsonPropertyName("Name")] public string Name { get; set; } = string.Empty;
-        [JsonPropertyName("Description")]
-        public string Description { get; set; } = string.Empty;
-
-        [JsonPropertyName("Id")]
-        public string Id { get; set; } = string.Empty;
-
-        [JsonPropertyName("Tree")]
-        public Dictionary<string, FactNodeModel> Tree { get; set; } = new Dictionary<string, FactNodeModel>();
+        [property: JsonPropertyName("Tree")]
+        public Dictionary<string, FactNodeModel> Tree { get; init; } = new Dictionary<string, FactNodeModel>();
     }
 }

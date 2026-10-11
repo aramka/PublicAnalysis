@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Public.Analysis.Console.CompanyFacts.FasbStatementFacts.Models;
 using Public.Analysis.Console.CompanyFacts.Models.StatementFactsModels;
 using Public.Analysis.Console.Services.Models;
 using Public.Analysis.Console.Visuals.Models;

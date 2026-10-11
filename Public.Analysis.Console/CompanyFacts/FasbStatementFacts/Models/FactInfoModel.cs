@@ -5,28 +5,14 @@ using System.Text.Json.Serialization;
 
 namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts.Models
 {
-    public class FactInfoModel
-    {
-        [JsonPropertyName("ElementId")] public string ElementId { get; set; } = string.Empty;
-        [JsonPropertyName("Abstract")]
-        public bool Abstract { get; set; } = false;
-
-        [JsonPropertyName("Balance")]
-        public string Balance { get; set; } = string.Empty;
-
-        [JsonPropertyName("Id")]
-        public string Id { get; set; } = string.Empty;
-
-        [JsonPropertyName("Name")]
-        public string Name { get; set; } = string.Empty;
-
-        [JsonPropertyName("Nillable")]
-        public bool Nillable { get; set; } = false;
-
-        [JsonPropertyName("PeriodType")]
-        public string PeriodType { get; set; } = string.Empty;
-
-        [JsonPropertyName("Type")]
-        public string Type { get; set; } = string.Empty;
-    }
+    public record FactInfoModel(
+        [property: JsonPropertyName("ElementId")] string ElementId = "",
+        [property: JsonPropertyName("Abstract")] bool Abstract = false,
+        [property: JsonPropertyName("Balance")] string Balance = "",
+        [property: JsonPropertyName("Id")] string Id = "",
+        [property: JsonPropertyName("Name")] string Name = "",
+        [property: JsonPropertyName("Nillable")] bool Nillable = false,
+        [property: JsonPropertyName("PeriodType")] string PeriodType = "",
+        [property: JsonPropertyName("Type")] string Type = ""
+    );
 }

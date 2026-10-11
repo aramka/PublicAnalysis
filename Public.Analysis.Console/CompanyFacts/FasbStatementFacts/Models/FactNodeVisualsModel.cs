@@ -1,15 +1,16 @@
 ﻿using Public.Analysis.Console.CompanyFacts.Models.StatementFactsModels;
 using Public.Analysis.Console.Visuals.Models;
+using System.Text.Json.Serialization;
 
 namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts.Models
 {
-    public class FactNodeVisualsModel : IFactNodeVisualsModel
+    public record FactNodeVisualsModel(
+        [property: JsonPropertyName("FactNode")] FactNodeModel FactNode,
+        [property: JsonPropertyName("Visuals")] IReadOnlyList<VisualType> Visuals
+    ) : IFactNodeVisualsModel
     {
-        public FactNodeModel FactNode { get; set; } = new FactNodeModel();
-        public VisualType[] Visuals { get; set; } = Array.Empty<VisualType>();
+        public FactNodeVisualsModel() : this(new FactNodeModel(), Array.Empty<VisualType>()) { }
 
-        // Explicit interface implementations to avoid changing existing property names
-        IFactNode IFactNodeVisualsModel.FactNode { get => this.FactNode; }
-        IList<VisualType> IFactNodeVisualsModel.Visuals { get => this.Visuals?.ToList() ?? new List<VisualType>(); }
+        IFactNode IFactNodeVisualsModel.FactNode => this.FactNode;
     }
 }

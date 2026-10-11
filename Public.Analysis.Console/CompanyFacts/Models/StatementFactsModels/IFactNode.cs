@@ -8,9 +8,9 @@ namespace Public.Analysis.Console.CompanyFacts.Models.StatementFactsModels
 
         string Label { get; }
 
-        IList<string>? ParentsIds { get; }
+        IReadOnlyList<string>? ParentsIds { get; }
 
-        IList<IFactNodeChild>? Children { get; }
+        IReadOnlyList<IFactNodeChild>? Children { get; }
 
         string Name { get;  }
     }

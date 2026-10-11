@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using Public.Analysis.Console.CompanyFacts.FasbStatementFacts.Models;
 using Public.Analysis.Console.CompanyFacts.Models.StatementFactsModels;
 using Public.Analysis.Console.Services.Models;
@@ -75,23 +76,24 @@ namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts
 
         private StatementTreeResult BuildFinalTree(Dictionary<string, FactNodeModel> treeNodesForTicker, StatementTaxonomyModel statementModel, int totalFactsCount)
         {
-            var toProcess = treeNodesForTicker.Values.Select(n =>
+            var toProcess = treeNodesForTicker
+                .Values
+                .Where(n=>n.Children is not null)
+                .Select(n =>
             {
-
-                n.Children = n.Children.Where(c => treeNodesForTicker.ContainsKey(c.ChildElementId)).ToList();
-                return n;
+                return n.New(children: n.Children!.Where(c => treeNodesForTicker.ContainsKey(c.ChildElementId)).ToArray());
             });
             (Dictionary<string, FactNodeModel> tree, Dictionary<string, Dictionary<string, List<FactNodeChild>>> children) = BuildFinalTreeNodes(statementModel, toProcess);
 
-            var finalTree = new Dictionary<string, IFactNodeVisualsModel>();
+            var finalTree = new Dictionary<string, FactNodeVisualsModel>();
 
             foreach (KeyValuePair<string, FactNodeModel> node in tree)
             {
-
+                var finalNode = node.Value;
                 // TODO: retrieve visuals by ticker, datasetName, and datapointName. For now, we will use placeholder values.
                 if (children.TryGetValue(node.Key, out var childElements))
                 {
-                    node.Value.Children = childElements.SelectMany(c => c.Value).ToList(); ;
+                    finalNode = finalNode.New(children: childElements.SelectMany(c => c.Value).ToList());
                 }
                 VisualType[] visuals = [];
                 if (treeNodesForTicker.ContainsKey(node.Key))
@@ -99,7 +101,7 @@ namespace Public.Analysis.Console.CompanyFacts.FasbStatementFacts
                     visuals = [VisualType.TimeSeries];
                 }
 
-                finalTree.Add(node.Key, new FactNodeVisualsModel { FactNode = node.Value, Visuals = visuals });
+                finalTree.Add(node.Key, new FactNodeVisualsModel(finalNode, visuals));
             }
 
             return new StatementTreeResult

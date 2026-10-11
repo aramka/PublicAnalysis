@@ -13,7 +13,7 @@ namespace Public.Analysis.Console.CompanyFacts.Models.StatementFactsModels
 
         decimal Coverage { get; }
 
-        IDictionary<string, IFactNodeVisualsModel> Tree { get; }
+        IReadOnlyDictionary<string, IFactNodeVisualsModel> Tree { get; }
 
         string Description { get; }
     }

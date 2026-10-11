@@ -121,6 +121,7 @@ namespace Public.Analysis.FasbTaxonomies
 
             foreach (string statementXmlFilePath in statementsFilePaths)
             {
+                // TODO: rename all the xrbl/xml properties so they dont bleed up and the rest of the codebase doesnt have to use then. Map them here to something more usable for the rest of the codebase.
                 StatementModel statementModel = statementBuilder.BuildStatement(statementXmlFilePath, elementsByElementId, labelsByElementId, roleTypesParser);
 
                 string jsonFilePath = Path.Combine(statementJsonOutputDirectory, $"{Path.GetFileNameWithoutExtension(statementXmlFilePath)}.json");
