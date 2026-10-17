@@ -52,10 +52,10 @@ namespace Public.Analysis.FasbTaxonomies.Statement
 
             var tree = BuildTree([2, 2, 1], out List<IStatementNode> roots);
 
-            var secondRoot = roots[1];
-            var firstRootChild = roots[0].Children.ElementAt(0);
-            secondRoot.AddChild(firstRootChild.Id, $"{firstRootChild.Id.ToString()}_put_in_second_root", firstRootChild.Order);
-            tree[firstRootChild.Id].AddParent(secondRoot.Id);
+            //var secondRoot = roots[1];
+            //var firstRootChild = roots[0].Children.ElementAt(0);
+            //secondRoot.AddChild(firstRootChild.Id, $"{firstRootChild.Id.ToString()}_put_in_second_root", firstRootChild.Order);
+            //tree[firstRootChild.Id].AddParent(secondRoot.Id);
 
             HashSet<ElementId> removedBranchNodes = new ();
             var queue = new Queue<IStatementNode>([roots[0]]);
