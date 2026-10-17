@@ -16,25 +16,28 @@ namespace Public.Analysis.FasbTaxonomies.Statement
 
             foreach(ElementId parentId in nodeToRemove.ParentsElementIds)
             {
-                if(!tree.TryGetValue(parentId, out IStatementNode? newParent))
+                if(!tree.TryGetValue(parentId, out IStatementNode? parent))
                 {
                     throw new InvalidOperationException($"Parent with {nameof(ElementId)} {parentId} not found in tree");
                 }
+                parent.RemoveChild(nodeToRemove.Id);
+            }
 
-                foreach(var parentChild in nodeToRemove.Children)
+            foreach (var parentChild in nodeToRemove.Children)
+            {
+                if (!tree.TryGetValue(parentChild.Id, out IStatementNode? childNode))
                 {
-                    if(!tree.TryGetValue(parentChild.Id, out IStatementNode? childNode))
-                    {
-                        throw new InvalidOperationException($"Child with {nameof(ElementId)} {parentChild.Id} not found in tree");
-                    }
-
-                    childNode.RemoveParent(nodeToRemove.Id);
-
-                    childNode.AddParent(newParent.Id);
-                    newParent.AddChild(childNode.Id, parentChild.Label, parentChild.Order);
+                    throw new InvalidOperationException($"Child with {nameof(ElementId)} {parentChild.Id} not found in tree");
                 }
+                
+                childNode.RemoveParent(nodeToRemove.Id);
 
-                newParent.RemoveChild(nodeToRemove.Id);
+                foreach (ElementId parentId in nodeToRemove.ParentsElementIds)
+                {
+                    
+                    childNode.AddParent(parentId);
+                    tree[parentId].AddChild(childNode.Id, parentChild.Label, parentChild.Order);
+                }
             }
 
             return tree.Where(kvp => kvp.Key != id).ToDictionary();

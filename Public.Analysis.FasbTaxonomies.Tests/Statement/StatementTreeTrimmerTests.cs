@@ -18,9 +18,33 @@ namespace Public.Analysis.FasbTaxonomies.Statement
             //remove the node and all its successors
         }
 
+        [TestMethod]
+        public void RemoveNodeMoveChildrenUp_2()
+        {
+            Mock<IXsElement> xsElementMoq = new Mock<IXsElement>();
+            xsElementMoq.Setup(a => a.ElementId).Returns(new ElementId("to_remove"));
+            IStatementNode toRemove = new StatementNode(xsElementMoq.Object, "to_remove");
+
+            string childLabel = "child_of_toRemove";
+            var childrenOfToRemove = BuildNodes(2, childLabel,
+                (childNode, i) =>
+                {
+                    childNode.AddParent(toRemove.Id);
+                    toRemove.AddChild(childNode.Id, childNode.Id.ToString(), i);
+                }
+                );
+            Dictionary<ElementId, IStatementNode> tree = childrenOfToRemove.Concat([toRemove]).ToDictionary(n => n.Id);
+
+            StatementTreeTrimmer treeTrimmer = new StatementTreeTrimmer();
+            var actual = treeTrimmer.RemoveNodeMoveChildrenUp(toRemove.Id, tree);
+
+            var expected = BuildNodes(2, childLabel, (_, _) => { }).ToDictionary(n=>n.Id);
+
+            actual.Should().BeEquivalentTo(expected);
+        }
 
         [TestMethod]
-        public void RemoveNode()
+        public void RemoveNodeMoveChildrenUp_3()
         {
             //remove the node and move its successors up to the parent
 
