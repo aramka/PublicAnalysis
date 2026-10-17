@@ -2,9 +2,6 @@
 using Moq;
 using Public.Analysis.FasbTaxonomies.Statement.StatementTree;
 using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementParsing;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Public.Analysis.FasbTaxonomies.Statement
 {
@@ -12,10 +9,43 @@ namespace Public.Analysis.FasbTaxonomies.Statement
     [TestClass]
     public class StatementTreeTrimmerTests
     {
+
         [TestMethod]
         public void RemoveBranch()
         {
             //remove the node and all its successors
+
+            var tree = BuildTree([2, 2, 1]);
+            
+            var roots = tree.Where(kvp => !kvp.Value.ParentsElementIds.Any()).Select(kvp => kvp.Value).ToList();
+
+            var secondRoot = roots[1];
+            var firstRootChild = roots[0].Children.ElementAt(0);
+            secondRoot.AddChild(firstRootChild.Id, $"{firstRootChild.Id.ToString()}_put_in_second_root", firstRootChild.Order);
+            tree[firstRootChild.Id].AddParent(secondRoot.Id);
+
+            HashSet<ElementId> removedBranchNodes = new ();
+            var queue = new Queue<IStatementNode>([roots[0]]);
+            while (queue.Any())
+            {
+                var node = queue.Dequeue();
+                removedBranchNodes.Add(node.Id);
+                foreach(var child in node.Children)
+                {
+                    queue.Enqueue(tree[child.Id]);
+                }
+            }
+
+            StatementTreeTrimmer underTest = new StatementTreeTrimmer();
+            IReadOnlyDictionary<ElementId, IStatementNode> actual = underTest.RemoveBranch(roots[0].Id, tree);
+
+            var expected = BuildTree([2, 2, 1])
+                .Select(kvp => kvp.Value)
+                .Where(n => !removedBranchNodes.Contains(n.Id))
+                .ToDictionary(n => n.Id);
+
+            actual.Should().BeEquivalentTo(expected);
+            
         }
 
         [TestMethod]
@@ -101,6 +131,40 @@ namespace Public.Analysis.FasbTaxonomies.Statement
             var expected = expectedParentNodes.Concat(expectedChildNodes).ToDictionary(n => n.Id);
 
             actual.Should().BeEquivalentTo(expected);
+        }
+
+        public Dictionary<ElementId, IStatementNode> BuildTree(int[] nodesAtDepth)
+        {
+            if(nodesAtDepth is null || nodesAtDepth.Length == 0)
+            {
+                return new Dictionary<ElementId, IStatementNode>();
+            }
+            var roots = BuildNodes(nodesAtDepth[0], "root", (_, _) => { });
+
+            if (nodesAtDepth.Length == 1)
+            {
+                return roots.ToDictionary(n => n.Id);
+            }
+            var allNodes = new List<IStatementNode>();
+            allNodes.AddRange(roots);
+            var parents = roots;
+            for(int i = 1; i < nodesAtDepth.Length; i++)
+            {
+                var nextParents = new List<IStatementNode>();
+
+                foreach(var parent in parents)
+                {
+                    var children = BuildNodes(nodesAtDepth[i], $"{parent.Id}_child", (child, j) =>
+                    {
+                        child.AddParent(parent.Id);
+                        parent.AddChild(child.Id, child.Id.ToString(), j);
+                    });
+                    nextParents.AddRange(children);
+                    allNodes.AddRange(children);
+                }
+                parents = nextParents;
+            }
+            return allNodes.ToDictionary(n => n.Id);
         }
         List<IStatementNode> BuildNodes(int count, string idPrefix, Action<IStatementNode, int> sideEffect)
         {
