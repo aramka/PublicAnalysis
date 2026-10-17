@@ -36,26 +36,30 @@ namespace Public.Analysis.FasbTaxonomies.Statement
         [TestMethod]
         public void RemoveBranch_BranchNodeWithNonBranchChild()
         {
-            Assert.Fail("must implement");
-        }
+            var tree = BuildTree([2, 1], out List<IStatementNode> roots);
+            var toRemove = tree[roots[0].Children.Single().Id];
 
-        [TestMethod]
-        public void RemoveBranc_StartFromNonRoot()
-        {
-            Assert.Fail("must implement");
-        }
+            var nonBranchChild = roots[1].Children.Single();
+            var nonBranchChildNode = tree[nonBranchChild.Id];
 
+            toRemove.AddChild(nonBranchChild.Id, nonBranchChild.Label, nonBranchChild.Order);
+            nonBranchChildNode.AddParent(toRemove.Id);
+
+            StatementTreeTrimmer trimmer = new();
+
+            var actual = trimmer.RemoveBranch(toRemove.Id, tree);
+
+            var expectedRemoved = toRemove.Children.Select(c => c.Id).Concat([toRemove.Id]).ToHashSet();
+            var expected = BuildTree([2, 0], out roots);
+
+            actual.Should().BeEquivalentTo(expected);
+        }
         [TestMethod]
         public void RemoveBranch()
         {
             //remove the node and all its successors
 
             var tree = BuildTree([2, 2, 1], out List<IStatementNode> roots);
-
-            //var secondRoot = roots[1];
-            //var firstRootChild = roots[0].Children.ElementAt(0);
-            //secondRoot.AddChild(firstRootChild.Id, $"{firstRootChild.Id.ToString()}_put_in_second_root", firstRootChild.Order);
-            //tree[firstRootChild.Id].AddParent(secondRoot.Id);
 
             HashSet<ElementId> removedBranchNodes = new ();
             var queue = new Queue<IStatementNode>([roots[0]]);
