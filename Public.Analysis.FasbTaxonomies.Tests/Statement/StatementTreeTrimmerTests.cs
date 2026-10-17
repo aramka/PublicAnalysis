@@ -19,6 +19,21 @@ namespace Public.Analysis.FasbTaxonomies.Statement
         }
 
         [TestMethod]
+        public void RemoveNodeMoveChildrenUp_1()
+        {
+            Mock<IXsElement> xsElementMoq = new Mock<IXsElement>();
+            xsElementMoq.Setup(a => a.ElementId).Returns(new ElementId("to_remove"));
+            IStatementNode toRemove = new StatementNode(xsElementMoq.Object, "to_remove");
+
+            Dictionary<ElementId, IStatementNode> tree = new IStatementNode[] { toRemove }.ToDictionary(n => n.Id);
+
+            StatementTreeTrimmer treeTrimmer = new StatementTreeTrimmer();
+            var actual = treeTrimmer.RemoveNodeMoveChildrenUp(toRemove.Id, tree);
+
+            actual.Should().BeEmpty();
+        }
+
+        [TestMethod]
         public void RemoveNodeMoveChildrenUp_2()
         {
             Mock<IXsElement> xsElementMoq = new Mock<IXsElement>();
