@@ -2,6 +2,7 @@
 using Moq;
 using Public.Analysis.FasbTaxonomies.Statement.StatementTree;
 using Public.Analysis.FasbTaxonomies.XmlParsing.XrblXElementParsing;
+using System.ComponentModel.Design.Serialization;
 
 namespace Public.Analysis.FasbTaxonomies.Statement
 {
@@ -9,15 +10,47 @@ namespace Public.Analysis.FasbTaxonomies.Statement
     [TestClass]
     public class StatementTreeTrimmerTests
     {
+        [TestMethod]
+        public void RemoveBranch_BranchNodeWithNonBranchParent()
+        {
+            var tree = BuildTree([2, 1], out List<IStatementNode> roots);
+            
+            var toRemove = roots[0];
+            var toRemoveChild = toRemove.Children.Single();
+
+            var nonBranchParent = roots[1];
+            nonBranchParent.AddChild(toRemoveChild.Id, toRemoveChild.Label, toRemoveChild.Order);
+            tree[toRemoveChild.Id].AddParent(nonBranchParent.Id);
+
+            StatementTreeTrimmer trimmer = new();
+
+            var actual = trimmer.RemoveBranch(toRemove.Id, tree);
+
+            var expected = BuildTree([2, 1], out roots)
+                .Where(kvp => kvp.Value.Id != toRemove.Id && kvp.Value.Id != toRemoveChild.Id)
+                .ToDictionary();
+
+            actual.Should().BeEquivalentTo(expected);
+
+        }
+        [TestMethod]
+        public void RemoveBranch_BranchNodeWithNonBranchChild()
+        {
+            Assert.Fail("must implement");
+        }
+
+        [TestMethod]
+        public void RemoveBranc_StartFromNonRoot()
+        {
+            Assert.Fail("must implement");
+        }
 
         [TestMethod]
         public void RemoveBranch()
         {
             //remove the node and all its successors
 
-            var tree = BuildTree([2, 2, 1]);
-            
-            var roots = tree.Where(kvp => !kvp.Value.ParentsElementIds.Any()).Select(kvp => kvp.Value).ToList();
+            var tree = BuildTree([2, 2, 1], out List<IStatementNode> roots);
 
             var secondRoot = roots[1];
             var firstRootChild = roots[0].Children.ElementAt(0);
@@ -39,7 +72,7 @@ namespace Public.Analysis.FasbTaxonomies.Statement
             StatementTreeTrimmer underTest = new StatementTreeTrimmer();
             IReadOnlyDictionary<ElementId, IStatementNode> actual = underTest.RemoveBranch(roots[0].Id, tree);
 
-            var expected = BuildTree([2, 2, 1])
+            var expected = BuildTree([2, 2, 1], out roots)
                 .Select(kvp => kvp.Value)
                 .Where(n => !removedBranchNodes.Contains(n.Id))
                 .ToDictionary(n => n.Id);
@@ -133,13 +166,14 @@ namespace Public.Analysis.FasbTaxonomies.Statement
             actual.Should().BeEquivalentTo(expected);
         }
 
-        public Dictionary<ElementId, IStatementNode> BuildTree(int[] nodesAtDepth)
+        public Dictionary<ElementId, IStatementNode> BuildTree(int[] nodesAtDepth, out List<IStatementNode> roots)
         {
+            roots = new List<IStatementNode>();
             if(nodesAtDepth is null || nodesAtDepth.Length == 0)
             {
                 return new Dictionary<ElementId, IStatementNode>();
             }
-            var roots = BuildNodes(nodesAtDepth[0], "root", (_, _) => { });
+            roots = BuildNodes(nodesAtDepth[0], "root", (_, _) => { });
 
             if (nodesAtDepth.Length == 1)
             {
