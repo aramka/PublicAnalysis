@@ -17,7 +17,7 @@ namespace Public.Frameworks.Tests
             JsonPathJsonQuery underTest = new JsonPathJsonQuery(queryBuilderFactoryMoq.Object);
 
 
-            Assert.Throws<ArgumentNullException>(() => underTest.Query(null, Enumerable.Empty<IJsonQueryExpression>()));
+            Assert.ThrowsAsync<ArgumentNullException>(() => underTest.Query(null!, Enumerable.Empty<IJsonQueryExpression>()));
         }
     }
 }

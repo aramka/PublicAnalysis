@@ -1,12 +1,14 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Public.Frameworks.Initialization;
 using Public.Analysis.Data;
-using Public.Analysis.Edgar.TickerToCIK;
-using Public.Analysis.Edgar.RawFacts;
 using Public.Analysis.Edgar.Models;
+using Public.Analysis.Edgar.RawFacts;
+using Public.Analysis.Edgar.TickerToCIK;
+using Public.Frameworks.Cache;
+using Public.Frameworks.Initialization;
 using Public.Frameworks.JsonQuery;
+using System.Text.Json.Nodes;
 
 namespace Public.Analysis.Edgar
 {
@@ -21,11 +23,17 @@ namespace Public.Analysis.Edgar
             services.Configure<EdgarOptions>(configuration.GetSection(GetSectionName(nameof(EdgarOptions))));
             services.Configure<TickerToCIKDataOptions>(configuration.GetSection(GetSectionName(nameof(TickerToCIKDataOptions))));
             services.Configure<FactsDataOptions>(configuration.GetSection(GetSectionName(nameof(FactsDataOptions))));
+            services.Configure<RawFactsCacheOptions>(configuration.GetSection(GetSectionName(nameof(RawFactsCacheOptions))));
 
             services.AddSingleton<HttpClient>();
             
             services.AddSingleton<RawFactsData>();
             services.AddSingleton<IEdgarData>((sp) => sp.GetRequiredService<RawFactsData>());
+            services.AddSingleton<IRawFactsData>((sp) => 
+            { 
+                return sp.GetRequiredService<RawFactsData>(); 
+            });
+            services.AddKeyedSingleton<ICache<TickerToCIKModel, JsonNode, RawFactsCacheOptions>, Cache<TickerToCIKModel, JsonNode, RawFactsCacheOptions>>(RawFactsData.RawFactsDataCacheServiceKey);
 
             services.AddSingleton<TickerToCIKData>();
             services.AddSingleton<ITickerToCIKData>((sp) => sp.GetRequiredService<TickerToCIKData>());

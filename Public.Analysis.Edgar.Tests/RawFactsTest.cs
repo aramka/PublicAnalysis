@@ -14,6 +14,7 @@ using System.Text.Json;
 using AwesomeAssertions;
 using System.Collections.ObjectModel;
 using Public.Frameworks.JsonQuery;
+using Public.Frameworks.Cache;
 
 namespace Public.Analysis.Edgar.Tests
 {
@@ -34,11 +35,13 @@ namespace Public.Analysis.Edgar.Tests
         private readonly HttpResponseMessage responseMessage = new HttpResponseMessage { Content = new StringContent(EdgarFactsFactory.EdgarFactsAPJsonString, System.Text.Encoding.UTF8, new MediaTypeHeaderValue("application/json")) };
         private readonly FactsDataOptions factsDataOptions;
         private readonly EdgarOptions edgarOptions;
+        private readonly RawFactsCacheOptions rawFactsCacheOptions;
+        private readonly Mock<ICache<TickerToCIKModel, JsonNode, RawFactsCacheOptions>> cacheMoq;
 
         public RawFactsTest()
         {
 
-            tickerCIKDataMoq.Setup(a => a.Query(It.Is<DataQuery>(q => q.Path[0] == aaplTicker))).ReturnsAsync(new TickerToCIKModel[] { new TickerToCIKModel { CikStr = aaplCik, Ticker = aaplTicker } });
+            tickerCIKDataMoq.Setup(a => a.Query(It.Is<DataQuery>(q => q.Path[0] == aaplTicker))).ReturnsAsync(new TickerToCIKModel[] { new TickerToCIKModel(aaplCik, aaplTicker, aaplTicker ) });
 
             Mock<IDataQueryValidation> dataQueryValidationMoq = new Mock<IDataQueryValidation>();
            
@@ -57,14 +60,26 @@ namespace Public.Analysis.Edgar.Tests
             Mock<IOptions<FactsDataOptions>> factsOptionsMoq = new Mock<IOptions<FactsDataOptions>>();
             factsOptionsMoq.Setup(a => a.Value).Returns(factsDataOptions);
 
-            this.rawFacts = new RawFactsData(tickerCIKDataMoq.Object, dataQueryValidationMoq.Object, clientHttp, edgarOptionsMoq.Object, factsOptionsMoq.Object, jsonQueryMoq.Object);
+            this.rawFactsCacheOptions = new RawFactsCacheOptions { CacheMissWaitToUpdateWithFactoryMilli = DateTimeOffset.UtcNow.Second };
+
+            this.cacheMoq = new Mock<ICache<TickerToCIKModel, JsonNode, RawFactsCacheOptions>>();
+
+            cacheMoq.Setup(a => a.GetOrAdd(It.IsAny<TickerToCIKModel>(), It.IsAny<Func<TickerToCIKModel, Task<JsonNode>>>(), rawFactsCacheOptions.CacheMissWaitToUpdateWithFactoryMilli))
+                .Returns<TickerToCIKModel, Func<TickerToCIKModel, Task<JsonNode>>, int>(async (ticker, factoryFunc, timeout) =>
+                {
+                    return await factoryFunc(ticker);
+                });
+            cacheMoq.Setup(a => a.Options).Returns(rawFactsCacheOptions);
+            
+
+            this.rawFacts = new RawFactsData(tickerCIKDataMoq.Object, dataQueryValidationMoq.Object, clientHttp, edgarOptionsMoq.Object, factsOptionsMoq.Object, jsonQueryMoq.Object, cacheMoq.Object);
             
         }
 
         [TestMethod]
         public async Task Query_ThrowsResponseException()
         {
-            HttpRequestMessage actualRequestMessage = null;
+            HttpRequestMessage? actualRequestMessage = null;
             httpHandlerMoq.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(new HttpResponseMessage(System.Net.HttpStatusCode.NotFound))
@@ -78,7 +93,7 @@ namespace Public.Analysis.Edgar.Tests
         [TestMethod]
         public async Task Query_CallMakesCorrectHttp()
         {
-            HttpRequestMessage actualRequestMessage = null;
+            HttpRequestMessage? actualRequestMessage = null;
             httpHandlerMoq.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(responseMessage)
@@ -115,8 +130,8 @@ namespace Public.Analysis.Edgar.Tests
         [TestMethod]
         public async Task Query_CallsIQueryJson()
         {
-            JsonNode jsonNodePassedToQuery = null;
-            IEnumerable<IJsonQueryExpression> pathPassedToQuery = null;
+            JsonNode? jsonNodePassedToQuery = null;
+            IEnumerable<IJsonQueryExpression>? pathPassedToQuery = null;
 
             var expectedReturn = new List<JsonNode> { JsonNode.Parse("{\"val\": 1234}")! };
             jsonQueryMoq.Setup(a => a.Query(It.IsAny<JsonNode>(), It.IsAny<IEnumerable<IJsonQueryExpression>>()))

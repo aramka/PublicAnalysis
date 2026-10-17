@@ -26,4 +26,9 @@
 		</None>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="FasbTaxonomies\Models\StatementTaxonomyModels\" />
+	  <Folder Include="FinancialStatements\" />
+	</ItemGroup>
+
 </Project>
